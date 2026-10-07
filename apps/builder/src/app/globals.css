@@ -1,0 +1,820 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 100% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+  }
+
+  .theme {
+    --animate-marquee: marquee var(--duration) infinite linear;
+    --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+    --animate-orbit: orbit calc(var(--duration)*1s) linear infinite;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+body {
+  font-family: "Montserrat", sans-serif;
+}
+
+/* AnimatedThemeToggler owns the root view-transition while active. Disable the
+   browser's default cross-fade and keep its snapshot alive for the full reveal. */
+html[data-magicui-theme-vt="active"]::view-transition-group(root) {
+  animation-duration: var(--magicui-theme-toggle-vt-duration);
+}
+
+html[data-magicui-theme-vt="active"]::view-transition-old(root),
+html[data-magicui-theme-vt="active"]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html[data-magicui-theme-vt="active"]::view-transition-old(root) {
+  z-index: 0;
+}
+
+html[data-magicui-theme-vt="active"]::view-transition-new(root) {
+  z-index: 1;
+  clip-path: var(--magicui-theme-vt-clip-from);
+}
+
+/* Keep dashboard pages centered within the space left by the fixed sidebar.
+   Settings owns its own narrower layout and is intentionally excluded. */
+.admin-main-content > * {
+  width: 100%;
+  max-width: 1440px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.ck-balloon-panel_position_border-side_right {
+  display: none !important;
+}
+
+/* Keep CKEditor aligned with the dark admin workspace. */
+html.dark .ck.ck-editor__main > .ck-editor__editable,
+html.dark .ck.ck-editor__main > .ck-editor__editable.ck-focused,
+html.dark .ck.ck-editor__editable_inline {
+  min-height: 18rem;
+  background: #404040 !important;
+  border-color: #525252 !important;
+  color: #f4f4f5 !important;
+}
+html.dark .ck.ck-toolbar {
+  background: #252525;
+  border-color: #525252;
+}
+
+/* CKEditor controls, dropdowns, and hover states. */
+html.dark .ck.ck-button:not(.ck-color-grid__tile),
+html.dark .ck.ck-button:not(.ck-disabled):not(.ck-color-grid__tile):hover,
+html.dark .ck.ck-button:not(.ck-disabled):not(.ck-color-grid__tile):focus,
+html.dark .ck.ck-dropdown__button {
+  color: #e5e5e5 !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+html.dark .ck.ck-button:not(.ck-disabled):not(.ck-color-grid__tile):hover,
+html.dark .ck.ck-button:not(.ck-disabled):not(.ck-color-grid__tile):focus,
+html.dark .ck.ck-dropdown__button:not(.ck-disabled):hover,
+html.dark .ck.ck-dropdown__button:not(.ck-disabled):focus {
+  background: #404040 !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+html.dark .ck.ck-button.ck-on:not(.ck-color-grid__tile),
+html.dark .ck.ck-button.ck-on:not(.ck-color-grid__tile):hover,
+html.dark .ck.ck-dropdown__button.ck-on,
+html.dark .ck.ck-dropdown__button.ck-on:hover {
+  background: #075985 !important;
+  color: #ffffff !important;
+}
+
+html.dark .ck.ck-dropdown__panel,
+html.dark .ck.ck-list {
+  background: #262626 !important;
+  border-color: #525252 !important;
+  color: #e5e5e5 !important;
+}
+
+html.dark .ck.ck-list__item .ck-button {
+  border-radius: 0 !important;
+  color: #e5e5e5 !important;
+  background: #262626 !important;
+}
+
+html.dark .ck.ck-list__item .ck-button:hover,
+html.dark .ck.ck-list__item .ck-button:focus,
+html.dark .ck.ck-list__item .ck-button.ck-on {
+  background: #075985 !important;
+  color: #ffffff !important;
+}
+
+html.dark .ck.ck-tooltip {
+  background: #171717 !important;
+  color: #f5f5f5 !important;
+}
+
+html.dark .ck.ck-dialog-overlay.ck-dialog-overlay__transparent {
+  background: rgba(23, 23, 23, 0.78) !important;
+}
+
+html.dark .ck.ck-dialog,
+html.dark .ck.ck-dialog__content {
+  background: #262626 !important;
+  border-color: #525252 !important;
+  color: #f5f5f5 !important;
+}
+
+html.dark .ck.ck-color-grid,
+html.dark .ck.ck-color-picker,
+html.dark .ck.ck-color-picker__row,
+html.dark .ck.ck-color-selector__remove-color,
+html.dark .ck.ck-color-selector_action-bar {
+  background: #262626 !important;
+  color: #e5e5e5 !important;
+}
+
+html.dark .ck.ck-color-grid__label,
+html.dark .ck.ck-color-picker__hash-view,
+html.dark .ck.ck-input-color,
+html.dark .ck.ck-input-color__button {
+  color: #e5e5e5 !important;
+}
+
+html.dark .ck.ck-color-grid__tile,
+html.dark .ck.ck-color-selector__color-tile_bordered {
+  border-color: #525252 !important;
+}
+
+html.dark .ck.ck-color-selector__remove-color:hover,
+html.dark .ck.ck-input-color__button:hover {
+  background: #075985 !important;
+  color: #ffffff !important;
+}
+
+html.dark .ck.ck-color-grid__tile:hover,
+html.dark .ck.ck-color-grid__tile:focus {
+  outline: 2px solid #38bdf8 !important;
+  outline-offset: 2px;
+}
+
+/* The editor uses a real portrait viewport for smaller device previews. Keep
+   the frame outside the iframe so the page itself still renders at the exact
+   CSS dimensions selected in the top bar. */
+.device-frame--mockup {
+  box-sizing: content-box;
+  border: 10px solid #17191e;
+  background: #17191e;
+  box-shadow:
+    0 24px 50px rgb(15 23 42 / 0.28),
+    0 4px 12px rgb(15 23 42 / 0.18),
+    inset 0 0 0 1px rgb(255 255 255 / 0.12);
+}
+
+.device-frame--mockup[data-viewport="mobile"] {
+  border-radius: 30px;
+}
+
+.device-frame--mockup[data-viewport="tablet"] {
+  border-radius: 22px;
+}
+
+.device-frame--mockup::before {
+  content: "";
+  position: absolute;
+  z-index: 20;
+  top: 9px;
+  left: 50%;
+  width: 84px;
+  height: 20px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #090a0d;
+  box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.08);
+  pointer-events: none;
+}
+
+.device-frame--mockup[data-viewport="tablet"]::before {
+  top: 8px;
+  width: 8px;
+  height: 8px;
+  background: #090a0d;
+  box-shadow:
+    0 0 0 2px #282b31,
+    inset 0 1px 1px rgb(255 255 255 / 0.15);
+}
+
+.device-frame--mockup::after {
+  content: "";
+  position: absolute;
+  z-index: 20;
+  bottom: 8px;
+  left: 50%;
+  width: 92px;
+  height: 4px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.72);
+  pointer-events: none;
+}
+
+.device-frame--mockup[data-viewport="tablet"]::after {
+  width: 64px;
+  height: 3px;
+  bottom: 7px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .device-frame--mockup {
+    box-shadow:
+      0 24px 50px rgb(0 0 0 / 0.42),
+      0 4px 12px rgb(0 0 0 / 0.28),
+      inset 0 0 0 1px rgb(255 255 255 / 0.12);
+  }
+}
+
+.landing-grid {
+  background-image:
+    linear-gradient(rgba(71, 112, 155, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(71, 112, 155, 0.08) 1px, transparent 1px);
+  background-size: 42px 42px;
+  background-position: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .landing-grid {
+    background-position: center;
+    animation: landing-grid-drift 24s linear infinite;
+  }
+}
+
+@keyframes landing-grid-drift {
+  from {
+    background-position: center;
+  }
+  to {
+    background-position: 42px 42px;
+  }
+}
+
+/* Webkit-based browsers (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  /* Invisible track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 100, 0.4);
+  /* Subtle dark gray */
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 100, 100, 0.6);
+  /* Slightly darker on hover */
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 100, 100, 0.4) transparent;
+}
+
+.bg-gradient {
+  --btn-bg-1: rgb(34 211 238 / 1);
+  --btn-bg-2: hsla(217, 100%, 56%, 1);
+
+  background-image: linear-gradient(
+    120deg,
+    var(--btn-bg-2),
+    var(--btn-bg-1),
+    var(--btn-bg-2)
+  );
+  background-size: 200% 100%;
+  background-position: 100% 0;
+
+  transition: background-position 0.5s;
+}
+
+.hover\:bg-gradient:hover {
+  background-position: 0 0;
+}
+
+/* Onboarding coach marks: a quiet cue that draws attention to the next action. */
+.onboarding-action-ring {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  overflow: hidden;
+  padding: 2px;
+  border-radius: 0.5rem;
+}
+
+.onboarding-action-ring::before {
+  content: "";
+  position: absolute;
+  inset: -100%;
+  z-index: -1;
+  border-radius: 0.65rem;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0 60%,
+    rgba(34, 211, 238, 0.9),
+    rgba(59, 130, 246, 0.85),
+    transparent 82% 100%
+  );
+  animation: onboarding-border-trace 2.8s linear infinite;
+}
+
+.onboarding-action-ring > button {
+  flex: 1;
+}
+/* Craft layer panel: the package ships fixed light-mode colors. */
+.craft-layers-override {
+  color: hsl(var(--foreground));
+}
+
+.builder-layer-row {
+  display: flex;
+  min-height: 36px;
+  align-items: center;
+  padding-right: 8px;
+  color: hsl(var(--muted-foreground));
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.builder-layer-row:hover,
+.builder-layer-row:focus-within {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+.builder-layer.is-selected > .builder-layer-row {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.builder-layer-visibility,
+.builder-layer-settings,
+.builder-layer-chevron {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: currentColor;
+  cursor: pointer;
+}
+
+.builder-layer-visibility {
+  width: 24px;
+  height: 24px;
+  margin-right: 4px;
+  opacity: 0.65;
+}
+
+.builder-layer-visibility svg,
+.builder-layer-settings svg {
+  width: 14px;
+  height: 14px;
+}
+
+.builder-layer-header {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 4px;
+}
+
+.builder-layer-name {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  line-height: 26px;
+}
+
+.builder-layer-settings,
+.builder-layer-chevron {
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 150ms ease, background-color 150ms ease;
+}
+
+.builder-layer-row:hover .builder-layer-settings,
+.builder-layer-row:focus-within .builder-layer-settings,
+.builder-layer-row:hover .builder-layer-chevron,
+.builder-layer-row:focus-within .builder-layer-chevron {
+  opacity: 0.8;
+}
+
+.builder-layer-settings:hover,
+.builder-layer-settings:focus-visible,
+.builder-layer-chevron:hover,
+.builder-layer-chevron:focus-visible {
+  background: hsl(var(--background) / 0.18);
+  opacity: 1;
+  outline: none;
+}
+
+.builder-layer-chevron.is-expanded svg {
+  transform: rotate(180deg);
+}
+
+.builder-layer-children {
+  display: block;
+}
+
+.dark .builder-layer-row {
+  color: hsl(var(--muted-foreground));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .builder-layer-row,
+  .builder-layer-settings,
+  .builder-layer-chevron {
+    transition: none;
+  }
+}
+
+/* bento grid ai sphere */
+.circle-big {
+  background-color: rgba(6, 182, 212, 0.18);
+  width: 160px;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow:
+    0 0 34px rgba(34, 211, 238, 0.2),
+    inset -10px -10px 20px rgba(255, 255, 255, 0.1);
+  border: solid 1px rgba(103, 232, 249, 0.3);
+  position: relative;
+  animation: pulseBig 4s ease-in-out infinite;
+}
+
+.circle-small {
+  width: 100px;
+  aspect-ratio: 1;
+  z-index: 5;
+  background: linear-gradient(
+    -135deg,
+    rgba(34, 211, 238, 0.85),
+    rgba(37, 99, 235, 0.85)
+  );
+  border-radius: 999px;
+  border: solid 2px rgba(255, 255, 255, 0.3);
+  box-shadow:
+    inset 0px 0px 35px 15px rgba(255, 255, 255, 0.2),
+    0 0 24px 12px rgba(34, 211, 238, 0.24);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+  color: rgba(255, 255, 255, 0.7);
+  animation: pulseSmall 3s ease-in-out infinite;
+}
+
+@keyframes pulseBig {
+  0% {
+    transform: scale(1);
+    box-shadow:
+      0 0 34px rgba(34, 211, 238, 0.2),
+      inset -10px -10px 20px rgba(255, 255, 255, 0.1);
+  }
+
+  50% {
+    transform: scale(1.05);
+    box-shadow:
+      0 0 44px rgba(34, 211, 238, 0.3),
+      inset -10px -10px 20px rgba(255, 255, 255, 0.2);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 34px rgba(34, 211, 238, 0.2),
+      inset -10px -10px 20px rgba(255, 255, 255, 0.1);
+  }
+}
+
+@keyframes pulseSmall {
+  0% {
+    transform: scale(1);
+    box-shadow:
+      inset 0px 0px 35px 15px rgba(255, 255, 255, 0.2),
+      0 0 24px 12px rgba(34, 211, 238, 0.24);
+  }
+
+  50% {
+    transform: scale(1.1);
+    box-shadow:
+      inset 0px 0px 45px 20px rgba(255, 255, 255, 0.3),
+      0 0 32px 16px rgba(34, 211, 238, 0.34);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow:
+      inset 0px 0px 35px 15px rgba(255, 255, 255, 0.2),
+      0 0 24px 12px rgba(34, 211, 238, 0.24);
+  }
+}
+
+.ck-editor__editable {
+  min-height: 300px;
+}
+
+/* CKEditor follows the admin theme. The editor renders its floating panels
+   near the document body, so scoping this to `.dark .ck` keeps toolbars,
+   dropdowns, dialogs, and the editing surface in sync with next-themes. */
+.dark .ck {
+  --ck-color-base-foreground: hsl(220 14% 18%);
+  --ck-color-base-background: hsl(222 16% 13%);
+  --ck-color-base-border: hsl(217 15% 27%);
+  --ck-color-base-text: hsl(210 20% 92%);
+  --ck-color-text: var(--ck-color-base-text);
+  --ck-color-toolbar-background: hsl(222 16% 13%);
+  --ck-color-toolbar-border: hsl(217 15% 27%);
+  --ck-color-panel-background: hsl(222 16% 15%);
+  --ck-color-panel-border: hsl(217 15% 30%);
+  --ck-color-dropdown-panel-background: hsl(222 16% 15%);
+  --ck-color-dropdown-panel-border: hsl(217 15% 30%);
+  --ck-color-input-background: hsl(222 16% 10%);
+  --ck-color-input-border: hsl(217 15% 32%);
+  --ck-color-input-text: hsl(210 20% 92%);
+  --ck-color-button-default-hover-background: hsl(217 15% 23%);
+  --ck-color-button-default-active-background: hsl(217 15% 26%);
+  --ck-color-button-on-background: hsl(214 55% 27%);
+  --ck-color-button-on-hover-background: hsl(214 55% 32%);
+  --ck-color-button-on-active-background: hsl(214 55% 36%);
+  --ck-color-button-on-color: hsl(214 95% 78%);
+  --ck-color-list-background: hsl(222 16% 15%);
+  --ck-color-list-button-hover-background: hsl(217 15% 23%);
+  --ck-color-list-button-on-background: hsl(214 55% 32%);
+  --ck-color-list-button-on-text: hsl(210 20% 96%);
+  --ck-color-tooltip-background: hsl(210 20% 92%);
+  --ck-color-tooltip-text: hsl(222 16% 13%);
+  --ck-color-engine-placeholder-text: hsl(215 12% 58%);
+  --ck-color-link-default: hsl(211 100% 73%);
+  --ck-color-focus-border: hsl(211 100% 70%);
+  --ck-color-focus-outer-shadow: hsl(214 55% 27% / 0.55);
+  color: var(--ck-color-base-text);
+}
+
+.dark .ck-editor__editable,
+.dark .ck-editor__editable.ck-focused {
+  background: hsl(222 16% 10%);
+  color: hsl(210 20% 92%);
+  border-color: hsl(217 15% 27%);
+}
+
+.dark .ck-content blockquote,
+.dark .ck-content pre {
+  background: hsl(217 15% 15%);
+  color: hsl(210 20% 88%);
+}
+
+.ck-editor__editable,
+.ck-toolbar {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.4s ease-out;
+}
+
+.circle-grow {
+  opacity: 0;
+  transform: scale(0.5);
+  will-change: transform, opacity;
+}
+
+.circle-grow-active {
+  animation: circle-grow-in 2s cubic-bezier(0.1, 0.4, 0.2, 1) forwards;
+}
+
+@keyframes circle-grow-in {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes footer-zap-flip {
+  0%,
+  100% {
+    transform: perspective(1em) rotateY(0deg) scale(1);
+  }
+
+  50% {
+    transform: perspective(1em) rotateY(180deg) scale(0.72);
+  }
+}
+
+.footer-zap {
+  transform-origin: center;
+}
+
+.footer-logo.is-visible .footer-zap {
+  animation: footer-zap-flip 1.3s ease-in-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-logo.is-visible .footer-zap {
+    animation: none;
+  }
+}
+
+.plan-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  opacity: 0.55;
+  mix-blend-mode: overlay;
+}
+
+/* Reusable cursor-following glow cards. Layout and card content stay in Tailwind. */
+.glow-card::before,
+.glow-card::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms ease;
+}
+
+.glow-card::before {
+  z-index: 3;
+  background: radial-gradient(
+    800px circle at var(--glow-x, 50%) var(--glow-y, 50%),
+    rgb(255 255 255 / 0.06),
+    transparent 40%
+  );
+}
+
+.glow-card::after {
+  z-index: 1;
+  background: radial-gradient(
+    600px circle at var(--glow-x, 50%) var(--glow-y, 50%),
+    rgb(255 255 255 / 0.4),
+    transparent 40%
+  );
+}
+
+.glow-card:not([data-glow-disabled]):hover::before,
+.glow-card-group:hover .glow-card:not([data-glow-disabled])::after {
+  opacity: 1;
+}
+
+.glow-card[data-glow-disabled]::before,
+.glow-card[data-glow-disabled]::after {
+  display: none;
+}
+
+.glow-card-content {
+  z-index: 2;
+  border-radius: inherit;
+}
+
+/* Connected matrices share one-pixel edges instead of drawing two card borders. */
+.glow-card-group-joined .glow-card-content {
+  inset: 1px 0 0 1px;
+}
+
+@media (hover: none) {
+  .glow-card::before,
+  .glow-card::after {
+    display: none;
+  }
+}
+
+@theme inline {
+  @keyframes orbit {
+  0% {
+    transform: rotate(calc(var(--angle) * 1deg)) translateY(calc(var(--radius) * 1px)) rotate(calc(var(--angle) * -1deg));
+    }
+  100% {
+    transform: rotate(calc(var(--angle) * 1deg + 360deg)) translateY(calc(var(--radius) * 1px)) rotate(calc((var(--angle) * -1deg) - 360deg));
+    }
+  }
+}

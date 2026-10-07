@@ -1,0 +1,190 @@
+export interface ThemePreset {
+  id: string;
+  name: string;
+  colors: {
+    primary: string;
+    secondary: string;
+    background: string;
+    foreground: string;
+    accent: string;
+    muted: string;
+    border: string;
+    ring: string;
+  };
+  headingFont?: string;
+  bodyFont?: string;
+  isCustom?: boolean;
+}
+
+const themes: ThemePreset[] = [
+  {
+    name: "Default",
+    id: "default",
+    colors: {
+      primary: "#06b6d4",
+      secondary: "#0f172a",
+      background: "#171717",
+      foreground: "#ffffff",
+      accent: "#22d3ee",
+      muted: "#737373",
+      border: "#404040",
+      ring: "#06b6d4",
+    },
+  },
+  {
+    name: "Light",
+    id: "light",
+    colors: {
+      primary: "#3b82f6",
+      secondary: "#6b7280",
+      background: "#ffffff",
+      foreground: "#0f172a",
+      accent: "#f1f5f9",
+      muted: "#f8fafc",
+      border: "#e2e8f0",
+      ring: "#3b82f6",
+    },
+  },
+  {
+    name: "Dark",
+    id: "dark",
+    colors: {
+      primary: "#3B82F6",
+      secondary: "#6366F1",
+      background: "#111827",
+      foreground: "#F9FAFB",
+      accent: "#6B7280",
+      muted: "#1F2937",
+      border: "#374151",
+      ring: "#3B82F6",
+    },
+  },
+  {
+    name: "Ocean Breeze",
+    id: "ocean-breeze",
+    colors: {
+      primary: "#0EA5E9",
+      secondary: "#0284C7",
+      background: "#F8FAFC",
+      foreground: "#0C4A6E",
+      accent: "#a3dfff",
+      muted: "#E0F2FE",
+      border: "#BAE6FD",
+      ring: "#0EA5E9",
+    },
+  },
+  {
+    name: "Purple",
+    id: "purple",
+    colors: {
+      primary: "#8B5CF6",
+      secondary: "#7C3AED",
+      background: "#FFFFFF",
+      foreground: "#1F2937",
+      accent: "#E3DAFF",
+      muted: "#F9FAFB",
+      border: "#E5E7EB",
+      ring: "#8B5CF6",
+    },
+  },
+  {
+    name: "Midnight Neon",
+    id: "midnight-neon",
+    colors: {
+      primary: "#00D9FF",
+      secondary: "#E600E6",
+      background: "#0A0A0A",
+      foreground: "#FFFFFF",
+      accent: "#FFD700",
+      muted: "#1A1A1A",
+      border: "#333333",
+      ring: "#00D9FF",
+    },
+  },
+  {
+    name: "Flexoky Dark",
+    id: "flexoky-dark",
+    colors: {
+      primary: "#60A5FA",
+      secondary: "#A78BFA",
+      background: "#1F2937",
+      foreground: "#F9FAFB",
+      accent: "#6B7280",
+      muted: "#374151",
+      border: "#4B5563",
+      ring: "#60A5FA",
+    },
+  },
+  {
+    name: "Velvet",
+    id: "velvet",
+    colors: {
+      primary: "#4F46E5",
+      secondary: "#7C3AED",
+      background: "#FFFFFF",
+      foreground: "#1F2937",
+      accent: "#8B5CF6",
+      muted: "#F9FAFB",
+      border: "#E5E7EB",
+      ring: "#4F46E5",
+    },
+  },
+  {
+    name: "Dark Forest",
+    id: "dark-forest",
+    colors: {
+      primary: "#10B981",
+      secondary: "#059669",
+      background: "#064E3B",
+      foreground: "#F0FDF4",
+      accent: "#34D399",
+      muted: "#065F46",
+      border: "#047857",
+      ring: "#10B981",
+    },
+  },
+  {
+    name: "Moon",
+    id: "moon",
+    colors: {
+      primary: "#8B5CF6",
+      secondary: "#6366F1",
+      background: "#0F172A",
+      foreground: "#F8FAFC",
+      accent: "#A78BFA",
+      muted: "#1E293B",
+      border: "#334155",
+      ring: "#8B5CF6",
+    },
+  },
+  {
+    name: "Sunny Cream",
+    id: "sunny-cream",
+    colors: {
+      primary: "#D97706",
+      secondary: "#EA580C",
+      background: "#FFFBEB",
+      foreground: "#1C1917",
+      accent: "#F59E0B",
+      muted: "#FEF3E2",
+      border: "#FDE68A",
+      ring: "#D97706",
+    },
+  },
+  {
+    name: "Sunset Glow",
+    id: "sunset-glow",
+    colors: {
+      primary: "#DC2626",
+      secondary: "#EA580C",
+      background: "#FFFBEB",
+      foreground: "#7C2D12",
+      accent: "#F59E0B",
+      muted: "#FEF3E2",
+      border: "#FDE68A",
+      ring: "#DC2626",
+    },
+  },
+];
+
+export default themes;

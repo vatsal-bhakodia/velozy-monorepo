@@ -1,0 +1,31 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "jsx": "preserve",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowJs": true,
+    "noEmit": true,
+    "incremental": true,
+    "isolatedModules": true,
+    "paths": {
+      "@/src/lib/utils": ["./lib/utils.ts"],
+      "@/app/*": ["./src/app/*"],
+      "@/components/ui/*": ["./components/ui/*.tsx"],
+      "@/components/color-picker": ["./components/color-picker.tsx"],
+      "@/components/*": ["./components/*"],
+      "@/constants/website-screenshots": ["./src/legacy-constants/website-screenshots"],
+      "@/constants/*": ["../builder/src/legacy-constants/*"],
+      "@/lib/logo-palette": ["../builder/src/legacy-lib/logo-palette"],
+      "@/lib/*": ["./lib/*"],
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", "components/ui"]
+}

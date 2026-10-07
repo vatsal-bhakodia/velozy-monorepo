@@ -1,0 +1,22 @@
+{
+  "name": "velozy-monorepo",
+  "private": true,
+  "packageManager": "pnpm@10.18.2",
+  "scripts": {
+    "build": "node scripts/with-env.mjs turbo run build",
+    "dev": "node scripts/with-env.mjs turbo run dev --parallel --env-mode=loose",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "format": "prettier --write .",
+    "db:generate": "node scripts/with-env.mjs pnpm --filter @velozy/db generate",
+    "db:migrate": "node scripts/with-env.mjs pnpm --filter @velozy/db migrate",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "prettier": "^3.6.2",
+    "turbo": "^2.5.6",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "name": "@velozy/api",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup src/index.ts --format esm --dts --out-dir dist",
+    "start": "node dist/index.js",
+    "test": "node --import tsx --test src/lib/inventory-pagination.test.ts src/lib/growth.test.ts src/lib/custom-domains.test.ts src/routes/admin/commerce.inventory.test.ts src/routes/admin/enquiries.test.ts src/routes/admin/operations.dashboard.test.ts src/routes/admin/seo.test.ts src/routes/admin/migration.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@velozy/contracts": "workspace:*",
+    "@velozy/db": "workspace:*",
+    "@supabase/supabase-js": "^2.49.4",
+    "cors": "^2.8.5",
+    "drizzle-orm": "^0.44.4",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "ioredis": "^5.6.1",
+    "jose": "^6.0.10",
+    "multer": "^1.4.5-lts.1",
+    "nanoid": "^5.1.5",
+    "node-html-parser": "^7.0.1",
+    "openai": "^6.9.1",
+    "pino": "^9.6.0",
+    "pino-http": "^10.4.0",
+    "postgres": "^3.4.5",
+    "rate-limiter-flexible": "^5.0.5",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/multer": "^1.4.12",
+    "tsup": "^8.4.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,0 +1,198 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 3.9%;
+  --primary: 0 0% 9%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 96.1%;
+  --secondary-foreground: 0 0% 9%;
+  --muted: 0 0% 96.1%;
+  --muted-foreground: 0 0% 45.1%;
+  --accent: 0 0% 96.1%;
+  --accent-foreground: 0 0% 9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 89.8%;
+  --input: 0 0% 89.8%;
+  --ring: 188 86% 40%;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 0 0% 9%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 9%;
+  --secondary: 0 0% 14.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 14.9%;
+  --muted-foreground: 0 0% 63.9%;
+  --accent: 0 0% 14.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 14.9%;
+  --input: 0 0% 14.9%;
+  --ring: 188 86% 53%;
+}
+
+html {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-background text-foreground;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Give every admin route the same dark canvas as the Customers workspace. */
+.dark .admin-main-content {
+  background-color: #111111;
+  color: #f0f0f0;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.45) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 9999px;
+  background: hsl(var(--muted-foreground) / 0.45);
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.7);
+  background-clip: padding-box;
+}
+
+.ck-editor__editable {
+  min-height: 300px;
+}
+
+.ck-powered-by-balloon {
+  display: none !important;
+}
+
+/* Keep CKEditor's surface and floating panels in step with the admin theme. */
+.dark .ck {
+  --ck-color-base-foreground: hsl(0 0% 16%);
+  --ck-color-base-background: hsl(0 0% 11%);
+  --ck-color-base-border: hsl(0 0% 25%);
+  --ck-color-base-text: hsl(0 0% 92%);
+  --ck-color-text: var(--ck-color-base-text);
+  --ck-color-toolbar-background: hsl(0 0% 11%);
+  --ck-color-toolbar-border: hsl(0 0% 25%);
+  --ck-color-panel-background: hsl(0 0% 14%);
+  --ck-color-panel-border: hsl(0 0% 28%);
+  --ck-color-dropdown-panel-background: hsl(0 0% 14%);
+  --ck-color-dropdown-panel-border: hsl(0 0% 28%);
+  --ck-color-input-background: hsl(0 0% 8%);
+  --ck-color-input-border: hsl(0 0% 30%);
+  --ck-color-input-text: hsl(0 0% 92%);
+  --ck-color-button-default-hover-background: hsl(0 0% 22%);
+  --ck-color-button-default-active-background: hsl(0 0% 26%);
+  --ck-color-button-on-background: hsl(214 55% 27%);
+  --ck-color-button-on-hover-background: hsl(214 55% 32%);
+  --ck-color-button-on-active-background: hsl(214 55% 36%);
+  --ck-color-button-on-color: hsl(214 95% 78%);
+  --ck-color-list-background: hsl(0 0% 14%);
+  --ck-color-list-button-hover-background: hsl(0 0% 22%);
+  --ck-color-list-button-on-background: hsl(214 55% 32%);
+  --ck-color-list-button-on-text: hsl(210 20% 96%);
+  --ck-color-tooltip-background: hsl(210 20% 92%);
+  --ck-color-tooltip-text: hsl(0 0% 11%);
+  --ck-color-engine-placeholder-text: hsl(215 12% 58%);
+  --ck-color-link-default: hsl(211 100% 73%);
+  --ck-color-focus-border: hsl(187 92% 50%);
+  --ck-color-focus-outer-shadow: hsl(187 92% 50% / 0.45);
+  color: var(--ck-color-base-text);
+}
+
+.dark .ck-editor__editable,
+.dark .ck-editor__editable.ck-focused {
+  background: hsl(0 0% 8%);
+  color: hsl(0 0% 92%);
+  border-color: hsl(0 0% 25%);
+}
+
+/* CKEditor 48 uses --ck-focus-ring for its focused editing-area border. */
+.admin-main-content .ck.ck-editor__editable:not(.ck-editor__nested-editable).ck-focused {
+  --ck-focus-ring: 1px solid hsl(187 92% 50%);
+}
+
+.dark .admin-product-editor textarea,
+.dark .admin-product-editor [role="combobox"],
+.dark .admin-editor [role="combobox"],
+.dark .admin-product-editor .ck-editor__editable,
+.dark .admin-product-editor .ck-editor__editable.ck-focused {
+  background-color: hsl(0 0% 14.9%);
+}
+
+.dark .ck-content blockquote,
+.dark .ck-content pre {
+  background: hsl(0 0% 14%);
+  color: hsl(0 0% 88%);
+}
+
+.ck-editor__editable,
+.ck-toolbar {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.marquee-track {
+  animation: admin-marquee var(--duration, 34s) linear infinite;
+}
+
+.marquee-track-reverse {
+  animation-direction: reverse;
+}
+
+.marquee-pause:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes admin-marquee {
+  to {
+    transform: translateX(-33.333333%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+.bg-gradient {
+  background: linear-gradient(110deg, #2563eb, #06b6d4);
+}

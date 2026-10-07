@@ -1,0 +1,10 @@
+type Entity = { id: string; [key: string]: any };
+type Form = { [key: string]: any };
+export type Products = Entity;
+export type ProductsFormData = Form;
+export type ProductCategories = Entity;
+export type ProductCategoriesFormData = Form;
+export type Blogs = Entity;
+export type BlogsFormData = Form;
+export type Page = Entity;
+export type PageFormData = Form;
