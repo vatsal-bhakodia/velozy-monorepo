@@ -113,11 +113,11 @@ export function Header({
       },
       {
         group: "Settings",
-        label: "Business",
-        description: "Update your business details",
-        href: "/settings/business",
+        label: "Project Settings",
+        description: "Update your project name and industry",
+        href: "/settings/project",
         icon: Settings,
-        keywords: "business project industry",
+        keywords: "project settings name industry",
       },
       {
         group: "Settings",

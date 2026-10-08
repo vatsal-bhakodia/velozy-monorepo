@@ -22,7 +22,7 @@ type Project = {
   designPreference: { style?: string; theme?: Theme };
 };
 
-export function ProjectSettingsPage({ section }: { section: "business" | "appearance" }) {
+export function ProjectSettingsPage({ section }: { section: "project" | "appearance" }) {
   const { selectedProjectId, deleteProject } = useAdmin();
   const [project, setProject] = useState<Project | null>(null);
   const [name, setName] = useState("");
@@ -72,7 +72,7 @@ export function ProjectSettingsPage({ section }: { section: "business" | "appear
     if (!project) return;
     setSaving(true);
     try {
-      if (section === "business") {
+      if (section === "project") {
         const response = await apiFetch("/api/admin/projects", {
           method: "PUT", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id: project.id, name: name.trim(), industry: industry.trim() || null }),
@@ -119,16 +119,16 @@ export function ProjectSettingsPage({ section }: { section: "business" | "appear
     finally { setDeleting(false); }
   };
 
-  const title = section === "business" ? "Business" : "Branding & Appearance";
+  const title = section === "project" ? "Project Settings" : "Branding & Appearance";
   if (loading) return <PageFrame title={title}><div className="h-48 animate-pulse rounded-xl bg-neutral-100 dark:bg-neutral-900" /></PageFrame>;
-  if (!project) return <PageFrame title={title}><div className="rounded-xl border border-neutral-200 bg-white p-8 text-center dark:border-neutral-800 dark:bg-neutral-900"><AlertCircle className="mx-auto mb-3 h-8 w-8 text-amber-500" /><p className="text-sm text-neutral-600 dark:text-neutral-300">Select a business to view its settings.</p></div></PageFrame>;
+  if (!project) return <PageFrame title={title}><div className="rounded-xl border border-neutral-200 bg-white p-8 text-center dark:border-neutral-800 dark:bg-neutral-900"><AlertCircle className="mx-auto mb-3 h-8 w-8 text-amber-500" /><p className="text-sm text-neutral-600 dark:text-neutral-300">Select a project to view its settings.</p></div></PageFrame>;
 
   return <>
-    <PageFrame title={title} headerAction={<Button onClick={() => void save()} disabled={saving || (section === "business" && !name.trim())} className="h-9 min-w-32">{saving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</> : "Save changes"}</Button>}>
+    <PageFrame title={title} headerAction={<Button onClick={() => void save()} disabled={saving || (section === "project" && !name.trim())} className="h-9 min-w-32">{saving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving...</> : "Save changes"}</Button>}>
       <div className="space-y-5">
-        {section === "business" ? <>
+        {section === "project" ? <>
           <section className="rounded-xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900 sm:p-6">
-            <h2 className="mb-5 text-base text-neutral-900 dark:text-neutral-100">Business details</h2>
+            <h2 className="mb-5 text-base text-neutral-900 dark:text-neutral-100">Project details</h2>
             <div className="grid gap-5 md:grid-cols-2">
               <label className="text-sm text-neutral-700 dark:text-neutral-300">Project name <span className="text-red-500">*</span><Input required value={name} onChange={(event) => setName(event.target.value)} className="mt-2" /></label>
               <label className="text-sm text-neutral-700 dark:text-neutral-300">Industry<Input value={industry} onChange={(event) => setIndustry(event.target.value)} placeholder="e.g. Retail, Healthcare" className="mt-2" /></label>
@@ -143,7 +143,7 @@ export function ProjectSettingsPage({ section }: { section: "business" | "appear
           <section className="rounded-xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900 sm:p-6">
             <h2 className="mb-5 text-base text-neutral-900 dark:text-neutral-100">Visual identity</h2>
             <div className="grid gap-5 md:grid-cols-2">
-              <div className="rounded-lg bg-neutral-50 p-4 dark:bg-[#151517]"><div className="mb-4 flex items-center justify-between"><span className="flex items-center gap-2 text-sm text-neutral-800 dark:text-neutral-200"><ImageIcon className="h-4 w-4" />Logo</span><div className="flex gap-2"><Button variant="outline" size="sm" onClick={() => { setPickerTarget("logo"); setPickerOpen(true); }}><Upload className="mr-1.5 h-3.5 w-3.5" />Choose image</Button>{logo && <Button variant="outline" size="icon" aria-label="Remove logo" onClick={() => setLogo("")}><Trash2 className="h-4 w-4" /></Button>}</div></div><div className="flex min-h-36 items-center justify-center rounded-md border border-dashed border-neutral-300 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-900">{logo ? <img src={logo} alt="Business logo preview" className="max-h-28 max-w-full object-contain" /> : <p className="text-sm text-neutral-500">No logo uploaded</p>}</div></div>
+              <div className="rounded-lg bg-neutral-50 p-4 dark:bg-[#151517]"><div className="mb-4 flex items-center justify-between"><span className="flex items-center gap-2 text-sm text-neutral-800 dark:text-neutral-200"><ImageIcon className="h-4 w-4" />Logo</span><div className="flex gap-2"><Button variant="outline" size="sm" onClick={() => { setPickerTarget("logo"); setPickerOpen(true); }}><Upload className="mr-1.5 h-3.5 w-3.5" />Choose image</Button>{logo && <Button variant="outline" size="icon" aria-label="Remove logo" onClick={() => setLogo("")}><Trash2 className="h-4 w-4" /></Button>}</div></div><div className="flex min-h-36 items-center justify-center rounded-md border border-dashed border-neutral-300 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-900">{logo ? <img src={logo} alt="Project logo preview" className="max-h-28 max-w-full object-contain" /> : <p className="text-sm text-neutral-500">No logo uploaded</p>}</div></div>
               <div className="rounded-lg bg-neutral-50 p-4 dark:bg-[#151517]"><div className="mb-4 flex items-center justify-between"><span className="flex items-center gap-2 text-sm text-neutral-800 dark:text-neutral-200"><Globe className="h-4 w-4" />Favicon preview</span><Button variant="outline" size="sm" onClick={() => { setPickerTarget("favicon"); setPickerOpen(true); }}><Upload className="mr-1.5 h-3.5 w-3.5" />Choose image</Button></div><div className="flex min-h-36 items-center justify-center rounded-md border border-dashed border-neutral-300 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-900"><div className="flex items-center gap-3 rounded-md bg-neutral-100 px-4 py-3 text-sm text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"><img src={favicon || "/favicon.svg"} alt="" className="h-5 w-5" />{project.name}<span className="text-neutral-400">×</span></div></div><p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">Favicon changes are preview-only and are not saved.</p></div>
             </div>
           </section>
