@@ -10,6 +10,9 @@ import { HttpError } from "../../middleware/errors.js";
 import { adminAccess } from "../../lib/admin-auth.js";
 import { googleJson, googleToken } from "./growth.js";
 import { processPrompt } from "../../lib/process-prompt.js";
+import { requestAiIdempotencyKey, withAiCredits } from "../../lib/platform-billing.js";
+import { postDataForSeo } from "../../lib/dataforseo-client.js";
+import { reserveSeoProviderBudget, settleSeoProviderBudget } from "../../lib/seo-provider-budget.js";
 
 type SeoTargetType = "page" | "product" | "collection" | "blog";
 type SeoRecord = {
@@ -186,155 +189,27 @@ export function adminSeoRouter(
   const db = createDb(environment.DATABASE_URL);
   const authz = adminAccess(environment.DATABASE_URL);
   const router = Router();
-  const reserveProviderBudget = async (
-    projectId: string,
-    operation: string,
-    reserveUsd: number,
-  ) =>
-    db.transaction(async (tx) => {
-      const now = new Date();
-      const monthStart = new Date(
-        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
-      );
-      const activeReservationAfter = new Date(now.getTime() - 5 * 60_000);
-      // Serialize reservations platform-wide so concurrent projects cannot pass
-      // the global cap using the same stale aggregate.
-      await tx.execute(sql`select pg_advisory_xact_lock(713021)`);
-      const expiredTasks = await tx
-        .update(schema.seoProviderTasks)
-        .set({ status: "expired", updatedAt: now })
-        .where(
-          and(
-            inArray(schema.seoProviderTasks.status, ["submitting", "queued"]),
-            lt(schema.seoProviderTasks.expiresAt, now),
-          ),
-        )
-        .returning({ usageId: schema.seoProviderTasks.usageId });
-      const expiredUsageIds = expiredTasks
-        .map((task) => task.usageId)
-        .filter((id): id is string => !!id);
-      if (expiredUsageIds.length)
-        await tx
-          .update(schema.seoProviderUsage)
-          .set({ status: "settled" })
-          .where(
-            and(
-              inArray(schema.seoProviderUsage.id, expiredUsageIds),
-              eq(schema.seoProviderUsage.status, "pending"),
-            ),
-          );
-      const activeRows = or(
-        eq(schema.seoProviderUsage.status, "settled"),
-        and(
-          eq(schema.seoProviderUsage.status, "reserved"),
-          gte(schema.seoProviderUsage.createdAt, activeReservationAfter),
-        ),
-        eq(schema.seoProviderUsage.status, "pending"),
-      );
-      const [platformTotal] = await tx
-        .select({
-          total: sql<string>`coalesce(sum(${schema.seoProviderUsage.amountUsd}), 0)`,
-        })
-        .from(schema.seoProviderUsage)
-        .where(
-          and(gte(schema.seoProviderUsage.createdAt, monthStart), activeRows),
-        );
-      const [projectTotal] = await tx
-        .select({
-          total: sql<string>`coalesce(sum(${schema.seoProviderUsage.amountUsd}), 0)`,
-        })
-        .from(schema.seoProviderUsage)
-        .where(
-          and(
-            eq(schema.seoProviderUsage.projectId, projectId),
-            gte(schema.seoProviderUsage.createdAt, monthStart),
-            activeRows,
-          ),
-        );
-      if (Number(platformTotal?.total ?? 0) + reserveUsd > 10.000001)
-        throw new HttpError(
-          429,
-          "SEO data provider monthly platform budget is exhausted",
-          "seo_platform_budget_exhausted",
-        );
-      if (Number(projectTotal?.total ?? 0) + reserveUsd > 1.000001)
-        throw new HttpError(
-          429,
-          "SEO data provider monthly project budget is exhausted",
-          "seo_project_budget_exhausted",
-        );
-      const [reservation] = await tx
-        .insert(schema.seoProviderUsage)
-        .values({
-          projectId,
-          provider: "dataforseo",
-          operation,
-          amountUsd: reserveUsd.toFixed(6),
-          status: "reserved",
-        })
-        .returning();
-      return reservation;
-    });
+  const reserveProviderBudget = (projectId: string, operation: string, reserveUsd: number) =>
+    reserveSeoProviderBudget(db, projectId, operation, reserveUsd);
   const releaseProviderBudget = async (
     id: string,
     actualCost: number | null,
   ) => {
-    await db
-      .update(schema.seoProviderUsage)
-      .set({
-        amountUsd: (actualCost ?? 0).toFixed(6),
-        status: actualCost === null ? "released" : "settled",
-      })
-      .where(eq(schema.seoProviderUsage.id, id));
+    await settleSeoProviderBudget(db, id, actualCost);
   };
   const dataForSeo = async (path: string, payload: unknown) => {
-    const login = environment.DATAFORSEO_LOGIN?.trim();
-    const password = environment.DATAFORSEO_PASSWORD?.trim();
-    if (!login || !password)
+    if (!environment.DATAFORSEO_LOGIN?.trim() || !environment.DATAFORSEO_PASSWORD?.trim())
       throw new HttpError(
         503,
         "Paid SEO research is not configured",
         "seo_provider_unavailable",
       );
-    const response = await fetch(`https://api.dataforseo.com/v3/${path}`, {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${Buffer.from(`${login}:${password}`).toString("base64")}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(20_000),
-    });
-    const body = (await response.json().catch(() => null)) as any;
-    if (
-      !response.ok ||
-      !body ||
-      body.status_code < 20000 ||
-      body.status_code >= 30000
-    )
-      throw new HttpError(
-        502,
-        "SEO data provider could not complete the request",
-        "seo_provider_failed",
-      );
-    const task = body.tasks?.[0];
-    if (!task || task.status_code < 20000 || task.status_code >= 30000)
-      throw new HttpError(
-        502,
-        task?.status_message || "SEO data provider returned no result",
-        "seo_provider_failed",
-      );
-    const providerCost = task.cost == null ? null : Number(task.cost);
-    return {
-      body,
-      task,
-      cost:
-        providerCost !== null &&
-        Number.isFinite(providerCost) &&
-        providerCost >= 0
-          ? providerCost
-          : null,
-    };
+    try {
+      const result = await postDataForSeo(environment, path, payload);
+      return { body: result.body, task: result.tasks[0], cost: result.cost };
+    } catch (error) {
+      throw new HttpError(502, error instanceof Error ? error.message : "SEO provider failed", "seo_provider_failed");
+    }
   };
   const dataForSeoGet = async (path: string) => {
     const login = environment.DATAFORSEO_LOGIN?.trim();
@@ -1315,7 +1190,12 @@ export function adminSeoRouter(
         ? record.metaTitle
         : record.metaDescription;
     const maxLength = input.data.field === "metaTitle" ? 60 : 160;
-    const generated = await processPrompt(
+    const generated = await withAiCredits(db, {
+      projectId: input.data.projectId,
+      actorId: currentUser.id,
+      clientKey: requestAiIdempotencyKey(request),
+      action: "generate_metadata",
+    }, () => processPrompt(
       "You are an SEO editor. Return only a JSON object with keys after and rationale. Write accurate metadata based only on supplied content. Never invent product claims, prices, locations, or facts. Keep after within the requested character limit.",
       JSON.stringify({
         field: input.data.field,
@@ -1326,7 +1206,7 @@ export function adminSeoRouter(
         keyword: input.data.keyword || null,
         content: record.body?.slice(0, 6000) ?? null,
       }),
-    );
+    ));
     let parsed: { after?: unknown; rationale?: unknown };
     try {
       const responseText = generated

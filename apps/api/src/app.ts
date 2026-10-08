@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import IORedis from "ioredis";
+import { Queue } from "bullmq";
 import pino from "pino";
 import pinoHttp from "pino-http";
 import { createHash, randomUUID } from "node:crypto";
@@ -41,6 +42,7 @@ import {
   publicEnquiryRouter,
 } from "./routes/admin/enquiries.js";
 import { adminContentPlannerRouter } from "./routes/admin/content-planner.js";
+import { adminSeoCampaignRouter } from "./routes/admin/seo-campaign.js";
 import { runContentPlannerWorker } from "./lib/content-planner-worker.js";
 import {
   adminGrowthRouter,
@@ -81,6 +83,11 @@ export function createApp(environment: Environment): {
   const redis = new RedisClient(environment.REDIS_URL, {
     maxRetriesPerRequest: null,
     enableOfflineQueue: false,
+  });
+  const seoCampaignQueue = new Queue("seo-campaigns", {
+    connection: new RedisClient(environment.REDIS_URL, {
+      maxRetriesPerRequest: null,
+    }),
   });
   const growthDb = createDb(environment.DATABASE_URL);
   const plannerDb = createDb(environment.DATABASE_URL);
@@ -340,6 +347,12 @@ export function createApp(environment: Environment): {
     requireSupabaseAuth(environment),
     adminLimit,
     adminEnquiriesRouter(environment),
+  );
+  app.use(
+    "/api/admin",
+    requireSupabaseAuth(environment),
+    adminLimit,
+    adminSeoCampaignRouter(environment, seoCampaignQueue),
   );
   app.use(
     "/api/admin",

@@ -8,6 +8,7 @@ export * from "./schema/custom-collections.js";
 export * from "./schema/enquiries.js";
 export * from "./schema/ai.js";
 export * from "./schema/growth.js";
+export * from "./schema/seo-campaign.js";
 export * from "./schema/platform.js";
 export * from "./schema/billing.js";
 export * from "./schema/relations.js";

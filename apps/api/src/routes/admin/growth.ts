@@ -29,6 +29,9 @@ import {
 import { generateAIText } from "../../lib/process-prompt.js";
 import { HttpError } from "../../middleware/errors.js";
 import { flushGrowthUsage } from "../../lib/growth.js";
+import { googleJson, googleToken } from "../../lib/google-search-console.js";
+import { requestAiIdempotencyKey, withAiCredits } from "../../lib/platform-billing.js";
+export { googleJson, googleToken } from "../../lib/google-search-console.js";
 
 const uuid = z.string().uuid();
 const providerScope = {
@@ -82,128 +85,6 @@ function sampleSizePerVariant(baseline: number, relativeEffect: number) {
     10_000_000,
     Math.ceil((numerator * numerator) / (variant - baseline) ** 2),
   );
-}
-
-export async function googleToken(
-  environment: Environment,
-  db: ReturnType<typeof createDb>,
-  projectId: string,
-  provider: "google_analytics" | "search_console",
-) {
-  if (
-    !environment.INTEGRATION_ENCRYPTION_KEY ||
-    !/^[\da-f]{64}$/i.test(environment.INTEGRATION_ENCRYPTION_KEY)
-  ) {
-    throw new HttpError(
-      503,
-      "Configure a 32-byte integration encryption key before connecting Google",
-      "integration_encryption_unavailable",
-    );
-  }
-  const connection = await db.query.growthConnections.findFirst({
-    where: and(
-      eq(schema.growthConnections.projectId, projectId),
-      eq(schema.growthConnections.provider, provider),
-    ),
-  });
-  if (!connection || connection.status !== "connected")
-    throw new HttpError(
-      409,
-      "Connect this Google source first",
-      "growth_source_not_connected",
-    );
-  const credentials = decryptCredentials(
-    environment.INTEGRATION_ENCRYPTION_KEY,
-    connection.encryptedCredentials,
-  );
-  const expiresAt = Number(credentials.expiresAt || 0);
-  if (expiresAt > Date.now() + 60_000 && credentials.accessToken)
-    return { connection, accessToken: credentials.accessToken };
-  if (
-    !credentials.refreshToken ||
-    !environment.GOOGLE_OAUTH_CLIENT_ID ||
-    !environment.GOOGLE_OAUTH_CLIENT_SECRET
-  ) {
-    throw new HttpError(
-      409,
-      "Reconnect this Google source to refresh access",
-      "growth_reconnect_required",
-    );
-  }
-  const form = new URLSearchParams({
-    client_id: environment.GOOGLE_OAUTH_CLIENT_ID,
-    client_secret: environment.GOOGLE_OAUTH_CLIENT_SECRET,
-    refresh_token: credentials.refreshToken,
-    grant_type: "refresh_token",
-  });
-  const refreshed = await fetch("https://oauth2.googleapis.com/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: form,
-    signal: AbortSignal.timeout(12_000),
-  });
-  const data = (await refreshed.json()) as {
-    access_token?: string;
-    expires_in?: number;
-    error?: string;
-  };
-  if (!refreshed.ok || !data.access_token) {
-    await db
-      .update(schema.growthConnections)
-      .set({
-        status: "reconnect_required",
-        lastError: "Google authorization expired",
-        updatedAt: new Date(),
-      })
-      .where(eq(schema.growthConnections.id, connection.id));
-    throw new HttpError(
-      409,
-      "Reconnect this Google source",
-      "growth_reconnect_required",
-    );
-  }
-  const updated = {
-    ...credentials,
-    accessToken: data.access_token,
-    expiresAt: String(Date.now() + (data.expires_in ?? 3600) * 1000),
-  };
-  await db
-    .update(schema.growthConnections)
-    .set({
-      encryptedCredentials: encryptCredentials(
-        environment.INTEGRATION_ENCRYPTION_KEY,
-        updated,
-      ),
-      updatedAt: new Date(),
-    })
-    .where(eq(schema.growthConnections.id, connection.id));
-  return { connection, accessToken: data.access_token };
-}
-
-export async function googleJson<T>(
-  url: string,
-  accessToken: string,
-  init: RequestInit = {},
-) {
-  const response = await fetch(url, {
-    ...init,
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-      ...init.headers,
-    },
-    signal: AbortSignal.timeout(15_000),
-  });
-  const body = (await response.json().catch(() => ({}))) as T & {
-    error?: { message?: string };
-  };
-  if (!response.ok)
-    throw new HttpError(
-      response.status === 403 ? 403 : 502,
-      body.error?.message || "Google could not return this report",
-      "google_api_failed",
-    );
-  return body;
 }
 
 export function growthOAuthCallbackRouter(
@@ -1226,6 +1107,8 @@ export function adminGrowthRouter(
 
   router.post("/growth/recommendations/generate", async (request, response) => {
     const site = await access(request, request.body?.projectId, true);
+    const actorId = (await user(request)).id;
+    const clientKey = requestAiIdempotencyKey(request);
     const [events, pages] = await Promise.all([
       db
         .select({ name: schema.analyticsEvents.eventName, count: count() })
@@ -1270,7 +1153,7 @@ export function adminGrowthRouter(
       .insert(schema.aiRuns)
       .values({
         projectId: site.id,
-        requestedBy: (await user(request)).id,
+        requestedBy: actorId,
         kind: "growth_recommendations",
         status: "running",
         input: evidence,
@@ -1280,11 +1163,16 @@ export function adminGrowthRouter(
     let aiExplanation: string | undefined;
     let aiError: string | undefined;
     try {
-      const generated = await generateAIText(
-        "Return JSON with title and explanation for one conservative website growth recommendation. Only use the supplied measurements. Never predict percentage lift or invent causal claims. Keep title under 120 characters and explanation under 500. If evidence is insufficient, say so.",
-        [{ type: "text", text: JSON.stringify(evidence) }],
-        "chat",
-      );
+      const generated = await withAiCredits(db, {
+        projectId: site.id,
+        actorId,
+        clientKey,
+        action: "generate_content_brief",
+      }, () => generateAIText(
+          "Return JSON with title and explanation for one conservative website growth recommendation. Only use the supplied measurements. Never predict percentage lift or invent causal claims. Keep title under 120 characters and explanation under 500. If evidence is insufficient, say so.",
+          [{ type: "text", text: JSON.stringify(evidence) }],
+          "chat",
+        ));
       const object = JSON.parse(generated) as {
         title?: unknown;
         explanation?: unknown;
@@ -1313,6 +1201,7 @@ export function adminGrowthRouter(
         .update(schema.aiRuns)
         .set({ status: "failed", error: aiError, completedAt: new Date() })
         .where(eq(schema.aiRuns.id, run.id));
+      if (error instanceof HttpError) throw error;
     }
     const topPage = pages[0];
     const title =

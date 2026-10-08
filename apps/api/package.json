@@ -7,13 +7,14 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsup src/index.ts --format esm --dts --out-dir dist",
     "start": "node dist/index.js",
-    "test": "node --import tsx --test src/lib/inventory-pagination.test.ts src/lib/growth.test.ts src/lib/custom-domains.test.ts src/lib/custom-collections.test.ts src/lib/platform-billing.test.ts src/routes/admin/commerce.inventory.test.ts src/routes/admin/enquiries.test.ts src/routes/admin/operations.dashboard.test.ts src/routes/admin/seo.test.ts src/routes/admin/migration.test.ts",
+    "test": "node --import tsx --test src/lib/inventory-pagination.test.ts src/lib/growth.test.ts src/lib/custom-domains.test.ts src/lib/custom-collections.test.ts src/lib/platform-billing.test.ts src/routes/admin/commerce.inventory.test.ts src/routes/admin/enquiries.test.ts src/routes/admin/operations.dashboard.test.ts src/routes/admin/seo.test.ts src/routes/admin/seo-campaign.test.ts src/routes/admin/migration.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
     "@velozy/contracts": "workspace:*",
     "@velozy/db": "workspace:*",
-    "@supabase/supabase-js": "^2.49.4",
+    "bullmq": "^5.81.4",
     "cors": "^2.8.5",
     "drizzle-orm": "^0.44.4",
     "express": "^5.1.0",
@@ -28,6 +29,7 @@
     "pino-http": "^10.4.0",
     "postgres": "^3.4.5",
     "rate-limiter-flexible": "^5.0.5",
+    "sharp": "0.35.4",
     "zod": "^3.24.2"
   },
   "devDependencies": {

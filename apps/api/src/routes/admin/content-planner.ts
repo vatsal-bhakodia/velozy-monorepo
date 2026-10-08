@@ -8,15 +8,6 @@ import { HttpError } from "../../middleware/errors.js";
 import { adminAccess } from "../../lib/admin-auth.js";
 
 const uuid = z.string().uuid();
-const channels = [
-  "instagram",
-  "facebook",
-  "linkedin",
-  "x",
-  "tiktok",
-  "pinterest",
-  "youtube",
-] as const;
 const timezone = z
   .string()
   .trim()
@@ -31,46 +22,13 @@ const timezone = z
     }
   }, "Choose a valid IANA timezone");
 const isoDate = z.string().datetime({ offset: true });
-const scheduleInput = z
-  .discriminatedUnion("kind", [
-    z.object({
-      projectId: uuid,
-      kind: z.literal("blog"),
-      blogId: uuid,
-      scheduledAt: isoDate,
-      timezone,
-    }),
-    z.object({
-      projectId: uuid,
-      kind: z.literal("social"),
-      channel: z.enum(channels),
-      text: z.string().trim().min(1).max(5000),
-      mediaIds: z
-        .array(uuid)
-        .max(10)
-        .refine(
-          (ids) => new Set(ids).size === ids.length,
-          "Remove duplicate media items",
-        )
-        .default([]),
-      status: z.enum(["draft", "planned"]).default("draft"),
-      scheduledAt: isoDate.nullable().optional(),
-      timezone,
-    }),
-  ])
-  .superRefine((value, context) => {
-    if (
-      value.kind === "social" &&
-      value.status === "planned" &&
-      !value.scheduledAt
-    ) {
-      context.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "A scheduled time is required for planned posts",
-        path: ["scheduledAt"],
-      });
-    }
-  });
+const scheduleInput = z.object({
+  projectId: uuid,
+  kind: z.literal("blog"),
+  blogId: uuid,
+  scheduledAt: isoDate,
+  timezone,
+});
 
 function parse<T extends z.ZodTypeAny>(
   validator: T,
@@ -128,7 +86,7 @@ export function adminContentPlannerRouter(
     const kind =
       request.query.kind === undefined
         ? undefined
-        : parse(z.enum(["blog", "social"]), request.query.kind);
+        : parse(z.literal("blog"), request.query.kind);
     const status =
       request.query.status === undefined
         ? undefined
@@ -145,10 +103,6 @@ export function adminContentPlannerRouter(
             ]),
             request.query.status,
           );
-    const channel =
-      request.query.channel === undefined
-        ? undefined
-        : parse(z.enum(channels), request.query.channel);
     const from =
       request.query.from === undefined
         ? undefined
@@ -165,7 +119,7 @@ export function adminContentPlannerRouter(
       );
     const where = and(
       eq(schema.contentPlans.projectId, p.id),
-      kind ? eq(schema.contentPlans.kind, kind) : undefined,
+      eq(schema.contentPlans.kind, kind || "blog"),
       status === "overdue"
         ? and(
             eq(schema.contentPlans.status, "scheduled"),
@@ -174,7 +128,6 @@ export function adminContentPlannerRouter(
         : status
           ? eq(schema.contentPlans.status, status)
           : undefined,
-      channel ? eq(schema.contentPlans.channel, channel) : undefined,
       from ? gte(schema.contentPlans.scheduledAt, new Date(from)) : undefined,
       to ? lte(schema.contentPlans.scheduledAt, new Date(to)) : undefined,
     );
@@ -319,40 +272,6 @@ export function adminContentPlannerRouter(
           }),
         });
     }
-    if (input.status === "planned") future(input.scheduledAt);
-    if (input.status === "draft" && input.scheduledAt)
-      future(input.scheduledAt, "Draft scheduled time");
-    if (input.mediaIds.length) {
-      const media = await db.query.media.findMany({
-        where: and(
-          eq(schema.media.projectId, p.id),
-          inArray(schema.media.id, input.mediaIds),
-          inArray(schema.media.mediaType, ["image", "video"]),
-        ),
-        columns: { id: true },
-      });
-      if (media.length !== new Set(input.mediaIds).size)
-        throw new HttpError(
-          400,
-          "One or more media items are unavailable in this project",
-          "invalid_media_reference",
-        );
-    }
-    const [plan] = await db
-      .insert(schema.contentPlans)
-      .values({
-        projectId: p.id,
-        kind: "social",
-        channel: input.channel,
-        text: input.text,
-        mediaIds: input.mediaIds,
-        status: input.status,
-        scheduledAt: input.scheduledAt ? new Date(input.scheduledAt) : null,
-        timezone: input.timezone,
-        createdBy: currentUser.id,
-      })
-      .returning();
-    response.status(201).json({ plan: publicPlan(plan) });
   });
 
   router.patch("/content-plans/:planId", async (request, response) => {
@@ -366,6 +285,7 @@ export function adminContentPlannerRouter(
       ),
     });
     if (!existing) throw new HttpError(404, "Content plan not found");
+    if (existing.kind !== "blog") throw new HttpError(404, "Scheduled blog not found");
     if (existing.status === "publishing" || existing.status === "published")
       throw new HttpError(
         409,
@@ -441,76 +361,6 @@ export function adminContentPlannerRouter(
         }),
       });
     }
-    const input = parse(
-      z
-        .object({
-          projectId: uuid.optional(),
-          channel: z.enum(channels),
-          text: z.string().trim().min(1).max(5000),
-          mediaIds: z
-            .array(uuid)
-            .max(10)
-            .refine(
-              (ids) => new Set(ids).size === ids.length,
-              "Remove duplicate media items",
-            )
-            .default([]),
-          status: z.enum(["draft", "planned"]),
-          scheduledAt: isoDate.nullable().optional(),
-          timezone,
-        })
-        .strict(),
-      request.body,
-    );
-    if (input.status === "planned" && !input.scheduledAt)
-      throw new HttpError(
-        400,
-        "A scheduled time is required for planned posts",
-        "validation_error",
-      );
-    if (input.scheduledAt) future(input.scheduledAt);
-    if (input.mediaIds.length) {
-      const media = await db.query.media.findMany({
-        where: and(
-          eq(schema.media.projectId, p.id),
-          inArray(schema.media.id, input.mediaIds),
-          inArray(schema.media.mediaType, ["image", "video"]),
-        ),
-        columns: { id: true },
-      });
-      if (media.length !== new Set(input.mediaIds).size)
-        throw new HttpError(
-          400,
-          "One or more media items are unavailable in this project",
-          "invalid_media_reference",
-        );
-    }
-    const [updated] = await db
-      .update(schema.contentPlans)
-      .set({
-        channel: input.channel,
-        text: input.text,
-        mediaIds: input.mediaIds,
-        status: input.status,
-        scheduledAt: input.scheduledAt ? new Date(input.scheduledAt) : null,
-        timezone: input.timezone,
-        updatedAt: new Date(),
-      })
-      .where(
-        and(
-          eq(schema.contentPlans.id, planId),
-          eq(schema.contentPlans.projectId, p.id),
-          inArray(schema.contentPlans.status, ["draft", "planned", "cancelled"]),
-        ),
-      )
-      .returning();
-    if (!updated)
-      throw new HttpError(
-        409,
-        "This plan changed while you were editing it. Refresh and try again.",
-        "plan_changed",
-      );
-    response.json({ plan: publicPlan(updated) });
   });
 
   router.post("/content-plans/:planId/cancel", async (request, response) => {
@@ -523,6 +373,7 @@ export function adminContentPlannerRouter(
       ),
     });
     if (!existing) throw new HttpError(404, "Content plan not found");
+    if (existing.kind !== "blog") throw new HttpError(404, "Scheduled blog not found");
     const [updated] = await db
       .update(schema.contentPlans)
       .set({

@@ -89,7 +89,8 @@ function getAdminPageTitle(pathname: string, search = "") {
   if (pathname.startsWith("/commerce/invoices/")) return "Invoice Details";
   if (pathname === "/analytics") return "Analytics";
   if (pathname === "/marketing" || pathname.startsWith("/marketing/"))
-    return "Content Planner";
+    return "SEO Campaign";
+  if (pathname === "/seo/campaign") return "SEO Campaign";
   if (pathname === "/seo") {
     const tab = new URLSearchParams(search).get("tab");
     if (tab === "audit") return "Technical SEO Audit";
@@ -99,9 +100,9 @@ function getAdminPageTitle(pathname: string, search = "") {
   if (pathname === "/growth") return "Growth";
   if (pathname === "/migration") return "Migration";
   if (pathname === "/settings") return "Settings";
-  if (pathname === "/settings/business") return "Business Settings";
+  if (pathname === "/settings/project") return "Project Settings";
   if (pathname === "/settings/team") return "People & Permissions";
-  if (pathname === "/settings/plan-usage") return "Plan & Usage";
+  if (pathname === "/settings/plan-usage") return "Billing & Usage";
   if (pathname === "/settings/domains") return "Custom Domain";
   if (pathname === "/settings/appearance") return "Branding & Appearance";
   if (pathname === "/settings/payments") return "Payment Providers";
@@ -308,10 +309,10 @@ function AdminLayoutContent() {
     },
     {
       slug: "marketing",
-      label: "Marketing",
+      label: "SEO Campaign",
       icon: Megaphone,
       children: [
-        { slug: "marketing/content-planner", label: "Content Planner" },
+        { slug: "seo/campaign", label: "Campaign", href: "/seo/campaign" },
         { slug: "seo", label: "SEO Workspace", href: "/seo" },
       ],
     },

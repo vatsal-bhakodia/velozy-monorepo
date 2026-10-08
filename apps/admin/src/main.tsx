@@ -72,11 +72,11 @@ const GrowthEvents = page("growth/events");
 const GrowthExperiments = page("growth/experiments");
 const GrowthRecommendations = page("growth/recommendations");
 const GrowthReports = page("growth/reports");
-const MarketingPlanner = page("marketing/planner");
 const Seo = page("seo/index");
+const SeoCampaign = page("seo/campaign");
 const MigrationHome = page("migration/index");
 const Settings = page("settings");
-const SettingsBusiness = page("settings/business");
+const SettingsProject = page("settings/project");
 const SettingsAppearance = page("settings/appearance");
 const SettingsAccount = page("settings/account");
 const SettingsNavigation = page("settings/navigation");
@@ -224,11 +224,13 @@ function App() {
                   {r("/growth/reports", GrowthReports)}
                   <Route
                     path="/marketing"
-                    element={
-                      <Navigate to="/marketing/content-planner" replace />
-                    }
+                    element={<Navigate to="/seo/campaign" replace />}
                   />
-                  {r("/marketing/content-planner", MarketingPlanner)}
+                  <Route
+                    path="/marketing/content-planner"
+                    element={<Navigate to="/seo/campaign" replace />}
+                  />
+                  {r("/seo/campaign", SeoCampaign)}
                   {r("/migration", MigrationHome)}
                   <Route
                     path="/migration/import"
@@ -292,7 +294,11 @@ function App() {
                     element={<Navigate to="/seo?tab=overview" replace />}
                   />
                   {r("/settings", Settings)}
-                  {r("/settings/business", SettingsBusiness)}
+                  {r("/settings/project", SettingsProject)}
+                  <Route
+                    path="/settings/business"
+                    element={<Navigate to="/settings/project" replace />}
+                  />
                   {r("/settings/appearance", SettingsAppearance)}
                   {r("/settings/account", SettingsAccount)}
                   {r("/settings/navigation", SettingsNavigation)}
