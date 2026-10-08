@@ -185,7 +185,8 @@ const pagesStructure = (db: ReturnType<typeof createDb>, projectAccess: ReturnTy
   if (!validProjectId.success || !request.auth?.userId)
     throw new HttpError(400, "Select a project before planning additional pages", "project_required");
   await projectAccess(validProjectId.data, request.auth.userId, "content:write");
-  await requireProjectPlanLimit(db, validProjectId.data, "published_pages");
+  const { allowance } = await requireProjectPlanLimit(db, validProjectId.data, "published_pages");
+  if (allowance < 2) throw new HttpError(403, "Upgrade to add pages beyond your free homepage", "plan_limit_reached");
 
   const profileFields = ["name", "industry", "archetype", "storeType", "subType", "businessDescription"] as const;
   const safeProfile = Object.fromEntries(

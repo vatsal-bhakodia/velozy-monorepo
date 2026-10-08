@@ -27,12 +27,12 @@ const groups = [
     ],
   },
   {
-    title: "Business Settings",
+    title: "Project Settings",
     items: [
       {
-        title: "Business",
-        description: "Update your business details",
-        href: "/settings/business",
+        title: "Project settings",
+        description: "Update your project name and industry",
+        href: "/settings/project",
         icon: Building2,
       },
       {
@@ -42,8 +42,8 @@ const groups = [
         icon: UsersRound,
       },
       {
-        title: "Plan & usage",
-        description: "Review published page views and billing status",
+        title: "Billing & usage",
+        description: "Manage your plan, AI credits, and project usage",
         href: "/settings/plan-usage",
         icon: BarChart3,
       },

@@ -40,7 +40,7 @@ test("plan access honors cancellation end dates and published page limits", asyn
   const db = (subscription: unknown) => ({ query: { projectSubscriptions: { findFirst: async () => subscription } } });
   const launch = { provider: "dodo", status: "active", plan: "launch", currentPeriodEnd: new Date("2027-06-01T00:00:00.000Z") };
   assert.equal((await requireProjectPlanLimit(db(launch), "project-id", "published_pages")).allowance, 20);
-  await assert.rejects(() => requireProjectPlanLimit(db({ ...launch, plan: "free", provider: "free" }), "project-id", "published_pages"), { code: "plan_limit_reached" });
+  assert.equal((await requireProjectPlanLimit(db({ ...launch, plan: "free", provider: "free" }), "project-id", "published_pages")).allowance, 1);
   await assert.rejects(() => requireProjectPlanLimit(db(undefined), "project-id", "published_pages"), { code: "subscription_required" });
 });
 

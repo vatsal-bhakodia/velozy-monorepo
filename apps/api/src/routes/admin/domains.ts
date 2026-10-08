@@ -8,6 +8,7 @@ import type { Environment } from "../../config/env.js";
 import { HttpError } from "../../middleware/errors.js";
 import { adminAccess } from "../../lib/admin-auth.js";
 import { customDomainChallengeName, hasCustomDomainVerificationRecord, normalizeCustomHostname } from "../../lib/custom-domains.js";
+import { requireProjectPlanLimit } from "../../lib/platform-billing.js";
 
 const projectIdSchema = z.string().uuid();
 
@@ -38,6 +39,7 @@ export function adminDomainsRouter(environment: Environment): ExpressRouter {
     if (!parsed.success) throw new HttpError(400, "Valid projectId and hostname are required");
     const project = await authz.project(parsed.data.projectId, request.auth!.userId!, "settings:write");
     if (!project.isPublished) throw new HttpError(409, "Publish your site before adding a custom domain", "site_not_published");
+    await requireProjectPlanLimit(db, project.id, "custom_domains");
     const hostname = normalizeCustomHostname(parsed.data.hostname);
     if (!hostname) throw new HttpError(400, "Enter a valid public domain name", "invalid_hostname");
     const platformDomain = (process.env.PLATFORM_DOMAIN || "localhost:3002").split(":")[0].toLowerCase();

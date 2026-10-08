@@ -13,7 +13,7 @@ Help a new user give the site builder enough accurate information, understand wh
 ## Product rules
 
 - Collect the business name, industry, business description, and site type/focus in the profile step. In Site Structure, seed and confirm a page plan first, then generate and refine homepage sections. Keep these answers editable and preserve them when navigating backward.
-- A free account can generate and preview one homepage draft. It cannot publish that draft or create additional pages. Paid Launch and Scale plans use the limits and live prices in `pricing_config.json`.
+- A free account can generate, preview, and publish one homepage on a Velozy subdomain. It cannot create additional pages or connect a custom domain. Paid Launch and Scale plans use the limits and live prices in `pricing_config.json`.
 - Ask the user to review generated content before publishing. Do not silently publish or seed fictional sample content.
 - Booking setup is a real optional module with services, availability, appointments, confirmations, and customer booking management.
 - AI logo generation is a subscription-gated feature. Competitor-informed SEO planning requires the separate SEO add-on and user confirmation before competitor crawling.
@@ -37,7 +37,7 @@ Help a new user give the site builder enough accurate information, understand wh
 
 ### 3. Entitlements and subscriptions
 
-- Treat `pricing_config.json` prices as live; revise Free limits to match the homepage-only draft rule.
+- Treat `pricing_config.json` prices and limits as live; keep Free publishing limited to one homepage on a Velozy subdomain.
 - Reuse and extend existing subscription records for project/site scope. Add server-authoritative entitlement checks for preview, publish, pages, and modules.
 - Add platform checkout, signed/idempotent subscription webhooks, status reconciliation, and price-version persistence. Do not trust client-supplied prices or plan state and do not apply automatic overage charges.
 - Keep merchant payment-provider setup and order webhooks isolated from platform subscription billing.
@@ -59,7 +59,7 @@ Help a new user give the site builder enough accurate information, understand wh
 
 - International and non-Latin business names work; invalid, missing, and overlong answers show actionable errors.
 - Navigation does not erase answers, and description submission never advances on a timer.
-- Free users can generate/retry/review one homepage draft but cannot publish or add pages; paid users receive the configured limits.
+- Free users can generate/retry/review one homepage and publish it on a Velozy subdomain; additional pages require a paid plan.
 - Invalid/empty/duplicate model sections are rejected; failed or partial generation remains retryable and never silently completes.
 - Refresh/retry does not duplicate a project, page section, subscription grant, appointment, or webhook side effect.
 - Booking conflicts are rejected; unauthorized users cannot read or change project bookings.

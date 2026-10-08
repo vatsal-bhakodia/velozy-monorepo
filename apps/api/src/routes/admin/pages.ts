@@ -1,11 +1,12 @@
 import { Router } from "express";
 import type { Router as ExpressRouter } from "express";
-import { and, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { createDb, schema } from "@velozy/db";
 import type { Environment } from "../../config/env.js";
 import { HttpError } from "../../middleware/errors.js";
 import { adminAccess } from "../../lib/admin-auth.js";
+import { requireProjectPlanLimit } from "../../lib/platform-billing.js";
 
 const pageInput = z.object({
   projectId: z.string().uuid(),
@@ -56,8 +57,13 @@ export function adminPagesRouter(environment: Environment): ExpressRouter {
         input.error.issues[0]?.message || "Invalid request",
         "validation_error",
       );
-    await ownedProject(input.data.projectId, u.id);
+    const project = await ownedProject(input.data.projectId, u.id);
     await authz.project(input.data.projectId, u.id, "content:write");
+    const { plan } = await requireProjectPlanLimit(db, project.id, "published_pages");
+    if (plan.id === "free") {
+      const [existingPages] = await db.select({ count: count() }).from(schema.pages).where(eq(schema.pages.projectId, project.id));
+      if (Number(existingPages?.count ?? 0) >= 1) throw new HttpError(403, "Upgrade to add pages beyond your free homepage", "plan_limit_reached");
+    }
     const existing = await db.query.pages.findFirst({
       where: and(
         eq(schema.pages.projectId, input.data.projectId),
