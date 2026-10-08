@@ -30,7 +30,7 @@ export const notFound: RequestHandler = (request, _response, next) =>
 
 export const errorHandler: ErrorRequestHandler = (
   error,
-  _request,
+  request,
   response,
   _next,
 ) => {
@@ -64,6 +64,18 @@ export const errorHandler: ErrorRequestHandler = (
         : duplicate
           ? "A record with these values already exists"
           : "Internal server error";
+  if (status >= 500) {
+    const cause = error instanceof Error ? error : new Error(String(error));
+    console.error(
+      {
+        requestId: response.locals.requestId,
+        method: request.method,
+        path: request.originalUrl,
+        error: { name: cause.name, message: cause.message, stack: cause.stack },
+      },
+      "API request failed",
+    );
+  }
   response.status(status).json({
     error: message,
     ...(error instanceof HttpError && error.code ? { code: error.code } : {}),
