@@ -1,9 +1,10 @@
 interface ErrorOverlayProps {
   generationError: string | null;
   onGoBack: () => void;
+  onRetry?: () => void;
 }
 
-export function ErrorOverlay({ generationError, onGoBack }: ErrorOverlayProps) {
+export function ErrorOverlay({ generationError, onGoBack, onRetry }: ErrorOverlayProps) {
   if (!generationError) return null;
 
   return (
@@ -31,12 +32,30 @@ export function ErrorOverlay({ generationError, onGoBack }: ErrorOverlayProps) {
           <p className="text-gray-600 dark:text-gray-400 mb-4">
             {generationError}
           </p>
-          <button
-            onClick={onGoBack}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Go Back
-          </button>
+          {generationError.includes("AI credits") && (
+            <a
+              href="/settings/plan-usage"
+              className="mb-4 inline-flex text-sm font-medium text-blue-700 underline underline-offset-4 dark:text-blue-300"
+            >
+              Open Billing &amp; usage
+            </a>
+          )}
+          <div className="flex justify-center gap-3">
+            {onRetry && (
+              <button
+                onClick={onRetry}
+                className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+              >
+                Retry generation
+              </button>
+            )}
+            <button
+              onClick={onGoBack}
+              className="rounded-lg border border-gray-300 px-4 py-2 text-gray-800 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
+            >
+              Go Back
+            </button>
+          </div>
         </div>
       </div>
     </div>

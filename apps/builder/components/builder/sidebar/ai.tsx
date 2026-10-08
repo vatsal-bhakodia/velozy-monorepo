@@ -531,6 +531,7 @@ export function AiPanel({
       const placementForm = new FormData();
       placementForm.append("mode", "placement");
       placementForm.append("prompt", text);
+      placementForm.append("projectId", sessionStorage.getItem("projectId") || "");
       placementForm.append(
         "context",
         JSON.stringify({
@@ -540,6 +541,7 @@ export function AiPanel({
       );
       const response = await fetch("/api/generate/builder-assistant", {
         method: "POST",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
         body: placementForm,
       });
       const data = await response.json();
@@ -827,6 +829,7 @@ export function AiPanel({
     try {
       const form = new FormData();
       form.append("prompt", text);
+      form.append("projectId", sessionStorage.getItem("projectId") || "");
       form.append("context", JSON.stringify(requestContext));
       form.append(
         "history",
@@ -837,6 +840,7 @@ export function AiPanel({
       outgoingFiles.forEach((file) => form.append("files", file));
       const response = await fetch("/api/generate/builder-assistant", {
         method: "POST",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
         body: form,
       });
       const data = await response.json();
@@ -858,12 +862,15 @@ export function AiPanel({
         requestError instanceof Error
           ? requestError.message
           : "Something went wrong.";
-      setError(message);
+      const actionableMessage = message.includes("AI credits")
+        ? `${message} Open Settings → Billing & usage to upgrade or add credits.`
+        : message;
+      setError(actionableMessage);
       setMessages((current) => [
         ...current,
         {
           role: "assistant",
-          content: `I couldn't apply that change: ${message}`,
+          content: `I couldn't apply that change: ${actionableMessage}`,
         },
       ]);
     } finally {

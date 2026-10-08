@@ -141,6 +141,9 @@ function useGrowthActions() {
     try {
       const result = await request<T>(path, {
         method,
+        ...(method === "POST" && path === "/api/admin/growth/recommendations/generate"
+          ? { headers: { "Idempotency-Key": crypto.randomUUID() } }
+          : {}),
         ...(body === undefined ? {} : { body: JSON.stringify(body) }),
       });
       setNotice(success);
@@ -149,7 +152,9 @@ function useGrowthActions() {
     } catch (cause) {
       setError(
         cause instanceof Error
-          ? cause.message
+          ? cause.message.includes("AI credits")
+            ? `${cause.message} Open Settings → Billing & usage to upgrade or add credits.`
+            : cause.message
           : "The request could not be completed.",
       );
     } finally {

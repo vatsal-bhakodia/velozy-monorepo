@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import NextImage from "@/components/image";
 import { Marquee } from "@/components/magicui/marquee";
+import { useAdmin } from "@/src/admin-context";
 
 type Attachment = { name: string; kind: "image" | "file"; previewUrl?: string };
 type Message = {
@@ -71,6 +72,7 @@ const suggestions = [
 ];
 
 export default function AdminAiPage() {
+  const { selectedProjectId } = useAdmin();
   const [prompt, setPrompt] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -142,6 +144,7 @@ export default function AdminAiPage() {
     try {
       const form = new FormData();
       form.append("prompt", value);
+      form.append("projectId", selectedProjectId || "");
       form.append("mode", "generate");
       form.append("history", JSON.stringify(messages.slice(-8)));
       form.append(
@@ -151,6 +154,7 @@ export default function AdminAiPage() {
       outgoingFiles.forEach((file) => form.append("files", file));
       const response = await apiFetch("/api/generate/builder-assistant", {
         method: "POST",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
         body: form,
       });
       const data = await response.json();
@@ -182,8 +186,14 @@ export default function AdminAiPage() {
   };
 
   return (
-    <div className="relative flex min-h-[calc(100vh-5rem)] w-full max-w-none flex-col overflow-x-hidden pb-0">
-      <div className="pointer-events-none absolute inset-x-[-18%] top-[-12%] h-[34rem] bg-[radial-gradient(ellipse_at_38%_24%,rgba(103,232,249,.2),transparent_34%),radial-gradient(ellipse_at_66%_42%,rgba(37,99,235,.14),transparent_42%),radial-gradient(ellipse_at_52%_78%,rgba(99,102,241,.1),transparent_48%)] blur-3xl" />
+    <div className="relative isolate flex min-h-[calc(100vh-5rem)] w-full max-w-none flex-col overflow-x-hidden pb-0">
+      <div
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+        aria-hidden="true"
+      >
+        <div className="absolute inset-[-14%] bg-[radial-gradient(ellipse_at_12%_42%,rgba(18,222,223,.24),transparent_48%),radial-gradient(ellipse_at_52%_46%,rgba(8,169,237,.18),transparent_48%),radial-gradient(ellipse_at_88%_88%,rgba(21,87,245,.2),transparent_46%),radial-gradient(ellipse_at_18%_96%,rgba(18,169,237,.16),transparent_44%),radial-gradient(ellipse_at_52%_35%,rgba(255,255,255,.84),transparent_55%)] blur-3xl dark:hidden" />
+        <div className="absolute inset-x-[-18%] top-[-12%] hidden h-[34rem] bg-[radial-gradient(ellipse_at_38%_24%,rgba(103,232,249,.2),transparent_34%),radial-gradient(ellipse_at_66%_42%,rgba(37,99,235,.14),transparent_42%),radial-gradient(ellipse_at_52%_78%,rgba(99,102,241,.1),transparent_48%)] blur-3xl dark:block" />
+      </div>
 
       <div className="absolute right-20 top-10 z-10 flex items-center gap-2">
         <button
@@ -204,7 +214,7 @@ export default function AdminAiPage() {
         </button>
       </div>
       <section
-        className={`flex min-h-[calc(100vh-9rem)] flex-1 flex-col ${messages.length ? "" : "justify-center"}`}
+        className={`relative z-10 flex min-h-[calc(100vh-9rem)] flex-1 flex-col ${messages.length ? "" : "justify-center"}`}
       >
         <div
           className={`${messages.length ? "flex-1 overflow-y-auto" : "flex-none"} space-y-6 px-2 py-8 sm:px-8`}

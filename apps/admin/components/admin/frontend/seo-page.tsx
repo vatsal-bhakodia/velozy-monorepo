@@ -1183,7 +1183,10 @@ export function SeoAiPage({ data }: { data: SeoWorkspaceData }) {
     try {
       const response = await apiFetch("/api/admin/seo/ai/suggestions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": crypto.randomUUID(),
+        },
         body: JSON.stringify({
           projectId: data.selectedProjectId,
           targetType: finding.targetType,
@@ -1192,13 +1195,17 @@ export function SeoAiPage({ data }: { data: SeoWorkspaceData }) {
           keyword: keyword.trim() || undefined,
         }),
       });
-      if (!response.ok) throw new Error("Could not generate suggestion");
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        const message = typeof body.error === "string" ? body.error : "Could not generate suggestion";
+        throw new Error(message.includes("AI credits") ? `${message} Open Settings → Billing & usage to upgrade or add credits.` : message);
+      }
       const body = (await response.json()) as { suggestion: Suggestion };
       data.setSuggestions((current) => [body.suggestion, ...current]);
       toast.success("Draft suggestion created for review");
     } catch (error) {
       console.error(error);
-      toast.error("Could not generate suggestion");
+      toast.error(error instanceof Error ? error.message : "Could not generate suggestion");
     } finally {
       setBusy(null);
     }

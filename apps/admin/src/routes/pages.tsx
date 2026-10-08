@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { apiFetch } from "@/src/lib/api";
+import { getSiteStyleGuidance } from "@/src/onboard/constants/site-style";
 import { useSession } from "@/src/lib/auth";
 import { useAdmin } from "@/src/admin-context";
 import Modal from "@/src/pages-modal";
@@ -180,7 +181,7 @@ export default function PagesPage() {
         ) {
           sessionStorage.setItem(
             "generationPrompt",
-            `My business name is ${project.name}, industry is ${project.industry || "general"}. ${preference.businessDescription || ""} Visual style: ${preference.style || "modern"}.`,
+            `My business name is ${project.name}, industry is ${project.industry || "general"}. ${preference.businessDescription || ""} ${getSiteStyleGuidance(preference.style)}.`,
           );
           sessionStorage.setItem(
             "siteSections",

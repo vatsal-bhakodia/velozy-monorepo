@@ -11,6 +11,7 @@ import { refreshTailwind } from "@/components/builder/canvas";
 const AiRevise = () => {
   const [prompt, setPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const { node, actions } = useNode((current) => ({ node: current }));
   const { query } = useEditor();
 
@@ -19,6 +20,7 @@ const AiRevise = () => {
     if (!trimmedPrompt || isLoading) return;
 
     setIsLoading(true);
+    setErrorMessage("");
 
     try {
       const parent = node.data.parent
@@ -34,8 +36,12 @@ const AiRevise = () => {
 
       const response = await fetch("/api/generate/component-revision", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": crypto.randomUUID(),
+        },
         body: JSON.stringify({
+          projectId: sessionStorage.getItem("projectId"),
           prompt: trimmedPrompt,
           component: {
             type: node.data.displayName || "Component",
@@ -50,7 +56,10 @@ const AiRevise = () => {
       });
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.error || "Could not revise this component");
+        const message = data.error || "Could not revise this component";
+        throw new Error(data.code === "insufficient_ai_credits"
+          ? `${message} Open Settings → Billing & usage to upgrade or add credits.`
+          : message);
       }
 
       actions.setProp((props: Record<string, unknown>) => {
@@ -60,6 +69,7 @@ const AiRevise = () => {
       setPrompt("");
     } catch (error) {
       console.error("AI component revision failed:", error);
+      setErrorMessage(error instanceof Error ? error.message : "Could not revise this component");
     } finally {
       setIsLoading(false);
     }
@@ -98,6 +108,7 @@ const AiRevise = () => {
               bg-neutral-100 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 
               focus:border-neutral-500 dark:focus:border-neutral-600 pr-8"
           />
+          {errorMessage && <p role="alert" className="mt-2 text-xs text-red-600 dark:text-red-400">{errorMessage}</p>}
 
           {/* Floating buttons */}
           <div className="absolute bottom-2 right-2">
