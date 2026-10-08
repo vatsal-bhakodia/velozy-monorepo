@@ -23,6 +23,7 @@ import {
   Megaphone,
   Mail,
   Bot,
+  Database,
 } from "lucide-react";
 import { useAdmin } from "./admin-context";
 import { Toaster } from "@/components/ui/sonner";
@@ -34,6 +35,7 @@ function getAdminPageTitle(pathname: string, search = "") {
 
   if (pathname === "/media") return "Media Library";
   if (pathname === "/pages") return "Pages";
+  if (pathname === "/content-collections") return "Content Collections";
   if (pathname === "/blogs") return "Blog Posts";
   if (pathname === "/blog-categories") return "Blog Categories";
   if (pathname.startsWith("/blogs/")) {
@@ -119,7 +121,12 @@ function AdminLayoutContent() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeSection, setActiveSection] = useState("dashboard");
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const { projects, selectedProjectId, setSelectedProjectId } = useAdmin();
+  const {
+    projects,
+    projectsReady,
+    selectedProjectId,
+    setSelectedProjectId,
+  } = useAdmin();
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -127,6 +134,12 @@ function AdminLayoutContent() {
       router.push("/signin");
     }
   }, [status, router]);
+
+  useEffect(() => {
+    if (status === "authenticated" && projectsReady && projects.length === 0) {
+      router.replace("/onboard");
+    }
+  }, [status, projectsReady, projects.length, router]);
 
   // Update active section based on current pathname
   useEffect(() => {
@@ -142,6 +155,8 @@ function AdminLayoutContent() {
       setActiveSection("blogs");
     } else if (pathname.includes("/pages")) {
       setActiveSection("pages");
+    } else if (pathname.includes("/content-collections")) {
+      setActiveSection("content-collections");
     } else if (pathname.includes("/media")) {
       setActiveSection("media");
     } else if (pathname.startsWith("/settings")) {
@@ -184,6 +199,10 @@ function AdminLayoutContent() {
     return null;
   }
 
+  if (projectsReady && projects.length === 0) {
+    return null;
+  }
+
   const sidebarItems = [
     { slug: "dashboard", label: "Dashboard", icon: Home },
     { slug: "ai", label: "AI Assistant", icon: Bot },
@@ -217,6 +236,7 @@ function AdminLayoutContent() {
     },
     { slug: "media", label: "Media Library", icon: Images },
     { slug: "pages", label: "Pages", icon: FileText },
+    { slug: "content-collections", label: "Content Collections", icon: Database, href: "/content-collections", searchDescription: "Manage custom structured content" },
     {
       slug: "products",
       label: "Products",

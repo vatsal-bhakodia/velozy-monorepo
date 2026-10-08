@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { CheckCircle2, Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react";
+import { CheckCircle2, Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import { supabase } from "@/src/lib/auth";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ export function OnboardingAuthModal({ open, onOpenChange, onAuthenticated }: Pro
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const inputClassName = "border-slate-300 bg-slate-50 text-slate-900 placeholder:text-slate-400 transition-colors hover:border-slate-400 focus-visible:border-cyan-500 focus-visible:ring-cyan-500/25 dark:border-neutral-700 dark:bg-neutral-800/80 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:hover:border-neutral-600 dark:focus-visible:border-cyan-400 dark:focus-visible:ring-cyan-400/30";
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -32,7 +33,6 @@ export function OnboardingAuthModal({ open, onOpenChange, onAuthenticated }: Pro
           email,
           password,
           options: {
-            data: { full_name: String(form.get("name")) },
             emailRedirectTo: `${window.location.origin}/auth/callback`,
           },
         });
@@ -45,7 +45,9 @@ export function OnboardingAuthModal({ open, onOpenChange, onAuthenticated }: Pro
         onAuthenticated();
       }
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Authentication failed. Please try again.");
+      setError(cause instanceof TypeError
+        ? "Could not reach the authentication service. Check your connection and try again."
+        : cause instanceof Error ? cause.message : "Authentication failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -77,10 +79,9 @@ export function OnboardingAuthModal({ open, onOpenChange, onAuthenticated }: Pro
         {error && <p role="alert" className="mt-4 rounded-md bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-300">{error}</p>}
         {message && <p role="status" className="mt-4 rounded-md bg-cyan-500/10 p-3 text-sm text-cyan-700 dark:text-cyan-200">{message}</p>}
         <form onSubmit={submit} className="mt-5 space-y-4">
-          {mode === "signup" && <div className="space-y-2"><label htmlFor="onboarding-name" className="text-sm">Full name</label><div className="relative"><User className="absolute left-3 top-3 h-4 w-4 text-slate-400" /><Input id="onboarding-name" name="name" autoComplete="name" className="pl-10" required /></div></div>}
-          <div className="space-y-2"><label htmlFor="onboarding-email" className="text-sm">Email</label><div className="relative"><Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" /><Input id="onboarding-email" name="email" type="email" autoComplete="email" className="pl-10" required /></div></div>
-          <div className="space-y-2"><label htmlFor="onboarding-password" className="text-sm">Password</label><div className="relative"><Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" /><Input id="onboarding-password" name="password" type={showPassword ? "text" : "password"} autoComplete={mode === "signup" ? "new-password" : "current-password"} className="pl-10 pr-10" minLength={6} required /><button type="button" onClick={() => setShowPassword((value) => !value)} className="absolute right-3 top-2.5 text-slate-400" aria-label={showPassword ? "Hide password" : "Show password"}>{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div></div>
-          <Button type="submit" className="bg-gradient w-full text-white" disabled={loading}>{loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Continuing...</> : mode === "signin" ? "Sign in and continue" : "Create account and continue"}</Button>
+          <div className="space-y-2"><label htmlFor="onboarding-email" className="text-sm">Email</label><div className="group relative"><Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400 transition-colors group-focus-within:text-cyan-600 dark:group-focus-within:text-cyan-300" /><Input id="onboarding-email" name="email" type="email" autoComplete="email" placeholder="you@example.com" className={`${inputClassName} pl-10`} required /></div></div>
+          <div className="space-y-2"><label htmlFor="onboarding-password" className="text-sm">Password</label><div className="group relative"><Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400 transition-colors group-focus-within:text-cyan-600 dark:group-focus-within:text-cyan-300" /><Input id="onboarding-password" name="password" type={showPassword ? "text" : "password"} autoComplete={mode === "signup" ? "new-password" : "current-password"} placeholder={mode === "signup" ? "Create a password" : "Enter your password"} className={`${inputClassName} pl-10 pr-10`} minLength={6} required /><button type="button" onClick={() => setShowPassword((value) => !value)} className="absolute right-3 top-2.5 rounded-sm text-slate-400 transition-colors hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/40 dark:hover:text-white dark:focus-visible:ring-cyan-300/40" aria-label={showPassword ? "Hide password" : "Show password"}>{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div></div>
+          <Button type="submit" className="w-full bg-white text-black hover:bg-neutral-200 hover:text-black dark:hover:bg-neutral-200 dark:hover:text-black" disabled={loading}>{loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Continuing...</> : mode === "signin" ? "Sign in and continue" : "Create account and continue"}</Button>
         </form>
         <div className="my-5 flex items-center gap-3 text-xs text-slate-400"><div className="h-px flex-1 bg-slate-200 dark:bg-neutral-700" />or<div className="h-px flex-1 bg-slate-200 dark:bg-neutral-700" /></div>
         <Button type="button" variant="outline" className="w-full" onClick={signInWithGoogle} disabled={loading}><img src="/icons/google.svg" alt="" className="mr-2 h-4 w-4" />Continue with Google</Button>

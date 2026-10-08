@@ -13,6 +13,8 @@ import {
   projects,
   forms,
   formFields,
+  customCollections,
+  customCollectionRecords,
 } from "@/lib/db/schema";
 import { findPublishedSite, normalizeHostname } from "@/lib/site-host";
 import { publishedPageCss } from "@/lib/published-css";
@@ -82,6 +84,8 @@ async function collectionItems(
     href: string;
     price?: string;
     meta?: string;
+    values?: Record<string, unknown>;
+    fields?: Array<{ key: string; label: string; type: string }>;
   }>
 > {
   const limit = Math.min(Math.max(Number(props.limit) || 6, 1), 24);
@@ -138,6 +142,32 @@ async function collectionItems(
       summary: item.description || "",
       image: item.image || "",
       href: `/categories/${item.slug}`,
+    }));
+  }
+
+  if (source === "custom" && typeof props.collectionId === "string") {
+    const collection = await db.query.customCollections.findFirst({ where: and(
+      eq(customCollections.id, props.collectionId),
+      eq(customCollections.projectId, projectId),
+      eq(customCollections.isArchived, false),
+    ) });
+    if (!collection) return [];
+    const rows = await db.query.customCollectionRecords.findMany({ where: and(
+      eq(customCollectionRecords.collectionId, collection.id),
+      eq(customCollectionRecords.status, "published"),
+    ), limit, orderBy: (table, { asc, desc }) => [asc(table.sortOrder), desc(table.publishedAt), desc(table.createdAt)] });
+    const fields = Array.isArray(collection.fields) ? collection.fields : [];
+    const titleField = fields.find((field) => ["title", "name", "person", "product"].includes(field.key)) || fields.find((field) => ["text", "textarea"].includes(field.type));
+    const summaryField = fields.find((field) => ["summary", "description", "quote", "content", "bio"].includes(field.key) && field.key !== titleField?.key);
+    const imageField = fields.find((field) => field.type === "image");
+    return rows.map((record) => ({
+      id: record.id,
+      title: String((titleField && record.values[titleField.key]) || collection.name),
+      summary: summaryField ? String(record.values[summaryField.key] || "") : "",
+      image: imageField ? String(record.values[imageField.key] || "") : "",
+      href: "",
+      values: record.values,
+      fields,
     }));
   }
 
@@ -256,16 +286,20 @@ async function renderNode(
                 />
               ) : null}
               <div className="space-y-3 p-6">
-                <a
-                  href={item.href}
-                  className="font-heading text-2xl font-semibold text-foreground"
-                >
-                  {item.title}
-                </a>
+                {item.href ? <a href={item.href} className="font-heading text-2xl font-semibold text-foreground">{item.title}</a> : <h3 className="font-heading text-2xl font-semibold text-foreground">{item.title}</h3>}
                 {item.summary ? (
                   <p className="text-sm leading-6 text-muted-foreground">
                     {item.summary}
                   </p>
+                ) : null}
+                {props.source === "custom" && item.values ? (
+                  <dl className="space-y-2 text-sm">
+                    {(item.fields || []).filter((field) => !["title", "name", "person", "product", "summary", "description", "quote", "content", "bio"].includes(field.key) && field.type !== "image").map((field) => {
+                      const value = item.values?.[field.key];
+                      if (value === undefined || value === null || value === "") return null;
+                      return <div key={field.key}><dt className="text-xs text-muted-foreground">{field.label}</dt><dd className="text-foreground">{typeof value === "boolean" ? value ? "Yes" : "No" : String(value)}</dd></div>;
+                    })}
+                  </dl>
                 ) : null}
                 {item.price ? (
                   <span className="font-semibold text-foreground">

@@ -4,13 +4,17 @@ import { supabase, useSession } from "@/src/lib/auth";
 import { apiFetch } from "@/src/lib/api";
 import { SiteSection, Question } from "./types";
 import themes from "@/src/onboard/constants/themes";
-import { siteStyles } from "@/src/onboard/constants/site-style";
-import { useOnboardingStore } from "./onboarding-store";
+import { getSiteStyleGuidance } from "@/src/onboard/constants/site-style";
+import {
+  ONBOARDING_DRAFT_STORAGE_KEY,
+  useOnboardingStore,
+} from "./onboarding-store";
 import { queryClient } from "@/src/lib/query-client";
 import { adminQueryKeys } from "@/src/lib/query";
 import { useProjectStore } from "@/src/lib/project-store";
 import {
   ONBOARDING_AUTH_PENDING_KEY,
+  ONBOARDING_PROJECT_CREATION_KEY,
   PENDING_LOGO_STORAGE_KEY,
 } from "./storage-keys";
 
@@ -28,6 +32,90 @@ function dataUrlToFile({ dataUrl, name, type }: PendingLogo): File {
   for (let index = 0; index < binary.length; index++)
     bytes[index] = binary.charCodeAt(index);
   return new File([bytes], name || "logo", { type: mimeType });
+}
+
+function validateGeneratedSections(value: unknown): SiteSection[] {
+  if (!Array.isArray(value) || value.length === 0 || value.length > 12) {
+    throw new Error(
+      "The generated homepage structure was empty or too large. Please retry.",
+    );
+  }
+  const ids = new Set<string>();
+  const sections = value.map((section: any) => {
+    if (
+      !section ||
+      typeof section !== "object" ||
+      typeof section.id !== "string" ||
+      !section.id.trim() ||
+      section.id.length > 255 ||
+      typeof section.name !== "string" ||
+      !section.name.trim() ||
+      section.name.length > 255 ||
+      typeof section.description !== "string" ||
+      !section.description.trim() ||
+      section.description.length > 2000
+    ) {
+      throw new Error(
+        "The generated homepage structure was invalid. Please retry.",
+      );
+    }
+    const id = section.id.trim();
+    if (ids.has(id)) {
+      throw new Error(
+        "The generated homepage structure contained duplicate sections. Please retry.",
+      );
+    }
+    ids.add(id);
+    if (section.kind === "dynamic") {
+      if (
+        !section.dynamic ||
+        !["products", "productCategories", "blogs", "custom"].includes(
+          section.dynamic.source,
+        ) ||
+        !["grid", "list", "carousel"].includes(section.dynamic.layout)
+      ) {
+        throw new Error(
+          "The generated homepage included an unsupported content section. Please retry.",
+        );
+      }
+      if (
+        section.dynamic.source === "custom" &&
+        (!section.dynamic.collection ||
+          !Array.isArray(section.dynamic.collection.fields) ||
+          !section.dynamic.collection.fields.length)
+      ) {
+        throw new Error(
+          "The generated collection schema was incomplete. Please retry.",
+        );
+      }
+    }
+    return { ...section, id } as SiteSection;
+  });
+  return sections;
+}
+
+function validateGeneratedPages(value: unknown): string[] {
+  if (
+    !Array.isArray(value) ||
+    value.length > 11 ||
+    value.some((page) => typeof page !== "string")
+  ) {
+    throw new Error("The page plan was invalid. Please retry your request.");
+  }
+
+  const seen = new Set<string>();
+  return value.flatMap((rawPage) => {
+    const page = rawPage.trim().replace(/\s+/g, " ");
+    if (!page || page.length > 80) {
+      throw new Error(
+        "The page plan included an invalid page name. Please retry.",
+      );
+    }
+    const key = page.toLowerCase();
+    if (key === "home" || seen.has(key)) return [];
+    seen.add(key);
+    return [page];
+  });
 }
 
 export const useOnboarding = (onAuthenticationRequired: () => void) => {
@@ -71,16 +159,27 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
     setLogoChoice,
     isCreatingProject,
     setIsCreatingProject,
+    isChatOpen,
+    setIsChatOpen,
+    unreadCount,
+    setUnreadCount,
+    isPremiumModalOpen,
+    setIsPremiumModalOpen,
+    isAuthModalOpen,
+    setIsAuthModalOpen,
     sectionsGenerated,
     setSectionsGenerated,
+    structureStage,
+    setStructureStage,
     generatedSectionsKey,
     setGeneratedSectionsKey,
-    resetWorkflow,
   } = onboarding;
   const sectionsAbortControllerRef = useRef<AbortController | null>(null);
+  const pagesAbortControllerRef = useRef<AbortController | null>(null);
   const createdProjectRef = useRef<any | null>(null);
   const uploadedLogoUrlRef = useRef<string | null>(null);
   const completionInProgressRef = useRef(false);
+  const projectCreationKeyRef = useRef<string | null>(null);
 
   // Refs to track initialization
   const hasInitialized = useRef(false);
@@ -99,9 +198,10 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
   const isValidProfileText = (value: string) => {
     const normalized = value.trim();
     return (
-      normalized.length >= 3 &&
-      /[A-Za-z]/.test(normalized) &&
-      !/^(.)\1+$/.test(normalized)
+      normalized.length >= 2 &&
+      normalized.length <= 120 &&
+      /[\p{L}\p{N}]/u.test(normalized) &&
+      !/^(.)\1+$/u.test(normalized)
     );
   };
 
@@ -138,12 +238,17 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
 
   const canProceedFromStep0 = isStep0FormComplete;
   const canProceedFromStep1 = true; // User can just click next
-  const canProceedFromStep2 = siteSections.length > 0 && !isProcessing;
+  const canProceedFromStep2 =
+    structureStage === "pages"
+      ? !isProcessing
+      : siteSections.length > 0 && !isProcessing;
   const canProceedFromStep3 = isStyleConfirmed && isThemeConfirmed;
 
   const cancelSectionGeneration = useCallback(() => {
     sectionsAbortControllerRef.current?.abort();
     sectionsAbortControllerRef.current = null;
+    pagesAbortControllerRef.current?.abort();
+    pagesAbortControllerRef.current = null;
   }, []);
 
   useEffect(() => cancelSectionGeneration, [cancelSectionGeneration]);
@@ -178,6 +283,7 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
       }
 
       if (currentStep === 2) cancelSectionGeneration();
+      if (currentStep === 1) setStructureStage("pages");
 
       setCurrentStep((prev) => prev + 1);
       setCurrentQuestion(0);
@@ -194,9 +300,6 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
       setChatMessages([]);
       setCurrentQuestion(0);
       setIsProcessing(false);
-      setSelectedStyle(siteStyles[0].id);
-      setIsStyleConfirmed(false);
-      setSectionsGenerated(false);
       hasInitialized.current = false;
       hasAskedQuestion.current = false;
     }
@@ -213,6 +316,32 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
     sectionsAbortControllerRef.current = controller;
 
     try {
+      const project = await createProject();
+      if (!project)
+        throw new Error(
+          "Sign in and create a project before generating its homepage.",
+        );
+      const billingResponse = await apiFetch(
+        `/api/admin/billing?projectId=${encodeURIComponent(project.id)}`,
+      );
+      const billing = await billingResponse.json().catch(() => ({}));
+      if (!billingResponse.ok) {
+        throw new Error(billing.error || "Could not check the project plan.");
+      }
+      if (!billing.subscription) {
+        const planResponse = await apiFetch("/api/admin/billing/free", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectId: project.id }),
+        });
+        if (!planResponse.ok) {
+          const error = await planResponse.json().catch(() => ({}));
+          throw new Error(
+            error.error ||
+              "Could not prepare the project for homepage generation.",
+          );
+        }
+      }
       let prompt =
         `website name is ${siteProfile.name}, industry of website is ${siteProfile.industry}, site archetype is ${siteProfile.archetype}` +
         (siteProfile.modules.length > 0
@@ -222,6 +351,9 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
           ? `, store model: ${siteProfile.storeType}`
           : "") +
         (siteProfile.subType ? `, site focus: ${siteProfile.subType}` : "") +
+        (siteProfile.plannedPages.length
+          ? `, planned pages to create after the homepage: ${siteProfile.plannedPages.join(", ")}. Generate only the homepage structure for this onboarding preview.`
+          : "") +
         (siteProfile.businessDescription
           ? `, about the business: ${siteProfile.businessDescription}`
           : "") +
@@ -236,19 +368,38 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
         "/api/generate/sections-structure",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt }),
+          headers: {
+            "Content-Type": "application/json",
+            "Idempotency-Key": crypto.randomUUID(),
+          },
+          body: JSON.stringify({ prompt, projectId: project.id }),
           signal: controller.signal,
         },
       );
 
       if (!sectionsStructureResponse.ok) {
-        throw new Error("Failed to analyze components");
+        const error = await sectionsStructureResponse.json().catch(() => ({}));
+        if (
+          sectionsStructureResponse.status === 402 &&
+          error.code === "insufficient_ai_credits"
+        ) {
+          const { data } = await supabase.auth.getUser();
+          if (data.user)
+            useProjectStore.getState().selectProject(data.user.id, project.id);
+          await queryClient.invalidateQueries({
+            queryKey: adminQueryKeys.projects,
+          });
+          router.push("/settings/plan-usage");
+          return false;
+        }
+        throw new Error(error.error || "Failed to analyze components");
       }
 
       const analysisData = await sectionsStructureResponse.json();
       if (controller.signal.aborted) return false;
-      const sectionsToGenerate: SiteSection[] = analysisData.sections || [];
+      const sectionsToGenerate = validateGeneratedSections(
+        analysisData.sections,
+      );
       setSiteSections(sectionsToGenerate);
       setGeneratedSectionsKey(getSectionsGenerationKey());
       setSectionsGenerated(true);
@@ -264,11 +415,81 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
     }
   };
 
+  const updatePlannedPages = async (userRequest: string) => {
+    pagesAbortControllerRef.current?.abort();
+    const controller = new AbortController();
+    pagesAbortControllerRef.current = controller;
+    try {
+      const response = await apiFetch("/api/generate/pages-structure", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": crypto.randomUUID(),
+        },
+        body: JSON.stringify({
+          projectId:
+            createdProjectRef.current?.id ??
+            sessionStorage.getItem("projectId"),
+          request: userRequest,
+          pages: siteProfile.plannedPages,
+          profile: {
+            name: siteProfile.name,
+            industry: siteProfile.industry,
+            archetype: siteProfile.archetype,
+            storeType: siteProfile.storeType,
+            subType: siteProfile.subType,
+            businessDescription: siteProfile.businessDescription,
+          },
+        }),
+        signal: controller.signal,
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        const message =
+          data.code === "plan_limit_reached" ||
+          data.code === "subscription_required"
+            ? `${data.error || "An active paid plan is required for additional pages."} Open Settings → Billing & usage to choose a plan.`
+            : data.error || "Could not update the page plan.";
+        throw new Error(message);
+      }
+      if (controller.signal.aborted) return false;
+      const pages = validateGeneratedPages(data.pages);
+      setSiteProfile((current) => ({ ...current, plannedPages: pages }));
+      return true;
+    } catch (error) {
+      if (controller.signal.aborted) return false;
+      console.error("Error updating planned pages:", error);
+      throw error;
+    } finally {
+      if (pagesAbortControllerRef.current === controller) {
+        pagesAbortControllerRef.current = null;
+      }
+    }
+  };
+
   const createProject = async (): Promise<any | null> => {
     if (!siteSections) return null;
 
     setIsCreatingProject(true);
     try {
+      if (!projectCreationKeyRef.current) {
+        try {
+          projectCreationKeyRef.current = sessionStorage.getItem(
+            ONBOARDING_PROJECT_CREATION_KEY,
+          );
+        } catch {
+          // The in-memory key still prevents duplicate submissions in this tab.
+        }
+        projectCreationKeyRef.current ||= crypto.randomUUID();
+        try {
+          sessionStorage.setItem(
+            ONBOARDING_PROJECT_CREATION_KEY,
+            projectCreationKeyRef.current,
+          );
+        } catch {
+          // Continue with the in-memory key when browser storage is unavailable.
+        }
+      }
       let pendingLogo: PendingLogo | null = null;
       if (typeof window !== "undefined") {
         try {
@@ -289,6 +510,7 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
         siteArchetype: siteProfile.archetype,
         storeType: siteProfile.storeType || null,
         capabilities: siteProfile.capabilities,
+        creationKey: projectCreationKeyRef.current,
         designPreference: {
           style: selectedStyle,
           sections: siteSections,
@@ -302,10 +524,12 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
             subType: siteProfile.subType,
             modules: siteProfile.modules,
             capabilities: siteProfile.capabilities,
+            plannedPages: siteProfile.plannedPages,
           },
         },
       };
 
+      const existingProject = Boolean(createdProjectRef.current);
       if (!createdProjectRef.current) {
         const response = await apiFetch("/api/admin/projects", {
           method: "POST",
@@ -325,6 +549,20 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
       }
 
       const project = createdProjectRef.current;
+      sessionStorage.setItem("projectId", project.id);
+
+      if (existingProject) {
+        const { creationKey: _creationKey, ...updateData } = projectData;
+        const updateResponse = await apiFetch("/api/admin/projects", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: project.id, ...updateData }),
+        });
+        if (!updateResponse.ok)
+          throw new Error(
+            "Could not save the latest homepage design to the project.",
+          );
+      }
 
       if (uploadFile && !project.logo) {
         if (!uploadedLogoUrlRef.current) {
@@ -383,6 +621,7 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
       if (!project) {
         return; // Project creation failed, error already handled
       }
+      setIsCreatingProject(true);
 
       // A retry can resume after the project was already created.
       const pagesResponse = await apiFetch(
@@ -408,7 +647,7 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
         homePage = (await pageResponse.json()).page;
       }
       if (!homePage?.id) throw new Error("Home page could not be opened.");
-      const prompt = `My business name is ${siteProfile.name}, industry is ${siteProfile.industry}, and site archetype is ${siteProfile.archetype}. ${siteProfile.businessDescription ? `About the business: ${siteProfile.businessDescription}.` : ""} Enabled modules: ${siteProfile.modules.join(", ") || "none"}. ${siteProfile.storeType ? `Store model: ${siteProfile.storeType}.` : ""} ${siteProfile.subType ? `Site focus: ${siteProfile.subType}.` : ""} Visual style: ${selectedStyle}.`;
+      const prompt = `My business name is ${siteProfile.name}, industry is ${siteProfile.industry}, and site archetype is ${siteProfile.archetype}. ${siteProfile.businessDescription ? `About the business: ${siteProfile.businessDescription}.` : ""} Enabled modules: ${siteProfile.modules.join(", ") || "none"}. ${siteProfile.storeType ? `Store model: ${siteProfile.storeType}.` : ""} ${siteProfile.subType ? `Site focus: ${siteProfile.subType}.` : ""} Planned pages after the homepage: ${siteProfile.plannedPages.join(", ") || "not provided"}. Generate and preview the homepage only. ${getSiteStyleGuidance(selectedStyle)}`;
       sessionStorage.removeItem("pageData");
       sessionStorage.setItem("generationPrompt", prompt);
       sessionStorage.setItem("siteSections", JSON.stringify(siteSections));
@@ -421,7 +660,7 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
             ),
         ),
       );
-      sessionStorage.setItem("projectId", project.id);
+      sessionStorage.removeItem(ONBOARDING_PROJECT_CREATION_KEY);
       sessionStorage.setItem("pageId", homePage.id);
       const { data } = await supabase.auth.getUser();
       if (data.user)
@@ -429,11 +668,16 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
       await queryClient.invalidateQueries({
         queryKey: adminQueryKeys.projects,
       });
-      resetWorkflow();
+      window.addEventListener(
+        "pagehide",
+        () => localStorage.removeItem(ONBOARDING_DRAFT_STORAGE_KEY),
+        { once: true },
+      );
       window.location.assign(
         `/page-builder/builder?id=${encodeURIComponent(homePage.id)}&generating=true`,
       );
     } catch (error) {
+      setIsCreatingProject(false);
       console.error("Error generating prompt:", error);
       alert(
         error instanceof Error
@@ -482,12 +726,22 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
     logoChoice,
     setLogoChoice,
     isCreatingProject,
+    isChatOpen,
+    setIsChatOpen,
+    unreadCount,
+    setUnreadCount,
+    isPremiumModalOpen,
+    setIsPremiumModalOpen,
+    isAuthModalOpen,
+    setIsAuthModalOpen,
     hasOnboardingData,
 
     // Step 0 form state
     isStep0FormComplete,
     sectionsGenerated,
     setSectionsGenerated,
+    structureStage,
+    setStructureStage,
     canReuseGeneratedSections,
     setGeneratedSectionsKey,
     getSectionsGenerationKey,
@@ -513,6 +767,7 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
 
     //ai generation
     generateSections,
+    updatePlannedPages,
     generatePrompt,
     createProject,
   };

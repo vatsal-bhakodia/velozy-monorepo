@@ -4,6 +4,7 @@ import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import { supabase, useSession } from "@/src/lib/auth";
 import { apiFetch } from "@/src/lib/api";
 import { AuthLayout } from "@/src/auth-layout";
+import { Button } from "@/components/ui/button";
 
 export default function SignIn() {
   const { status } = useSession();
@@ -137,9 +138,10 @@ export default function SignIn() {
             </button>
           </div>
         </div>
-        <button
+        <Button
+          type="submit"
           disabled={submitting}
-          className="flex h-10 w-full items-center justify-center rounded-md bg-white px-4 text-sm font-medium text-black hover:bg-cyan-50 disabled:opacity-50"
+          className="w-full bg-white text-black hover:bg-neutral-200 hover:text-black dark:hover:bg-neutral-200 dark:hover:text-black"
         >
           {submitting ? (
             <>
@@ -149,7 +151,7 @@ export default function SignIn() {
           ) : (
             "Sign in"
           )}
-        </button>
+        </Button>
       </form>
       <div className="relative text-center text-xs uppercase">
         <div className="absolute inset-x-0 top-1/2 border-t border-white/40" />

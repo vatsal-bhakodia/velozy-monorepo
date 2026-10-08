@@ -17,6 +17,7 @@ export const projects = pgTable("projects", {
   industry: varchar("industry", { length: 255 }),
   logo: varchar("logo", { length: 500 }),
   designPreference: jsonb("design_preference"),
+  creationKey: varchar("creation_key", { length: 64 }),
   siteArchetype: varchar("site_archetype", { length: 30 }),
   storeType: varchar("store_type", { length: 30 }),
   capabilities: jsonb("capabilities"),
@@ -30,7 +31,11 @@ export const projects = pgTable("projects", {
   publishedVersion: integer("published_version").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}, (table) => ({
+  creationKey: uniqueIndex("projects_creation_key_idx")
+    .on(table.creationKey)
+    .where(sql`${table.creationKey} IS NOT NULL`),
+}));
 export type Projects = InferSelectModel<typeof projects>;
 export type ProjectsFormData = Omit<
   Formify<InferInsertModel<typeof projects>>,

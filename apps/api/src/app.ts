@@ -18,12 +18,14 @@ import { adminAccountRouter } from "./routes/admin/account.js";
 import { adminCategoriesRouter } from "./routes/admin/categories.js";
 import { adminProductsRouter } from "./routes/admin/products.js";
 import { adminBlogRouter } from "./routes/admin/blog.js";
+import { adminCustomCollectionsRouter } from "./routes/admin/custom-collections.js";
 import { adminSeoRouter } from "./routes/admin/seo.js";
 import { adminBulkRouter } from "./routes/admin/bulk.js";
 import { adminAIRouter } from "./routes/admin/ai.js";
 import { adminCommerceRouter } from "./routes/admin/commerce.js";
 import { adminNavigationRouter } from "./routes/admin/navigation.js";
 import { adminOperationsRouter } from "./routes/admin/operations.js";
+import { adminBillingRouter } from "./routes/admin/billing.js";
 import { adminMediaRouter } from "./routes/admin/media.js";
 import { adminCsvRouter } from "./routes/admin/csv.js";
 import { adminMigrationRouter } from "./routes/admin/migration.js";
@@ -32,6 +34,7 @@ import { pageDataRouter } from "./routes/page-data.js";
 import { publishRouter } from "./routes/publish.js";
 import { adminIntegrationsRouter } from "./routes/admin/integrations.js";
 import { providerWebhookRouter } from "./routes/provider-webhooks.js";
+import { platformBillingWebhookRouter } from "./routes/platform-billing-webhook.js";
 import { publicCommerceRouter } from "./routes/public-commerce.js";
 import {
   adminEnquiriesRouter,
@@ -198,7 +201,7 @@ export function createApp(environment: Environment): {
     if (usesDedicatedLimit) return next();
     return publicLimit(request, response, next);
   });
-  app.use("/api", generationRouter(requireSupabaseAuth(environment), aiLimit));
+  app.use("/api", generationRouter(environment, requireSupabaseAuth(environment), aiLimit));
   app.use(
     "/api/pages/data",
     requireSupabaseAuth(environment),
@@ -239,6 +242,7 @@ export function createApp(environment: Environment): {
   app.use("/api", publicContentRouter(environment));
   app.use("/api", publicCommerceRouter(environment));
   app.use("/api", publicEnquiryRouter(environment));
+  app.use("/api/webhooks", platformBillingWebhookRouter(environment));
   app.use("/api/webhooks", providerWebhookRouter(environment));
   app.use(
     "/api/admin",
@@ -251,6 +255,12 @@ export function createApp(environment: Environment): {
     requireSupabaseAuth(environment),
     adminLimit,
     adminProjectsRouter(environment),
+  );
+  app.use(
+    "/api/admin",
+    requireSupabaseAuth(environment),
+    adminLimit,
+    adminBillingRouter(environment),
   );
   app.use(
     "/api/admin",
@@ -282,6 +292,7 @@ export function createApp(environment: Environment): {
     adminLimit,
     adminBlogRouter(environment),
   );
+  app.use("/api/admin", requireSupabaseAuth(environment), adminLimit, adminCustomCollectionsRouter(environment));
   app.use(
     "/api/admin",
     requireSupabaseAuth(environment),

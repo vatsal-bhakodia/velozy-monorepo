@@ -1,12 +1,13 @@
 import { Router } from "express";
 import type { Router as ExpressRouter } from "express";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, count, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { createDb, schema } from "@velozy/db";
 import type { Environment } from "../config/env.js";
 import { HttpError } from "../middleware/errors.js";
 import { publicSiteUrl } from "../lib/public-site-url.js";
 import { adminAccess } from "../lib/admin-auth.js";
+import { requireProjectPlanLimit } from "../lib/platform-billing.js";
 
 const inputSchema = z.object({ projectId: z.string().uuid(), pageId: z.string().uuid() });
 const slug = (name: string) => name.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 45) || "site";
@@ -31,8 +32,13 @@ export function publishRouter(environment: Environment): ExpressRouter {
     if (!input.success) throw new HttpError(400, "Valid projectId and pageId are required");
     if (!request.auth?.userId) throw new HttpError(401, "Unauthorized");
     const project = await authz.project(input.data.projectId, request.auth.userId, "publish");
+    const { allowance: publishedPageLimit } = await requireProjectPlanLimit(db, project.id, "published_pages");
     const page = await db.query.pages.findFirst({ where: and(eq(schema.pages.id, input.data.pageId), eq(schema.pages.projectId, project.id)) });
     if (!page?.pageData) throw new HttpError(400, "Save page content before publishing");
+    if (page.status !== "published") {
+      const [published] = await db.select({ count: count() }).from(schema.pages).where(and(eq(schema.pages.projectId, project.id), eq(schema.pages.status, "published")));
+      if (Number(published?.count ?? 0) >= publishedPageLimit) throw new HttpError(409, "This plan's published page limit has been reached", "published_page_limit");
+    }
     const formIds = referencedFormIds(page.pageData);
     if (formIds.length) {
       if (formIds.some((formId) => !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(formId))) throw new HttpError(409, "This page contains an invalid form reference. Replace it with an active form before publishing.", "form_unavailable");

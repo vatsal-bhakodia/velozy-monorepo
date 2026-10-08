@@ -174,11 +174,34 @@ export const useContentGeneration = (
         // Small delay to show setup completion
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        // Generate sections one by one. The navbar occupies step 1.
+        // Resume from sections persisted by earlier attempts. This keeps a retry
+        // from duplicating work in the page data or on the live canvas.
         let sectionsAccumulator: any[] = [];
+        const existingPageResponse = pageId
+          ? await fetch(`/api/pages/data?pageId=${encodeURIComponent(pageId)}`)
+          : null;
+        if (existingPageResponse && !existingPageResponse.ok) {
+          throw new Error("Could not load saved homepage sections. Please retry.");
+        }
+        const existingPageData = existingPageResponse
+          ? await existingPageResponse.json()
+          : null;
+        const existingSections = Array.isArray(existingPageData?.pageData?.sections)
+          ? existingPageData.pageData.sections
+          : [];
+        const existingById = new Map(
+          existingSections
+            .filter((section: any) => typeof section?.id === "string")
+            .map((section: any) => [section.id, section]),
+        );
+        sectionsAccumulator = sectionsToGenerate
+          .map((section: any) => existingById.get(section.id))
+          .filter(Boolean);
+        const failedSections: string[] = [];
 
         for (let i = 0; i < sectionsToGenerate.length; i++) {
           const section = sectionsToGenerate[i];
+          if (existingById.has(section.id)) continue;
           const stepNumber = i + 2;
           const isLastSection = i === sectionsToGenerate.length - 1;
 
@@ -192,7 +215,10 @@ export const useContentGeneration = (
           try {
             const sectionResponse = await fetch("/api/generate/section", {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+                "Idempotency-Key": crypto.randomUUID(),
+              },
               body: JSON.stringify({
                 prompt: generationStateRef.current?.userPrompt || prompt,
                 sectionId: section.id,
@@ -206,19 +232,15 @@ export const useContentGeneration = (
             });
 
             if (!sectionResponse.ok) {
-              throw new Error(`Failed to generate ${section.name}`);
+              const error = await sectionResponse.json().catch(() => ({}));
+              const message = error.error || `Failed to generate ${section.name}`;
+              throw new Error(error.code === "insufficient_ai_credits"
+                ? `${message} Open Settings → Billing & usage to upgrade or add credits.`
+                : message);
             }
 
             let sectionWithImages = (await sectionResponse.json()).section;
             if (projectId) sectionWithImages = await linkGeneratedForms(sectionWithImages, projectId);
-
-            // Add the new section to our accumulator (images already enriched server-side)
-            sectionsAccumulator.push(sectionWithImages);
-
-            // OPTIMIZED: Append only the new section to canvas (for live generation mode)
-            if (isGenerating && actions && query) {
-              appendSectionLive(sectionWithImages);
-            }
 
             // Persist each completed section so an interrupted generation can resume.
             if (pageId) {
@@ -228,6 +250,13 @@ export const useContentGeneration = (
                 body: JSON.stringify({ pageId, section: sectionWithImages }),
               });
               if (!savedSection.ok) throw new Error(`Could not save ${section.name}`);
+            }
+
+            // The section is safe to add to the live canvas only after it is
+            // durable, so a retry can discover it and avoid appending it twice.
+            sectionsAccumulator.push(sectionWithImages);
+            if (isGenerating && actions && query) {
+              appendSectionLive(sectionWithImages);
             }
 
             // Update completed sections
@@ -250,46 +279,20 @@ export const useContentGeneration = (
             );
           } catch (sectionError) {
             console.error(`Error generating ${section.name}:`, sectionError);
-            // Continue with other sections rather than failing completely
-            setCurrentStepText(
-              `Warning: ${section.name} generation failed, continuing...`,
-            );
-            await new Promise((resolve) => setTimeout(resolve, 500));
+            failedSections.push(section.name);
+            setCurrentStepText(`Could not create ${section.name}; this section can be retried.`);
           }
+        }
+
+        if (failedSections.length) {
+          throw new Error(
+            `Some homepage sections could not be created: ${failedSections.join(", ")}. Retry generation to continue.`,
+          );
         }
 
         // All page sections are complete; finalize and store complete data.
         setCurrentStep(totalSteps);
         setCurrentStepText("Finalizing your page...");
-
-        // If the user included dynamic sections (blogs/products/categories),
-        // seed some initial published sample content so the landing page preview
-        // isn't empty.
-        if (projectId) {
-          const dynamicSources = Array.from(
-            new Set(
-              sectionsToGenerate
-                .filter((s: any) => s?.kind === "dynamic" && s?.dynamic?.source)
-                .map((s: any) => s.dynamic.source),
-            ),
-          );
-
-          if (dynamicSources.length > 0) {
-            try {
-              await fetch("/api/admin/projects/seed-sample-content", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  projectId,
-                  sources: dynamicSources,
-                  prompt: generationStateRef.current?.userPrompt || prompt,
-                }),
-              });
-            } catch (err) {
-              console.warn("Failed to seed sample content:", err);
-            }
-          }
-        }
 
         if (sectionsToGenerate.length > 0 && sectionsAccumulator.length === 0) {
           throw new Error("No sections could be generated. Check the AI provider configuration and try again.");

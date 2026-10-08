@@ -6,11 +6,13 @@ export type AIInputPart =
   | { type: "text"; text: string }
   | { type: "image"; dataUrl: string }
   | { type: "file"; dataUrl: string; filename: string };
+export type AIRequestOptions = { disableReasoning?: boolean };
 
 const DEFAULT_MODELS: Record<AIProvider, Record<AITask, string>> = {
   openai: { chat: "gpt-4o-mini", coding: "gpt-5.2" },
   gemini: { chat: "gemini-3.6-flash", coding: "gemini-2.5-pro" },
 };
+const NON_REASONING_FALLBACK_MODEL = DEFAULT_MODELS.openai.chat;
 
 export function getAIProvider(): AIProvider {
   const provider = process.env.AI_PROVIDER?.trim().toLowerCase() || "openai";
@@ -85,6 +87,7 @@ async function generateWithOpenAI(
   systemPrompt: string,
   input: AIInputPart[],
   model: string,
+  options: AIRequestOptions = {},
 ): Promise<string> {
   const content: OpenAI.Responses.ResponseInputContent[] = input.map((part) => {
     if (part.type === "text") return { type: "input_text", text: part.text };
@@ -97,11 +100,45 @@ async function generateWithOpenAI(
       file_data: part.dataUrl,
     };
   });
-  const response = await getOpenAIClient().responses.create({
-    model,
+  const client = getOpenAIClient();
+  const request = {
     instructions: systemPrompt,
-    input: [{ role: "user", content }],
-  });
+    input: [{ role: "user" as const, content }],
+  };
+  const reasoningDisabled =
+    options.disableReasoning && /^gpt-5(?:[.-]|$)/i.test(model);
+  let response: OpenAI.Responses.Response;
+  try {
+    response = await client.responses.create({
+      model,
+      ...request,
+      // Some GPT-5 models support effort="none"; non-reasoning models such
+      // as gpt-4o-mini do not accept the reasoning parameter at all.
+      ...(reasoningDisabled
+        ? { reasoning: { effort: "none" as const } }
+        : {}),
+    });
+  } catch (error) {
+    const apiError = error as { param?: unknown; message?: unknown };
+    const reasoningParamRejected =
+      typeof apiError.param === "string" &&
+      apiError.param.startsWith("reasoning.");
+    if (
+      !reasoningDisabled ||
+      !reasoningParamRejected ||
+      model === NON_REASONING_FALLBACK_MODEL
+    ) {
+      throw error;
+    }
+
+    console.warn(
+      `OpenAI model ${model} does not support disabling reasoning; retrying onboarding request with ${NON_REASONING_FALLBACK_MODEL}.`,
+    );
+    response = await client.responses.create({
+      model: NON_REASONING_FALLBACK_MODEL,
+      ...request,
+    });
+  }
   if (!response.output_text) throw new Error("OpenAI returned no text");
   return response.output_text;
 }
@@ -110,13 +147,14 @@ export async function generateAIText(
   systemPrompt: string,
   input: AIInputPart[],
   task: AITask = "chat",
+  options: AIRequestOptions = {},
 ): Promise<string> {
   const provider = getAIProvider();
   const model = getAIModel(task);
   try {
     return provider === "gemini"
       ? await generateWithGemini(systemPrompt, input, model)
-      : await generateWithOpenAI(systemPrompt, input, model);
+      : await generateWithOpenAI(systemPrompt, input, model, options);
   } catch (error) {
     console.error(`${provider} ${task} request failed:`, error);
     throw new Error(
@@ -129,10 +167,12 @@ export function processPrompt(
   systemPrompt: string,
   userPrompt: string,
   task: AITask = "chat",
+  options: AIRequestOptions = {},
 ): Promise<string> {
   return generateAIText(
     systemPrompt,
     [{ type: "text", text: userPrompt }],
     task,
+    options,
   );
 }

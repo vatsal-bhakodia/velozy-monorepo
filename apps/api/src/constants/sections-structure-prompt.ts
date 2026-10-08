@@ -14,16 +14,20 @@ Each section should have:
 - description: brief description of what this section will contain AND its specific spatial composition or visual vibe (maximum 15 words)
 - kind: "static" or "dynamic"
 - dynamic: optional object, only when kind is "dynamic"
-  - source: "products" | "productCategories" | "blogs"
+  - source: "products" | "productCategories" | "blogs" | "custom"
   - layout: "grid" | "list" | "carousel"
   - limit: integer between 1 and 12
   - featuredOnly: boolean (optional, useful for products/blogs)
+  - collection: only for custom sources; { name, key, description, fields, initialRecords }
+    - fields: 1-30 field definitions { key, label, type, required, options? }
+    - allowed types: text, textarea, number, boolean, date, url, image, select
+    - initialRecords: 1-8 plausible draft JSON objects matching fields; never invent real identities, quotes, credentials, metrics, or endorsements
 
 NOTE: Hero and footer are required sections.
 IMPORTANT: Section descriptions must be concise and must not exceed 15 words. Describe not just the content, but the aesthetic approach (e.g., "Asymmetrical grid showcasing our brutalist designs").
-IMPORTANT: Only create dynamic sections if the user's prompt explicitly says those dynamic modules are enabled.
+IMPORTANT: Only create dynamic sections when a repeatable module is enabled or the business structure clearly needs reusable records. For other content use static sections.
 IMPORTANT: Product showcases, product categories, and latest blog sections should be marked as dynamic when relevant.
-IMPORTANT: Hero, manifesto, FAQ, about, testimonials, CTA, and footer sections should remain static unless the prompt clearly requires a dynamic collection.
+IMPORTANT: Hero, manifesto, FAQ, about, testimonials, CTA, and footer sections should remain static unless the user asks to manage their repeated entries as records. Never represent testimonials as blogs. If testimonials are requested as managed records, use a custom collection with testimonial-specific fields, not blogs.
 
 Generate sections that push beyond predictably generic patterns. NEVER output generic repetitive structures. While you must include essentials (Hero, Footer), infuse others with high-character, distinctive layout goals:
 - Hero/Banner (Required)
@@ -52,18 +56,6 @@ Example response format (NOTE: This is just an example - be creative!):
         "source": "products",
         "layout": "grid",
         "limit": 6,
-        "featuredOnly": true
-      }
-    },
-    {
-      "id": "latest-journal",
-      "name": "Latest Journal",
-      "description": "Magazine-style content strip surfacing timely stories with visual rhythm.",
-      "kind": "dynamic",
-      "dynamic": {
-        "source": "blogs",
-        "layout": "carousel",
-        "limit": 3,
         "featuredOnly": true
       }
     },

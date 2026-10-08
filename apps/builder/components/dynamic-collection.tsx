@@ -5,7 +5,8 @@ import React, { useEffect, useMemo, useState } from "react";
 export type DynamicCollectionSource =
   | "products"
   | "productCategories"
-  | "blogs";
+  | "blogs"
+  | "custom";
 
 export const DYNAMIC_COLLECTION_REFRESH_EVENT =
   "builder:dynamic-collection-refresh";
@@ -19,11 +20,13 @@ export type DynamicCollectionItem = {
   badge?: string;
   meta?: string;
   price?: string;
+  values?: Record<string, unknown>;
 };
 
 export type DynamicCollectionProps = {
   projectId: string;
   source: DynamicCollectionSource;
+  collectionId?: string;
   heading?: string;
   description?: string;
   limit?: number;
@@ -79,8 +82,8 @@ function interpolateTemplate(
 ): string {
   return template.replace(/{{\s*([\w]+)\s*}}/g, (_, rawKey) => {
     const key = rawKey as keyof DynamicCollectionItem;
-    const value = item[key];
-    return escapeHtml(value ? String(value) : "");
+    const value = item[key] ?? item.values?.[key];
+    return escapeHtml(value === null || value === undefined ? "" : String(value));
   });
 }
 
@@ -88,10 +91,13 @@ function buildRequestUrl(
   baseUrl: string,
   projectId: string,
   source: DynamicCollectionSource,
+  collectionId: string | undefined,
   limit: number,
   featuredOnly: boolean,
 ) {
-  const path = `/api/public/projects/${projectId}/${source}`;
+  const path = source === "custom" && collectionId
+    ? `/api/public/projects/${projectId}/collections/${collectionId}`
+    : `/api/public/projects/${projectId}/${source}`;
   const url = new URL(path, baseUrl);
   url.searchParams.set("limit", String(limit));
 
@@ -154,6 +160,7 @@ function renderFallbackCard(item: DynamicCollectionItem) {
 export function DynamicCollection({
   projectId,
   source,
+  collectionId,
   heading,
   description,
   limit = 6,
@@ -237,6 +244,7 @@ export function DynamicCollection({
           resolvedBaseUrl,
           projectId,
           source,
+          collectionId,
           limit,
           featuredOnly,
         );
@@ -273,7 +281,7 @@ export function DynamicCollection({
     return () => {
       isCancelled = true;
     };
-  }, [featuredOnly, limit, projectId, refreshVersion, resolvedBaseUrl, source]);
+  }, [collectionId, featuredOnly, limit, projectId, refreshVersion, resolvedBaseUrl, source]);
 
   return (
     <section className={sectionClassName}>

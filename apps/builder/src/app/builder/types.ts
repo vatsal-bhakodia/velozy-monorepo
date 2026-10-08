@@ -1,5 +1,8 @@
 export type DynamicSectionConfig = {
-  source: "products" | "productCategories" | "blogs";
+  source: "products" | "productCategories" | "blogs" | "custom";
+  collectionId?: string;
+  collectionKey?: string;
+  collection?: { name: string; key: string; description?: string; fields: Array<{ key: string; label: string; type: "text" | "textarea" | "number" | "boolean" | "date" | "url" | "image" | "select"; required?: boolean; options?: string[] }>; initialRecords?: Record<string, unknown>[] };
   layout: "grid" | "list" | "carousel";
   limit: number;
   featuredOnly?: boolean;

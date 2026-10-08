@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNode } from "@craftjs/core";
 import { BookOpen, Database, Layers3, Package, Sparkles } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { DynamicCollectionProps } from "@/components/dynamic-collection";
 
 const sources = [
@@ -27,12 +28,19 @@ const sources = [
     description: "Pull in your latest published stories",
     icon: BookOpen,
   },
+  {
+    value: "custom",
+    label: "Content collections",
+    description: "Show records from a custom content group",
+    icon: Database,
+  },
 ] as const;
 
 const fieldLabel =
   "mb-1.5 block text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground";
 
 export const DynamicCollectionSettings = () => {
+  const [collections, setCollections] = useState<Array<{ id: string; name: string }>>([]);
   const {
     actions: { setProp },
     props,
@@ -51,6 +59,16 @@ export const DynamicCollectionSettings = () => {
       });
     }
   }, [props.projectId, setProp]);
+
+  useEffect(() => {
+    if (!props.projectId) return;
+    let cancelled = false;
+    void fetch(`/api/admin/content-collections?projectId=${encodeURIComponent(props.projectId)}`)
+      .then(async (response) => response.ok ? response.json() : { collections: [] })
+      .then((data) => { if (!cancelled) setCollections(Array.isArray(data.collections) ? data.collections : []); })
+      .catch(() => { if (!cancelled) setCollections([]); });
+    return () => { cancelled = true; };
+  }, [props.projectId]);
 
   const update = <K extends keyof DynamicCollectionProps>(
     key: K,
@@ -120,6 +138,7 @@ export const DynamicCollectionSettings = () => {
             );
           })}
         </div>
+        {props.source === "custom" ? <div className="space-y-2 rounded-xl border border-border bg-muted/30 p-3"><p className="text-xs font-medium text-foreground">Collection group</p><Select value={props.collectionId || ""} onValueChange={(value) => update("collectionId" as keyof DynamicCollectionProps, value)}><SelectTrigger><SelectValue placeholder="Choose a collection" /></SelectTrigger><SelectContent>{collections.map((collection) => <SelectItem key={collection.id} value={collection.id}>{collection.name}</SelectItem>)}</SelectContent></Select>{!collections.length && <p className="text-xs text-muted-foreground">No custom collections found for this site.</p>}</div> : null}
       </section>
 
       <section className="space-y-3 border-t border-border pt-5">

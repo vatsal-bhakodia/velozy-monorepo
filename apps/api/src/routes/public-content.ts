@@ -3,6 +3,7 @@ import type { Router as ExpressRouter } from "express";
 import { and, eq } from "drizzle-orm";
 import { createDb, schema } from "@velozy/db";
 import type { Environment } from "../config/env.js";
+import { z } from "zod";
 
 function limit(value: unknown, fallback: number) {
   const parsed = Number(value);
@@ -138,6 +139,33 @@ export function publicContentRouter(environment: Environment): ExpressRouter {
         price: "",
       })),
     });
+  });
+
+  router.get("/public/projects/:projectId/collections/:collectionId", async (request, response) => {
+    const { projectId, collectionId } = request.params;
+    if (!z.string().uuid().safeParse(projectId).success || !z.string().uuid().safeParse(collectionId).success) return response.status(400).json({ error: "Invalid collection request" });
+    const collection = await db.query.customCollections.findFirst({
+      where: and(eq(schema.customCollections.id, collectionId), eq(schema.customCollections.projectId, projectId), eq(schema.customCollections.isArchived, false)),
+    });
+    if (!collection) return response.status(404).json({ error: "Collection not found" });
+    const rows = await db.query.customCollectionRecords.findMany({
+      where: and(eq(schema.customCollectionRecords.collectionId, collection.id), eq(schema.customCollectionRecords.status, "published")),
+      limit: limit(request.query.limit, 6),
+      orderBy: (table, { asc, desc }) => [asc(table.sortOrder), desc(table.publishedAt), desc(table.createdAt)],
+    });
+    const fields = Array.isArray(collection.fields) ? collection.fields : [];
+    const titleField = fields.find((field) => ["title", "name", "person", "product"].includes(field.key)) || fields.find((field) => ["text", "textarea"].includes(field.type));
+    const summaryField = fields.find((field) => ["summary", "description", "quote", "content", "bio"].includes(field.key) && field.key !== titleField?.key);
+    const imageField = fields.find((field) => field.type === "image");
+    response.setHeader("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+    response.json({ source: "custom", collection: { id: collection.id, name: collection.name, fields }, items: rows.map((record) => ({
+      id: record.id,
+      title: String((titleField && record.values[titleField.key]) || collection.name),
+      summary: summaryField ? String(record.values[summaryField.key] || "") : "",
+      image: imageField ? String(record.values[imageField.key] || "") : "",
+      href: "",
+      values: record.values,
+    })) });
   });
 
   return router;

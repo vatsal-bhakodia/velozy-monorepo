@@ -1,6 +1,10 @@
 import { useEffect, useRef } from "react";
 import { ChatMessage, SiteProfile } from "./types";
-import { siteStyles, SiteStyleProps } from "@/src/onboard/constants/site-style";
+import {
+  getSiteStyleGuidance,
+  siteStyles,
+  SiteStyleProps,
+} from "@/src/onboard/constants/site-style";
 import themes from "@/src/onboard/constants/themes";
 import { apiFetch } from "@/src/lib/api";
 import { useSession } from "@/src/lib/auth";
@@ -38,19 +42,17 @@ export const useChatHandlers = (onboardingState: any) => {
     hasInitialized,
     hasAskedQuestion,
     step1Questions,
-    nextStep,
     generateSections,
+    updatePlannedPages,
     cancelSectionGeneration,
     sectionsGenerated,
     setSectionsGenerated,
     canReuseGeneratedSections,
+    structureStage,
   } = onboardingState;
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const autoProgressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
   const currentStepRef = useRef(currentStep);
   const sectionGenerationRunRef = useRef(0);
 
@@ -59,10 +61,6 @@ export const useChatHandlers = (onboardingState: any) => {
     if (currentStep !== 2) {
       sectionGenerationRunRef.current += 1;
       cancelSectionGeneration();
-    }
-    if (currentStep !== 0 && autoProgressTimeoutRef.current) {
-      clearTimeout(autoProgressTimeoutRef.current);
-      autoProgressTimeoutRef.current = null;
     }
   }, [currentStep, cancelSectionGeneration]);
 
@@ -104,14 +102,16 @@ export const useChatHandlers = (onboardingState: any) => {
       setChatMessages([]);
       simulateTyping(() => {
         addBotMessage(
-          "Great! Now tell us about your business — what makes it unique? This helps us create a better website structure for you. You can also skip this step.",
+          siteProfile.businessDescription
+            ? `Your current business description is: “${siteProfile.businessDescription}”. Send an updated description to change it, or click Next to keep it.`
+            : "Tell us about your business and what makes it unique. This helps us create a more accurate website structure. You can also skip this step.",
         );
       });
     }
     if (currentStep !== 1) {
       step1ChatActivePrev.current = false;
     }
-  }, [currentStep]);
+  }, [currentStep, siteProfile.businessDescription]);
 
   // Reset initialization when step changes
   useEffect(() => {
@@ -122,7 +122,16 @@ export const useChatHandlers = (onboardingState: any) => {
   // Handle step transitions
   useEffect(() => {
     const handleStepTransition = async () => {
-      if (currentStep === 2) {
+      if (currentStep === 2 && structureStage === "pages") {
+        if (status !== "authenticated") return;
+        sectionGenerationRunRef.current += 1;
+        cancelSectionGeneration();
+        setChatMessages([]);
+        setIsProcessing(false);
+        addBotMessage(
+          "I suggested pages for your site type. Review the list and tell me what to add or remove. When it looks right, click Next to build the homepage structure.",
+        );
+      } else if (currentStep === 2 && structureStage === "sections") {
         if (status !== "authenticated") return;
         const runId = ++sectionGenerationRunRef.current;
         setChatMessages([]);
@@ -131,7 +140,7 @@ export const useChatHandlers = (onboardingState: any) => {
           setSectionsGenerated(true);
           setIsProcessing(false);
           addBotMessage(
-            "Your website structure is ready. You can drag sections to reorder them, or let me know if you'd like to add or change any sections.",
+            "Your homepage structure is ready. Drag to reorder sections or tell me what to add, remove, or change.",
           );
           return;
         }
@@ -149,7 +158,7 @@ export const useChatHandlers = (onboardingState: any) => {
             return;
           setSectionsGenerated(true);
           addBotMessage(
-            "Great! I've created a basic structure for your website. You can drag sections to reorder them, or let me know if you'd like to add or change any sections. Click 'Next' when you're ready to proceed.",
+            "Your homepage structure is ready. Drag to reorder sections or tell me what to add, remove, or change.",
           );
         } catch (error) {
           if (
@@ -172,18 +181,18 @@ export const useChatHandlers = (onboardingState: any) => {
         }
       } else if (currentStep === 3) {
         setChatMessages([]);
-        setSelectedStyle(siteStyles[0].id);
-        setSelectedTheme(themes[0].id);
-        setIsStyleConfirmed(false);
-        setIsThemeConfirmed(false);
         addBotMessage(
-          "Let's start with a color palette. You can edit each color directly or tell me how you want it to feel.",
+          isThemeConfirmed
+            ? "Your selected visual style and color theme are saved. You can make any final changes before continuing."
+            : isStyleConfirmed
+              ? "Your visual style is saved. What colors or mood do you prefer? Tell me and I’ll create a matching palette, or choose a preset and edit it."
+              : "Choose a visual style for your website. If you have color preferences, tell me your colors or mood and I’ll create a palette; you can also start with a preset.",
         );
       }
     };
 
     handleStepTransition();
-  }, [currentStep, status]);
+  }, [currentStep, structureStage, status]);
 
   const askQuestion = (questionIndex: number) => {
     // No longer used for step 0 (form-based now), kept for compatibility
@@ -214,11 +223,20 @@ export const useChatHandlers = (onboardingState: any) => {
     e: React.FormEvent | React.KeyboardEvent,
   ) => {
     e.preventDefault();
-    if (!currentInput.trim() || isProcessing) return;
+    const normalizedInput = currentInput.trim();
+    const maximumLength =
+      currentStep === 1 ? 2000 : currentStep === 2 ? 1000 : 500;
+    if (!normalizedInput || isProcessing) return;
+    if (normalizedInput.length > maximumLength) {
+      addBotMessage(
+        `Please keep this response under ${maximumLength} characters.`,
+      );
+      return;
+    }
 
     setIsProcessing(true);
 
-    const tempCurrentInput = currentInput;
+    const tempCurrentInput = normalizedInput;
     setCurrentInput("");
 
     addUserMessage(tempCurrentInput);
@@ -230,25 +248,36 @@ export const useChatHandlers = (onboardingState: any) => {
         businessDescription: tempCurrentInput,
       }));
 
-      setTimeout(() => {
-        simulateTyping(() => {
-          addBotMessage(
-            "Thanks for sharing! This will help us create a great website structure. Moving to the next step...",
-          );
-          setIsProcessing(false);
-
-          autoProgressTimeoutRef.current = setTimeout(() => {
-            if (currentStepRef.current === 1) {
-              nextStep(true);
-            }
-          }, 2000);
-        });
-      }, 500);
+      addBotMessage(
+        "Thanks, I’ve saved that description. Review it above or click Next when you’re ready.",
+      );
+      setIsProcessing(false);
+    } else if (currentStep === 2 && structureStage === "pages") {
+      try {
+        const runId = ++sectionGenerationRunRef.current;
+        const updated = await updatePlannedPages(tempCurrentInput);
+        if (
+          !updated ||
+          currentStepRef.current !== 2 ||
+          sectionGenerationRunRef.current !== runId
+        )
+          return;
+        addBotMessage(
+          "I updated the page plan. You can remove pages from the list or tell me what else to change.",
+        );
+      } catch (error) {
+        if (currentStepRef.current !== 2) return;
+        addBotMessage(
+          error instanceof Error
+            ? `${error.message} Try again or describe a different page change.`
+            : "I couldn't update the page plan. Please try again.",
+        );
+      } finally {
+        if (currentStepRef.current === 2) setIsProcessing(false);
+      }
     } else if (currentStep === 2) {
-      // Step 2: user wants to modify sections
       setSectionsGenerated(false);
       setIsProcessing(true);
-
       try {
         const runId = ++sectionGenerationRunRef.current;
         const generated = await generateSections(tempCurrentInput);
@@ -259,33 +288,35 @@ export const useChatHandlers = (onboardingState: any) => {
         )
           return;
         setSectionsGenerated(true);
-        setTimeout(() => {
-          simulateTyping(() => {
-            if (
-              currentStepRef.current !== 2 ||
-              sectionGenerationRunRef.current !== runId
-            )
-              return;
-            addBotMessage(
-              "I've updated the structure for your website. You can drag sections to reorder them, or let me know if you'd like to make more changes. Click 'Next' when you're ready to proceed.",
-            );
-            setIsProcessing(false);
-          });
-        }, 500);
+        addBotMessage(
+          "I updated the homepage sections. Drag to reorder them or tell me what else to change.",
+        );
       } catch (error) {
         if (currentStepRef.current !== 2) return;
         setSectionsGenerated(true);
-        setIsProcessing(false);
-        addBotMessage("Sorry, I encountered an error. Please try again.");
+        addBotMessage(
+          error instanceof Error
+            ? `${error.message} Enter “Try again” to retry, or describe the change you want.`
+            : "I couldn't update the homepage sections. Enter “Try again” to retry.",
+        );
+      } finally {
+        if (currentStepRef.current === 2) setIsProcessing(false);
       }
-    } else if (currentStep === 3 && !isThemeConfirmed) {
+    } else if (currentStep === 3) {
+      // Require a fresh confirmation before allowing the user to finish with
+      // a palette that is currently being changed.
+      setIsThemeConfirmed(false);
       try {
         const response = await apiFetch("/api/generate/theme", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "Idempotency-Key": crypto.randomUUID(),
+          },
           body: JSON.stringify({
+            projectId: sessionStorage.getItem("projectId"),
             industry: siteProfile.industry,
-            styleType: selectedStyle || "logo-palette",
+            styleType: getSiteStyleGuidance(selectedStyle),
             userRequest: tempCurrentInput,
             currentTheme: activeTheme,
           }),
@@ -300,13 +331,16 @@ export const useChatHandlers = (onboardingState: any) => {
           ...previous.filter((theme) => theme.id !== nextTheme.id),
           nextTheme,
         ]);
+        setIsThemeConfirmed(false);
         addBotMessage(
-          "I updated the palette. You can keep refining it or confirm it when it feels right.",
+          "I updated the palette. Review the new colors and confirm them when they feel right.",
         );
       } catch (error) {
         console.error("Error updating theme:", error);
         addBotMessage(
-          "I couldn't update the palette. You can try another request or edit the colors directly.",
+          error instanceof Error && error.message.includes("AI credits")
+            ? `${error.message} Open Settings → Billing & usage to upgrade or add credits.`
+            : "I couldn't update the palette. You can try another request or edit the colors directly.",
         );
       } finally {
         setIsProcessing(false);
@@ -332,7 +366,7 @@ export const useChatHandlers = (onboardingState: any) => {
     setTimeout(() => {
       simulateTyping(() => {
         addBotMessage(
-          "Excellent choice! Now let's select a color theme that matches your style.",
+          "Your visual style and palette are ready. You can request color changes below or continue when everything looks right.",
         );
         setIsProcessing(false);
       });
@@ -394,15 +428,14 @@ export const useChatHandlers = (onboardingState: any) => {
       sessionStorage.removeItem("pendingTheme");
     }
 
-    const selectedThemeName =
-      selectedThemeData?.name ||
-      themes.find((t) => t.id === selectedTheme)?.name;
-    addUserMessage(selectedThemeName || "");
+    setChatMessages([]);
 
     setTimeout(() => {
       simulateTyping(() => {
         addBotMessage(
-          "Your palette is ready. Now choose a visual style that fits it best.",
+          isStyleConfirmed
+            ? "Your updated palette is confirmed. Your visual style is still selected, and you can continue when you’re ready."
+            : "Your palette is ready. Now choose a visual style that fits it best.",
         );
         setIsProcessing(false);
       });

@@ -55,13 +55,18 @@ export type SiteCapability =
   | "seo"
   | "analytics";
 
-export type DynamicSource = "products" | "productCategories" | "blogs";
+export type CollectionFieldType = "text" | "textarea" | "number" | "boolean" | "date" | "url" | "image" | "select";
+export type CollectionField = { key: string; label: string; type: CollectionFieldType; required?: boolean; options?: string[] };
+export type DynamicSource = "products" | "productCategories" | "blogs" | "custom";
+
+export type StructureStage = "pages" | "sections";
 
 export type DynamicSectionConfig = {
   source: DynamicSource;
   layout: "grid" | "list" | "carousel";
   limit: number;
   featuredOnly?: boolean;
+  collection?: { name: string; key: string; description?: string; fields: CollectionField[]; initialRecords: Record<string, unknown>[] };
 };
 
 export type SiteProfile = {
@@ -72,6 +77,7 @@ export type SiteProfile = {
   subType: SiteSubType | "";
   modules: SiteModule[];
   capabilities: SiteCapability[];
+  plannedPages: string[];
   logo: string;
   businessDescription: string;
 };

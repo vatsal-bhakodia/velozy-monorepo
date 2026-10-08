@@ -48,6 +48,7 @@ export function useAdmin() {
   return {
     projects,
     projectsLoading: projectsQuery.isLoading,
+    projectsReady: projectsQuery.isSuccess,
     selectedProjectId,
     setSelectedProjectId: (id: string) => {
       if (user) selectProject(user.id, id);

@@ -45,6 +45,7 @@ const Products = page("products/index");
 const Product = page("products/slug");
 const ProductAttributes = page("product/attributes");
 const Collections = page("collections/index");
+const ContentCollections = page("content-collections");
 const Collection = page("collections/slug");
 const CommerceCarts = page("commerce/carts");
 const CommerceCart = page("commerce/carts-id");
@@ -152,6 +153,7 @@ function App() {
                   {r("/product-attributes", ProductAttributes)}
                   {r("/collections", Collections)}
                   {r("/collections/:slug", Collection)}
+                  {r("/content-collections", ContentCollections)}
                   <Route
                     path="/product-categories"
                     element={<Navigate to="/collections" replace />}
@@ -313,4 +315,12 @@ function App() {
     </QueryClientProvider>
   );
 }
-createRoot(document.getElementById("root")!).render(<App />);
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error("Admin app root element was not found");
+
+const root = createRoot(rootElement);
+root.render(<App />);
+
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => root.unmount());
+}

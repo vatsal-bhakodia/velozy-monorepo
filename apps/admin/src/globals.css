@@ -194,5 +194,8 @@ body {
 }
 
 .bg-gradient {
-  background: linear-gradient(110deg, #2563eb, #06b6d4);
+  background:
+    radial-gradient(ellipse at center, transparent 64%, rgba(112, 250, 255, 0.28) 100%),
+    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.2), transparent 56%),
+    linear-gradient(135deg, #12dedf 0%, #08a9ed 48%, #1557f5 100%);
 }

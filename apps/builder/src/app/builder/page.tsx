@@ -395,6 +395,7 @@ function BuilderInner() {
               {/* Error Overlay */}
               <ErrorOverlay
                 generationError={generationError}
+                onRetry={() => window.location.reload()}
                 onGoBack={() => {
                   setGenerationError(null);
                   window.location.assign("/pages");

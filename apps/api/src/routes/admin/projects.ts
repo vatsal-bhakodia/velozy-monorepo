@@ -36,9 +36,10 @@ const projectInput = z.object({
   siteArchetype: z.string().trim().max(30).nullable().optional(),
   storeType: z.string().trim().max(30).nullable().optional(),
   capabilities: z.array(z.unknown()).optional(),
+  creationKey: z.string().uuid().optional(),
 });
 
-const projectUpdate = projectInput.partial().extend({
+const projectUpdate = projectInput.omit({ creationKey: true }).partial().extend({
   id: z.string().uuid(),
   currency: z
     .string()
@@ -182,6 +183,16 @@ export function adminProjectsRouter(environment: Environment): ExpressRouter {
   router.post("/projects", async (request, response) => {
     const user = await ensureUser(db, request.auth);
     const input = parseBody(projectInput, request.body);
+    if (input.creationKey) {
+      const existing = await db.query.projects.findFirst({
+        where: eq(schema.projects.creationKey, input.creationKey),
+      });
+      if (existing) {
+        if (existing.userId !== user.id)
+          throw new HttpError(409, "This project creation request is already in use");
+        return response.status(200).json({ project: existing, reused: true });
+      }
+    }
     const ownerOrganizations = await db.select({ organizationId: schema.organizationAccessMemberships.organizationId })
       .from(schema.organizationAccessMemberships)
       .innerJoin(schema.accessRoles, eq(schema.accessRoles.id, schema.organizationAccessMemberships.roleId))
@@ -195,7 +206,9 @@ export function adminProjectsRouter(environment: Environment): ExpressRouter {
           : input.storeType === "enquiry"
             ? "enquiry"
             : "catalogue";
-    const project = await db.transaction(async (tx) => {
+    let project;
+    try {
+      project = await db.transaction(async (tx) => {
       const [created] = await tx
         .insert(schema.projects)
         .values({
@@ -218,7 +231,17 @@ export function adminProjectsRouter(environment: Environment): ExpressRouter {
       if (!ownerRole) throw new HttpError(500, "Project owner role could not be created");
       await tx.insert(schema.projectMemberships).values({ projectId: created.id, userId: user.id, roleId: ownerRole.id });
       return created;
-    });
+      });
+    } catch (error) {
+      if ((error as { code?: string })?.code === "23505" && input.creationKey) {
+        const existing = await db.query.projects.findFirst({
+          where: eq(schema.projects.creationKey, input.creationKey),
+        });
+        if (existing?.userId === user.id)
+          return response.status(200).json({ project: existing, reused: true });
+      }
+      throw error;
+    }
     return response.status(201).json({ project });
   });
 

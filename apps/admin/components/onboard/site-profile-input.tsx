@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Upload,
   WandSparkles,
@@ -43,37 +43,37 @@ const ARCHETYPE_OPTIONS: Array<{
   {
     id: "business",
     label: "Business",
-    description: "A complete company or service website.",
+    description: "Company or service website.",
     icon: Building2,
   },
   {
     id: "landing",
     label: "Landing Page",
-    description: "A focused page for a campaign or promotion.",
+    description: "Focused page for one offer.",
     icon: Briefcase,
   },
   {
     id: "store",
     label: "Store",
-    description: "Commerce-first product website.",
+    description: "Sell products online.",
     icon: ShoppingBag,
   },
   {
     id: "blog",
     label: "Blog",
-    description: "Content-heavy publishing website.",
+    description: "Articles, news and stories.",
     icon: Newspaper,
   },
   {
     id: "portfolio",
     label: "Portfolio",
-    description: "Personal or studio showcase.",
+    description: "Showcase work and projects.",
     icon: LayoutTemplate,
   },
   {
     id: "booking",
     label: "Booking",
-    description: "Appointments, consultations, or classes.",
+    description: "Appointments and classes.",
     icon: CalendarDays,
   },
 ];
@@ -87,19 +87,19 @@ const STORE_TYPE_OPTIONS: Array<{
   {
     id: "enquiry",
     label: "Catalogue + enquiries",
-    description: "Products with quote requests.",
+    description: "Product quotes and enquiries.",
     icon: MessageSquare,
   },
   {
     id: "enquiry-cart",
     label: "Enquiry cart",
-    description: "Cart-based enquiries, no payments.",
+    description: "Cart-based enquiries.",
     icon: List,
   },
   {
     id: "ecommerce",
     label: "Full ecommerce",
-    description: "Checkout, payments, and orders.",
+    description: "Online checkout and payments.",
     icon: CreditCard,
   },
 ];
@@ -117,13 +117,13 @@ const SUBTYPE_OPTIONS: Record<
     {
       id: "services",
       label: "Services",
-      description: "Professional services.",
+      description: "Promote your services.",
       icon: Briefcase,
     },
     {
       id: "company",
       label: "Company",
-      description: "Company and capabilities.",
+      description: "Share company details.",
       icon: Building2,
     },
     {
@@ -137,19 +137,19 @@ const SUBTYPE_OPTIONS: Record<
     {
       id: "lead-generation",
       label: "Lead generation",
-      description: "Collect interest and enquiries.",
+      description: "Collect leads and enquiries.",
       icon: MessageSquare,
     },
     {
       id: "product-launch",
       label: "Product launch",
-      description: "Introduce an offer or release.",
+      description: "Promote a new product.",
       icon: WandSparkles,
     },
     {
       id: "event",
       label: "Event",
-      description: "Promote one event or date.",
+      description: "Promote an event.",
       icon: CalendarDays,
     },
   ],
@@ -157,19 +157,19 @@ const SUBTYPE_OPTIONS: Record<
     {
       id: "personal-blog",
       label: "Personal blog",
-      description: "Share thoughts and stories.",
+      description: "Share stories and ideas.",
       icon: UserRound,
     },
     {
       id: "news-magazine",
       label: "News & magazine",
-      description: "Publish stories and updates.",
+      description: "Publish news and articles.",
       icon: Newspaper,
     },
     {
       id: "company-blog",
       label: "Company blog",
-      description: "Share expertise and news.",
+      description: "Share company insights.",
       icon: Building2,
     },
   ],
@@ -177,19 +177,19 @@ const SUBTYPE_OPTIONS: Record<
     {
       id: "creative-work",
       label: "Creative work",
-      description: "Show projects and selected work.",
+      description: "Showcase selected work.",
       icon: ImageIcon,
     },
     {
       id: "case-studies",
       label: "Case studies",
-      description: "Explain process and results.",
+      description: "Highlight process and results.",
       icon: FileText,
     },
     {
       id: "resume",
       label: "Resume",
-      description: "Present skills and experience.",
+      description: "Share skills and experience.",
       icon: UserRound,
     },
   ],
@@ -197,7 +197,7 @@ const SUBTYPE_OPTIONS: Record<
     {
       id: "appointments",
       label: "Appointments",
-      description: "Book a time with you.",
+      description: "Let customers book a time.",
       icon: CalendarDays,
     },
     {
@@ -209,10 +209,39 @@ const SUBTYPE_OPTIONS: Record<
     {
       id: "rentals",
       label: "Rentals",
-      description: "Reserve spaces or equipment.",
+      description: "Book spaces or equipment.",
       icon: ShoppingBag,
     },
   ],
+};
+
+const SUBTYPE_GROUP_CONFIG: Record<
+  Exclude<SiteArchetype, "store">,
+  {
+    description: string;
+    icon: React.ComponentType<{ className?: string }>;
+  }
+> = {
+  business: {
+    description: "What kind of business site are you building?",
+    icon: Briefcase,
+  },
+  landing: {
+    description: "What should your landing page focus on?",
+    icon: WandSparkles,
+  },
+  blog: {
+    description: "What kind of content will you publish?",
+    icon: Newspaper,
+  },
+  portfolio: {
+    description: "What work do you want to showcase?",
+    icon: ImageIcon,
+  },
+  booking: {
+    description: "What kind of bookings will you offer?",
+    icon: CalendarDays,
+  },
 };
 
 export type SiteProfileInput = {
@@ -245,105 +274,109 @@ export const SiteProfileInput = ({
   clearLogo,
   showPremiumModal,
 }: SiteProfileInput) => {
+  const [touched, setTouched] = useState({ name: false, industry: false });
   const isMeaningful = (value: string) => {
     const normalized = value.trim();
     return (
-      normalized.length >= 3 &&
-      /[A-Za-z]/.test(normalized) &&
-      !/^(.)\1+$/.test(normalized)
+      normalized.length >= 2 &&
+      normalized.length <= 120 &&
+      /[\p{L}\p{N}]/u.test(normalized) &&
+      !/^(.)\1+$/u.test(normalized)
     );
   };
-  const nameInvalid =
-    siteProfile.name.length > 0 && !isMeaningful(siteProfile.name);
-  const industryInvalid =
-    siteProfile.industry.length > 0 && !isMeaningful(siteProfile.industry);
+  const nameInvalid = touched.name && !isMeaningful(siteProfile.name);
+  const industryInvalid = touched.industry && !isMeaningful(siteProfile.industry);
 
   return (
     <>
       {/* Card */}
-      <div className="mx-auto w-full max-w-2xl overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-neutral-700 dark:bg-neutral-800">
-        <div className="relative p-4 sm:p-6 border-b border-gray-200 dark:border-gray-600">
+      <div className="mx-auto w-full max-w-3xl overflow-hidden rounded-lg border border-gray-200/80 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.12)] dark:border-white/[0.09] dark:bg-[#202124] dark:shadow-[0_28px_90px_rgba(0,0,0,0.38)]">
+        <div className="relative border-b border-gray-200/80 bg-gray-50/70 p-4 dark:border-white/[0.08] dark:bg-white/[0.015] sm:p-6">
           <div className="flex items-start sm:items-center justify-between gap-2">
             <div className="relative flex items-center space-x-3 sm:space-x-4">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                <Globe className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient text-white sm:h-12 sm:w-12">
+                <Globe className="h-5 w-5 sm:h-7 sm:w-7" />
               </div>
               <div className="text-gray-800 dark:text-neutral-50">
-                <h3 className="text-lg sm:text-xl font-bold leading-tight">
+                <h3 className="text-lg font-medium leading-6 text-neutral-950 dark:text-neutral-50">
                   Site Profile
                 </h3>
-                <p className="text-xs sm:text-sm mt-0.5">
-                  Your website information
+                <p className="mt-1.5 text-sm text-neutral-500 dark:text-neutral-400">
+                  Tell us about your business and the site you want to create.
                 </p>
               </div>
             </div>
             {/* Step badge */}
-            <span className="hidden h-fit shrink-0 rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 sm:px-3 sm:py-1.5 md:block md:text-[11px]">
+            <span className="hidden h-fit shrink-0 rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium uppercase tracking-wider text-neutral-500 dark:border-white/[0.09] dark:bg-white/[0.04] dark:text-neutral-300 md:block">
               Step 1 of 3
             </span>
           </div>
         </div>
 
         {/* Body */}
-        <div className="p-4 sm:px-8 sm:py-7 flex flex-col gap-5 sm:gap-6">
+        <div className="flex flex-col gap-5 p-4 sm:gap-6 sm:px-8 sm:py-7">
           {/* Site Name */}
           <div className="flex flex-col gap-2">
-            <label className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest uppercase text-slate-500 dark:text-slate-400">
+            <label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
               Site Name
             </label>
             <div className="relative group">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors duration-200 group-focus-within:text-slate-600 dark:group-focus-within:text-neutral-200">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 transition-colors duration-200 group-focus-within:text-neutral-600 dark:group-focus-within:text-neutral-300">
                 <Globe />
               </span>
               <input
+                id="onboarding-site-name"
                 autoFocus
                 type="text"
                 spellCheck={false}
+                maxLength={120}
                 value={siteProfile.name}
                 onChange={(e) => onProfileChange("name", e.target.value)}
+                onBlur={() => setTouched((current) => ({ ...current, name: true }))}
                 aria-invalid={nameInvalid}
+                aria-describedby="onboarding-site-name-error"
                 placeholder="e.g., My Awesome Website"
-                className="w-full rounded-xl border-[1.5px] border-slate-200/80 bg-slate-50/80 px-11 py-3 text-[14px] text-slate-800 outline-none transition-all duration-200 placeholder:text-slate-300 focus:border-slate-400 focus:bg-white focus:shadow-[0_0_0_4px_rgba(100,116,139,0.08)] dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-50 dark:focus:border-neutral-400 dark:focus:bg-neutral-700 sm:rounded-2xl sm:py-3.5 sm:text-[15px]"
+                className="w-full rounded-md border border-slate-200 bg-slate-50/80 px-11 py-3 text-[14px] text-slate-800 outline-none transition-all duration-200 placeholder:text-slate-400 focus:border-neutral-400 focus:bg-white focus:shadow-[0_0_0_3px_rgba(115,115,115,0.1)] dark:border-white/[0.1] dark:bg-[#292a2d] dark:text-neutral-50 dark:placeholder:text-neutral-500 dark:focus:border-neutral-400 dark:focus:bg-[#292a2d] dark:focus:shadow-[0_0_0_3px_rgba(255,255,255,0.08)] sm:py-3.5 sm:text-[15px]"
               />
             </div>
-            {nameInvalid && (
-              <p className="text-xs font-medium text-rose-500" role="alert">
-                Enter at least 3 meaningful characters.
-              </p>
-            )}
+            <p id="onboarding-site-name-error" className={`text-xs ${nameInvalid ? "font-medium text-rose-500" : "text-neutral-500 dark:text-neutral-400"}`}>
+              {nameInvalid ? "Enter at least 2 letters or numbers (up to 120 characters)." : "This is the name shown to visitors."}
+            </p>
           </div>
 
           {/* Industry */}
           <div className="flex flex-col gap-2">
-            <label className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest uppercase text-slate-500 dark:text-slate-400">
+            <label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
               Industry / Project Type
             </label>
             <div className="relative group">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors duration-200 group-focus-within:text-slate-600 dark:group-focus-within:text-neutral-200">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 transition-colors duration-200 group-focus-within:text-neutral-600 dark:group-focus-within:text-neutral-300">
                 <Tag />
               </span>
               <input
+                id="onboarding-industry"
                 type="text"
                 spellCheck={false}
+                maxLength={120}
                 value={siteProfile.industry}
                 onChange={(e) => onProfileChange("industry", e.target.value)}
+                onBlur={() => setTouched((current) => ({ ...current, industry: true }))}
                 aria-invalid={industryInvalid}
+                aria-describedby="onboarding-industry-error"
                 placeholder="e.g., Restaurant, Tech..."
-                className="w-full rounded-xl border-[1.5px] border-slate-200/80 bg-slate-50/80 px-11 py-3 text-[14px] text-slate-800 outline-none transition-all duration-200 placeholder:text-slate-300 focus:border-slate-400 focus:bg-white focus:shadow-[0_0_0_4px_rgba(100,116,139,0.08)] dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-50 dark:focus:border-neutral-400 dark:focus:bg-neutral-700 sm:rounded-2xl sm:py-3.5 sm:text-[15px]"
+                className="w-full rounded-md border border-slate-200 bg-slate-50/80 px-11 py-3 text-[14px] text-slate-800 outline-none transition-all duration-200 placeholder:text-slate-400 focus:border-neutral-400 focus:bg-white focus:shadow-[0_0_0_3px_rgba(115,115,115,0.1)] dark:border-white/[0.1] dark:bg-[#292a2d] dark:text-neutral-50 dark:placeholder:text-neutral-500 dark:focus:border-neutral-400 dark:focus:bg-[#292a2d] dark:focus:shadow-[0_0_0_3px_rgba(255,255,255,0.08)] sm:py-3.5 sm:text-[15px]"
               />
             </div>
-            {industryInvalid && (
-              <p className="text-xs font-medium text-rose-500" role="alert">
-                Enter at least 3 meaningful characters.
-              </p>
-            )}
+            <p id="onboarding-industry-error" className={`text-xs ${industryInvalid ? "font-medium text-rose-500" : "text-neutral-500 dark:text-neutral-400"}`}>
+              {industryInvalid ? "Enter at least 2 letters or numbers (up to 120 characters)." : "For example, restaurant, consulting, or photography."}
+            </p>
           </div>
 
           {/* Site Archetype */}
           <div className="flex flex-col gap-3">
-            <label className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest uppercase text-slate-500 dark:text-slate-400">
+            <label className="flex items-center gap-1.5 text-sm leading-5 text-neutral-500 dark:text-neutral-400">
               <LayoutTemplate className="w-4 h-4" />
-              Site Type
+              What kind of site are you creating?
             </label>
 
             <div className="grid grid-cols-3 gap-2">
@@ -380,9 +413,8 @@ export const SiteProfileInput = ({
 
           {siteProfile.archetype && siteProfile.archetype !== "store" && (
             <OptionGroup
-              title="Refine your site"
-              description="Choose the structure that fits best."
-              icon={WandSparkles}
+              description={SUBTYPE_GROUP_CONFIG[siteProfile.archetype].description}
+              icon={SUBTYPE_GROUP_CONFIG[siteProfile.archetype].icon}
             >
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 {SUBTYPE_OPTIONS[siteProfile.archetype].map((option) => {
@@ -404,7 +436,6 @@ export const SiteProfileInput = ({
 
           {siteProfile.archetype === "store" && (
             <OptionGroup
-              title="Store model"
               description="How should customers buy from you?"
               icon={ShoppingBag}
             >
@@ -430,12 +461,9 @@ export const SiteProfileInput = ({
 
           {/* Logo Upload */}
           <div className="flex flex-col gap-3">
-            <label className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest uppercase text-slate-500 dark:text-slate-400">
+            <label className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
               <ImageIcon />
               Logo
-              <span className="text-slate-400 normal-case tracking-normal font-normal text-[11px] ml-1">
-                — optional
-              </span>
             </label>
 
             <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3 sm:gap-4 items-stretch">
@@ -451,14 +479,14 @@ export const SiteProfileInput = ({
                     fileInputRef as React.RefObject<HTMLInputElement>
                   )?.current?.click()
                 }
-                className={`onboarding-dropzone relative rounded-xl sm:rounded-2xl border-2 border-dashed items-center justify-center cursor-pointer overflow-hidden transition-all duration-200 h-[100px] min-h-[100px] sm:min-h-0 sm:max-h-28
+                className={`onboarding-dropzone relative rounded-lg border-2 border-dashed items-center justify-center cursor-pointer overflow-hidden transition-all duration-200 h-[100px] min-h-[100px] sm:min-h-0 sm:max-h-28
                   ${!logoPreview ? "hidden sm:flex" : "flex"}
                   ${
                     dragActive
-                      ? "border-cyan-400 bg-gray-50 shadow-[0_0_0_4px_rgba(14,165,233,0.1)] dark:bg-neutral-800"
+                      ? "border-neutral-400 bg-gray-50 shadow-[0_0_0_3px_rgba(115,115,115,0.08)] dark:border-neutral-400 dark:bg-[#252527]"
                       : logoPreview
-                        ? "border-slate-300 bg-gray-50 dark:border-neutral-600 dark:bg-neutral-800"
-                        : "border-slate-200 bg-slate-50/60 hover:border-slate-400 hover:bg-gray-50 hover:shadow-[0_0_0_4px_rgba(100,116,139,0.06)] dark:border-neutral-600 dark:bg-neutral-800 dark:hover:border-neutral-500 dark:hover:bg-neutral-700"
+                        ? "border-slate-300 bg-gray-50 dark:border-[#36363a] dark:bg-[#252527]"
+                        : "border-slate-200 bg-slate-50/60 hover:border-slate-400 hover:bg-gray-50 hover:shadow-[0_0_0_4px_rgba(100,116,139,0.06)] dark:border-[#36363a] dark:bg-[#252527] dark:hover:border-neutral-500 dark:hover:bg-[#353538]"
                   }`}
               >
                 {logoPreview ? (
@@ -466,7 +494,7 @@ export const SiteProfileInput = ({
                     <img
                       src={logoPreview}
                       alt="Logo preview"
-                      className="w-full h-full object-contain p-2 rounded-xl sm:rounded-2xl"
+                      className="w-full h-full rounded-md object-contain p-2"
                     />
                     <button
                       onClick={(e) => {
@@ -479,15 +507,14 @@ export const SiteProfileInput = ({
                     </button>
                   </>
                 ) : (
-                  <div className="flex flex-col items-center gap-1.5">
+                  <div className="flex flex-col items-center justify-center gap-2">
                     <span
-                      className={`transition-colors duration-200 ${dragActive ? "text-cyan-400" : "text-slate-300 dark:text-neutral-400"}`}
+                      className={`transition-colors duration-200 ${dragActive ? "text-neutral-200" : "text-slate-300 dark:text-neutral-400"}`}
                     >
                       <Upload />
                     </span>
-                    <span className="text-[11px] text-slate-400 font-medium text-center leading-tight">
-                      Drag &<br />
-                      Drop
+                    <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+                      Drop logo here
                     </span>
                   </div>
                 )}
@@ -509,14 +536,14 @@ export const SiteProfileInput = ({
                       fileInputRef as React.RefObject<HTMLInputElement>
                     )?.current?.click()
                   }
-                  className={`${logoPreview ? "hidden sm:flex" : "flex"} flex-[1] items-center justify-center gap-2 rounded-lg border-[1.5px] border-slate-200/80 bg-slate-50/80 px-3 py-2.5 text-[12px] font-semibold text-slate-600 transition-all duration-200 hover:border-slate-400 hover:bg-white hover:text-slate-800 hover:shadow-[0_2px_8px_rgba(15,23,42,0.08)] dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-200 dark:hover:border-neutral-500 dark:hover:bg-neutral-600 sm:rounded-xl sm:px-4 sm:py-3 sm:text-[13px]`}
+                  className={`${logoPreview ? "hidden sm:flex" : "flex"} flex-[1] items-center justify-center gap-2 rounded-md border border-slate-200/80 bg-slate-50/80 px-3 py-2.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:border-slate-400 hover:bg-white hover:text-slate-800 hover:shadow-[0_2px_8px_rgba(15,23,42,0.08)] dark:border-[#36363a] dark:bg-[#252527] dark:text-neutral-200 dark:hover:border-neutral-500 dark:hover:bg-[#353538] sm:px-4 sm:py-3`}
                 >
                   <Upload className="w-4 h-4 sm:w-5 sm:h-5" />
                   Upload from device
                 </button>
                 <button
                   onClick={showPremiumModal}
-                  className="flex-[1] flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-[12px] sm:text-[13px] font-semibold text-white bg-gradient hover:bg-gradient border-none shadow-[0_4px_14px_rgba(6,182,212,0.35)] hover:shadow-[0_6px_20px_rgba(6,182,212,0.45)] hover:-translate-y-px active:translate-y-0 transition-all duration-200"
+                  className="flex flex-[1] items-center justify-center gap-2 rounded-md bg-gradient px-3 py-2.5 text-sm font-medium text-white shadow-sm transition-[filter] duration-200 hover:brightness-110 sm:px-4 sm:py-3"
                 >
                   <WandSparkles className="w-4 h-4 sm:w-5 sm:h-5" />
                   Generate with AI

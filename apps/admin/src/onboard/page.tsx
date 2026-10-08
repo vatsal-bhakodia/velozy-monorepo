@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useTheme } from "@/src/lib/theme";
 import { MessageCircle } from "lucide-react";
 import { BottomNav } from "@/components/onboard/botttom-nav";
@@ -18,9 +18,9 @@ import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { useSession } from "@/src/lib/auth";
 import { ONBOARDING_AUTH_PENDING_KEY } from "./storage-keys";
 import { OnboardingAuthModal } from "@/components/onboard/onboarding-auth-modal";
+import { profileWithSiteTypeChange } from "./recommended-pages";
 
 const OnBoard = () => {
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const { status } = useSession();
   const onboardingState = useOnboarding(() => setIsAuthModalOpen(true));
   const { resolvedTheme, setTheme } = useTheme();
@@ -34,9 +34,19 @@ const OnBoard = () => {
     setCurrentInput,
     currentQuestion,
     isProcessing,
+    isChatOpen,
+    setIsChatOpen,
+    unreadCount,
+    setUnreadCount,
+    isPremiumModalOpen,
+    setIsPremiumModalOpen,
+    isAuthModalOpen,
+    setIsAuthModalOpen,
     siteProfile,
     setSiteProfile,
     setCurrentStep,
+    structureStage,
+    setStructureStage,
     siteSections,
     setSiteSections,
     selectedStyle,
@@ -68,6 +78,15 @@ const OnBoard = () => {
     canProceedFromStep3,
   } = onboardingState;
 
+  const setPlannedPages: React.Dispatch<React.SetStateAction<string[]>> = (
+    value,
+  ) =>
+    setSiteProfile((current) => ({
+      ...current,
+      plannedPages:
+        typeof value === "function" ? value(current.plannedPages) : value,
+    }));
+
   const {
     chatContainerRef,
     fileInputRef,
@@ -86,10 +105,6 @@ const OnBoard = () => {
     handleLogoGenerate,
     clearLogo,
   } = logoHandlers;
-
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
 
   React.useEffect(() => {
     if (status === "loading") return;
@@ -149,41 +164,71 @@ const OnBoard = () => {
 
   // Determine if chatbox should be visible
   // Step 1: always visible for chat
-  // Step 2: only after sections are generated
+  // Page planning is immediate; the homepage sections chat appears after generation.
   // Step 3: always visible
   const shouldShowChat =
     currentStep === 1 ||
-    (currentStep === 2 && sectionsGenerated) ||
+    (currentStep === 2 &&
+      (structureStage === "pages" || (sectionsGenerated && !isProcessing))) ||
     currentStep === 3;
 
   // Whether we need a input field for current step/state
   const shouldShowInput =
     currentStep === 1 ||
-    (currentStep === 2 && sectionsGenerated) ||
-    (currentStep === 3 && !isThemeConfirmed);
+    (currentStep === 2 &&
+      (structureStage === "pages" || (sectionsGenerated && !isProcessing))) ||
+    (currentStep === 3 && (!isThemeConfirmed || isStyleConfirmed));
 
   const handleProfileChange = (
     field: keyof typeof siteProfile,
     value: string | string[],
   ) => {
     setSiteProfile((prev: typeof siteProfile) => {
+      if (field === "storeType") {
+        const selectedStoreType = value as typeof prev.storeType;
+        const capabilities: typeof prev.capabilities = prev.capabilities.filter(
+          (capability) =>
+            capability !== "products" && capability !== "checkout",
+        );
+        if (selectedStoreType) capabilities.push("products");
+        if (selectedStoreType === "ecommerce") capabilities.push("checkout");
+        return profileWithSiteTypeChange(
+          { ...prev, capabilities },
+          { storeType: selectedStoreType },
+        );
+      }
+      if (field === "subType") {
+        return profileWithSiteTypeChange(prev, {
+          subType: value as typeof prev.subType,
+        });
+      }
       if (field !== "archetype") return { ...prev, [field]: value };
 
       const requiredModule: (typeof prev.modules)[number] | null =
         value === "blog" ? "blog" : value === "store" ? "ecommerce" : null;
+      const capabilities: typeof prev.capabilities = prev.capabilities.filter(
+        (capability) =>
+          !["bookings", "products", "checkout"].includes(capability),
+      );
+      if (value === "booking") capabilities.push("bookings");
+      if (value === "store") capabilities.push("products");
 
-      return {
-        ...prev,
-        archetype: value as typeof prev.archetype,
-        storeType: value === "store" ? prev.storeType : "",
-        subType: value === "store" ? "" : prev.subType,
-        modules: [
-          ...prev.modules.filter(
-            (module) => module !== "blog" && module !== "ecommerce",
-          ),
-          ...(requiredModule ? [requiredModule] : []),
-        ],
-      };
+      return profileWithSiteTypeChange(
+        {
+          ...prev,
+          storeType:
+            value === prev.archetype && value === "store" ? prev.storeType : "",
+          subType: value === prev.archetype ? prev.subType : "",
+          modules: [
+            ...prev.modules.filter(
+              (module) => module !== "blog" && module !== "ecommerce",
+            ),
+            ...(requiredModule ? [requiredModule] : []),
+          ],
+          capabilities,
+        },
+        { archetype: value as typeof prev.archetype },
+      );
     });
   };
 
@@ -199,16 +244,35 @@ const OnBoard = () => {
     nextStep();
   };
 
+  const handleNext = () => {
+    if (currentStep === 2 && structureStage === "pages") {
+      onboardingState.setChatMessages([]);
+      onboardingState.setIsProcessing(true);
+      setStructureStage("sections");
+      return;
+    }
+    continueOnboarding();
+  };
+
+  const handlePrevious = () => {
+    if (currentStep === 2 && structureStage === "sections") {
+      onboardingState.cancelSectionGeneration();
+      onboardingState.setChatMessages([]);
+      onboardingState.setIsProcessing(false);
+      setStructureStage("pages");
+      return;
+    }
+    prevStep();
+  };
+
   return (
-    <div className="relative h-screen max-h-screen overflow-hidden bg-[#f4f5f5] text-gray-900 transition-colors duration-300 dark:bg-[#171717] dark:text-neutral-100">
+    <div className="relative h-screen max-h-screen overflow-hidden bg-[#fbfcfd] text-gray-900 transition-colors duration-300 dark:bg-[#171717] dark:text-neutral-100">
       <div
         className="pointer-events-none absolute inset-0 overflow-hidden"
         aria-hidden="true"
       >
-        <div className="absolute inset-x-[-18%] top-[-12%] h-[34rem] bg-[radial-gradient(ellipse_at_38%_24%,rgba(103,232,249,.2),transparent_34%),radial-gradient(ellipse_at_66%_42%,rgba(37,99,235,.14),transparent_42%),radial-gradient(ellipse_at_52%_78%,rgba(99,102,241,.1),transparent_48%)] blur-3xl" />
-        <div className="absolute -left-28 top-[8%] h-80 w-80 rounded-full bg-cyan-400/[0.07] blur-[90px] dark:bg-cyan-400/[0.045]" />
-        <div className="absolute right-[5%] top-[14%] h-96 w-96 rounded-full bg-sky-400/[0.06] blur-[110px] dark:bg-sky-500/[0.035]" />
-        <div className="absolute inset-0 opacity-[0.018] dark:opacity-[0.035] [background-image:radial-gradient(currentColor_0.7px,transparent_0.7px)] [background-size:18px_18px]" />
+        <div className="absolute inset-[-14%] bg-[radial-gradient(ellipse_at_12%_42%,rgba(18,222,223,.24),transparent_48%),radial-gradient(ellipse_at_52%_46%,rgba(8,169,237,.18),transparent_48%),radial-gradient(ellipse_at_88%_88%,rgba(21,87,245,.2),transparent_46%),radial-gradient(ellipse_at_18%_96%,rgba(18,169,237,.16),transparent_44%),radial-gradient(ellipse_at_52%_35%,rgba(255,255,255,.84),transparent_55%)] blur-3xl dark:hidden" />
+        <div className="absolute inset-x-[-18%] top-[-12%] hidden h-[34rem] bg-[radial-gradient(ellipse_at_38%_24%,rgba(103,232,249,.2),transparent_34%),radial-gradient(ellipse_at_66%_42%,rgba(37,99,235,.14),transparent_42%),radial-gradient(ellipse_at_52%_78%,rgba(99,102,241,.1),transparent_48%)] blur-3xl dark:block" />
       </div>
       <div className="absolute right-4 top-4 z-[60] sm:right-6 sm:top-5">
         <div className="rounded-xl border border-gray-200/80 bg-white/80 p-0.5 shadow-[0_8px_30px_rgba(15,23,42,0.08)] backdrop-blur-md dark:border-neutral-700/80 dark:bg-neutral-800/90 dark:shadow-black/20">
@@ -228,8 +292,8 @@ const OnBoard = () => {
           {/* Chat Panel */}
           <div
             className={`
-              h-full w-full lg:relative lg:h-[min(680px,calc(100vh-9rem))] lg:overflow-hidden lg:rounded-[1.75rem] lg:border lg:border-gray-200/80 lg:bg-white lg:shadow-[0_24px_70px_rgba(15,23,42,0.12)] lg:flex lg:flex-col dark:lg:border-neutral-700 dark:lg:bg-neutral-800 dark:lg:shadow-[0_24px_70px_rgba(0,0,0,0.3)]
-              fixed inset-x-0 top-0 bottom-[64px] pb-4 sm:bottom-[76px] z-40 bg-white/95 backdrop-blur-lg flex flex-col transition-all duration-500 ease-out dark:bg-neutral-800/95 dark:lg:bg-neutral-800/95 dark:lg:border-neutral-700/70
+              h-full w-full lg:relative lg:h-[min(680px,calc(100vh-9rem))] lg:overflow-hidden lg:rounded-lg lg:border lg:border-gray-200/80 lg:bg-white lg:shadow-[0_24px_70px_rgba(15,23,42,0.12)] lg:flex lg:flex-col dark:lg:border-white/[0.09] dark:lg:bg-[#202124] dark:lg:shadow-[0_24px_70px_rgba(0,0,0,0.3)]
+              fixed inset-x-0 top-0 bottom-[64px] pb-4 sm:bottom-[76px] z-40 bg-white/95 backdrop-blur-lg flex flex-col transition-all duration-500 ease-out dark:bg-[#202124]/95 dark:lg:bg-[#202124]/95 dark:lg:border-white/[0.09]
               ${shouldShowChat ? "lg:!static lg:!z-auto lg:!bg-white dark:lg:!bg-neutral-800" : "absolute -left-[9999px] opacity-0 pointer-events-none lg:hidden"}
               ${isChatOpen ? "translate-y-0 opacity-100" : "translate-y-full lg:translate-y-0 opacity-0 lg:opacity-100"}
             `}
@@ -246,6 +310,7 @@ const OnBoard = () => {
               currentInput={currentInput}
               setCurrentInput={setCurrentInput}
               handleInputSubmit={handleInputSubmit}
+              structureStage={structureStage}
               showInput={shouldShowInput}
               isProcessing={isProcessing}
               onSkip={currentStep === 1 ? handleSkipDescription : undefined}
@@ -258,12 +323,8 @@ const OnBoard = () => {
               isThemeConfirmed={isThemeConfirmed}
               handleThemeSelect={handleThemeSelect}
               confirmThemeSelect={confirmThemeSelect}
-              siteProfile={siteProfile}
               customThemes={customThemes}
-              setCustomThemes={setCustomThemes}
               activeTheme={activeTheme}
-              setActiveTheme={setActiveTheme}
-              logoPreview={logoPreview}
             />
           </div>
 
@@ -307,6 +368,9 @@ const OnBoard = () => {
                 isProcessing={isProcessing}
                 siteSections={siteSections}
                 setSiteSections={setSiteSections}
+                plannedPages={siteProfile.plannedPages}
+                setPlannedPages={setPlannedPages}
+                structureStage={structureStage}
               />
             </div>
           )}
@@ -366,7 +430,8 @@ const OnBoard = () => {
         open={isAuthModalOpen}
         onOpenChange={(open) => {
           setIsAuthModalOpen(open);
-          if (!open && status !== "authenticated") localStorage.removeItem(ONBOARDING_AUTH_PENDING_KEY);
+          if (!open && status !== "authenticated")
+            localStorage.removeItem(ONBOARDING_AUTH_PENDING_KEY);
         }}
         onAuthenticated={() => {
           setIsAuthModalOpen(false);
@@ -375,7 +440,7 @@ const OnBoard = () => {
 
       <BottomNav
         currentStep={currentStep}
-        prevStep={prevStep}
+        prevStep={handlePrevious}
         nextStep={nextStep}
         generatePrompt={generatePrompt}
         canProceedFromStep0={!!canProceedFromStep0}
@@ -383,7 +448,12 @@ const OnBoard = () => {
         canProceedFromStep2={!!canProceedFromStep2}
         canProceedFromStep3={!!canProceedFromStep3}
         isCreatingProject={isCreatingProject}
-        onNext={continueOnboarding}
+        nextStepDescription={
+          currentStep === 2 && structureStage === "pages"
+            ? "Click Next to generate your homepage structure."
+            : undefined
+        }
+        onNext={handleNext}
       />
     </div>
   );

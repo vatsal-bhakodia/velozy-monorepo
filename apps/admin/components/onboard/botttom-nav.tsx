@@ -24,6 +24,7 @@ interface BottomNavProps {
   canProceedFromStep2: boolean;
   canProceedFromStep3: boolean;
   isCreatingProject: boolean;
+  nextStepDescription?: string;
   onNext?: () => void;
 }
 
@@ -37,6 +38,7 @@ export const BottomNav = ({
   canProceedFromStep2,
   canProceedFromStep3,
   isCreatingProject,
+  nextStepDescription,
   onNext,
 }: BottomNavProps) => {
   const canContinue =
@@ -44,6 +46,13 @@ export const BottomNav = ({
     (currentStep === 1 && canProceedFromStep1) ||
     (currentStep === 2 && canProceedFromStep2) ||
     (currentStep === 3 && canProceedFromStep3);
+  const disabledReason = currentStep === 0
+    ? "Enter a valid site name and industry, then choose a site type and focus."
+    : currentStep === 2
+      ? "Generate a homepage structure before continuing."
+      : currentStep === 3
+        ? "Confirm both the visual style and color theme before finishing."
+        : "Complete this step before continuing.";
 
   const steps: (Step & { isActive: boolean })[] = [
     {
@@ -77,7 +86,7 @@ export const BottomNav = ({
           <button
             onClick={prevStep}
             disabled={currentStep === 0}
-            className="flex flex-shrink-0 items-center gap-1.5 rounded-xl bg-gray-100 px-3 py-2 text-gray-700 transition-all duration-200 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700 sm:gap-2 sm:px-4"
+            className="flex flex-shrink-0 items-center gap-1.5 rounded-md bg-gray-100 px-3 py-2 text-gray-700 transition-all duration-200 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700 sm:gap-2 sm:px-4"
           >
             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             <span className="hidden sm:inline text-sm">Previous</span>
@@ -118,6 +127,7 @@ export const BottomNav = ({
               >
                 <TooltipTrigger asChild>
                   <div
+                    title={!canContinue ? disabledReason : undefined}
                     className={
                       canContinue && !isCreatingProject
                         ? "relative isolate flex overflow-hidden rounded-lg p-[2px] drop-shadow-[0_0_10px_rgba(14,165,233,0.32)] before:absolute before:inset-[-100%] before:-z-10 before:rounded-[0.65rem] before:bg-[conic-gradient(from_0deg,transparent_0_60%,#0ea5e9,#2563eb,#ffffff,transparent_82%_100%)] before:animate-spin"
@@ -131,6 +141,11 @@ export const BottomNav = ({
                           : () => (onNext ? onNext() : nextStep())
                       }
                       disabled={!canContinue || isCreatingProject}
+                      aria-label={
+                        !canContinue
+                          ? `${currentStep === 3 ? "Finish" : "Next"}. ${disabledReason}`
+                          : undefined
+                      }
                       className="relative z-10 flex flex-1 items-center gap-1.5 rounded-md bg-gradient px-3 py-2 text-white shadow-[0_5px_18px_rgba(14,165,233,0.28),inset_0_0_0_1px_rgba(255,255,255,0.22)] transition-all duration-200 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 sm:gap-2 sm:px-4"
                     >
                       <span className="text-sm sm:text-base">
@@ -160,7 +175,7 @@ export const BottomNav = ({
                   >
                     {currentStep === 3
                       ? "Click Finish to save your project and open the dashboard."
-                      : "Click Next to continue to the next step."}
+                      : nextStepDescription || "Click Next to continue to the next step."}
                   </TooltipContent>
                 )}
               </Tooltip>
