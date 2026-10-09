@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { sectionToReactElements } from "@/lib/sectionToReactElements";
 import { BuilderElements } from "@/components/builder/elements";
 import { Navbar } from "@/components/builder/elements/navbar";
+import { SiteFooter } from "@/components/builder/elements/site-footer";
 import {
   pauseTailwindObserver,
   resumeTailwindObserver,
@@ -79,7 +80,7 @@ async function loadSectionsToCanvas(sections: any[], actions: any, query: any) {
 
   // ── Step 1: Convert DB sections → React elements (pure JS, no DOM) ──────────
   const allSectionElements: React.ReactElement[] = [];
-  for (const section of sections) {
+  for (const section of sections.filter((item) => !isGeneratedFooter(item))) {
     const elements = sectionToReactElements(section, BuilderElements);
     allSectionElements.push(...elements);
   }
@@ -118,17 +119,71 @@ export function ensureNavbarOnCanvas(
   const hasNavbar = Object.values(nodes).some(
     (node: any) => node?.data?.displayName === "Navbar",
   );
-  if (hasNavbar) return false;
+  let changed = false;
+  if (!hasNavbar) {
+    const tree = query
+      .parseReactElement(
+        React.createElement(Navbar, { projectId: projectId || "" }),
+      )
+      .toNodeTree();
+    actions.history.ignore().addNodeTree(tree, "ROOT");
+    actions.history.ignore().move(tree.rootNodeId, "ROOT", 0);
+    changed = true;
+  }
+  const hasFooter = Object.values(query.getNodes()).some(
+    (node: any) => node?.data?.displayName === "SiteFooter",
+  );
+  if (!hasFooter) {
+    const footerTree = query
+      .parseReactElement(
+        React.createElement(SiteFooter, { projectId: projectId || "" }),
+      )
+      .toNodeTree();
+    actions.history.ignore().addNodeTree(footerTree, "ROOT");
+    changed = true;
+  }
+  return changed;
+}
 
-  const tree = query
-    .parseReactElement(
-      React.createElement(Navbar, { projectId: projectId || "" }),
-    )
-    .toNodeTree();
-  actions.history.ignore().addNodeTree(tree, "ROOT");
-  // The root receives new nodes at the end; the navbar is a page-level header.
-  actions.history.ignore().move(tree.rootNodeId, "ROOT", 0);
-  return true;
+function isGeneratedFooter(section: any) {
+  return /(?:^|[-_\s])footer(?:$|[-_\s])/i.test(`${section?.id || ""} ${section?.name || ""}`);
+}
+
+function stripGeneratedFooterFromCraftState(value: unknown): Record<string, any> {
+  const state: any = typeof value === "string" ? JSON.parse(value) : structuredClone(value);
+  if (!state || typeof state !== "object" || !state.ROOT) return state;
+  const removeSubtree = (nodeId: string): boolean => {
+    const node = state[nodeId];
+    if (!node) return false;
+    const isFooter = node.data?.displayName === "SiteFooter" ||
+      node.data?.displayName === "Footer" ||
+      node.data?.props?.tag === "footer";
+    if (isFooter) {
+      const descendants = [...(node.data?.nodes || []), ...Object.values(node.data?.linkedNodes || {})];
+      descendants.forEach((id) => removeSubtree(String(id)));
+      delete state[nodeId];
+      return true;
+    }
+    for (const property of ["nodes", "linkedNodes"] as const) {
+      const children = node.data?.[property];
+      if (Array.isArray(children)) {
+        node.data[property] = children.filter((id: string) => !removeSubtree(id));
+      } else if (children && typeof children === "object") {
+        for (const [key, id] of Object.entries(children)) {
+          if (removeSubtree(String(id))) delete node.data[property][key];
+        }
+      }
+    }
+    return false;
+  };
+  const rootData = state.ROOT.data;
+  if (Array.isArray(rootData?.nodes)) {
+    rootData.nodes = rootData.nodes.filter((id: string) => !removeSubtree(id));
+  }
+  for (const [key, id] of Object.entries(rootData?.linkedNodes || {})) {
+    if (removeSubtree(String(id))) delete rootData.linkedNodes[key];
+  }
+  return state;
 }
 
 // ── Fetch page data from DB ───────────────────────────────────────────────────
@@ -217,8 +272,8 @@ export const useContentInitialization = (
 
           // Extract CSS classes from whichever data format we have
           const allClasses = hasCraftState
-            ? extractClassNamesFromCraftState(pageData.craftState)
-            : extractClassNames(pageData.sections);
+            ? extractClassNamesFromCraftState(stripGeneratedFooterFromCraftState(pageData.craftState))
+            : extractClassNames(pageData.sections.filter((section: any) => !isGeneratedFooter(section)));
           console.log(
             `📋 Extracted ${allClasses.length} unique Tailwind classes`,
           );
@@ -229,10 +284,9 @@ export const useContentInitialization = (
 
           try {
             if (hasCraftState) {
-              const stateStr =
-                typeof pageData.craftState === "string"
-                  ? pageData.craftState
-                  : JSON.stringify(pageData.craftState);
+              const stateStr = JSON.stringify(
+                stripGeneratedFooterFromCraftState(pageData.craftState),
+              );
               actions.history.ignore().deserialize(stateStr);
             } else {
               await loadSectionsToCanvas(pageData.sections, actions, query);
@@ -258,7 +312,7 @@ export const useContentInitialization = (
             );
           }, 0);
 
-          if (pageId) router.replace(`/builder?id=${pageId}`);
+          if (pageId) router.replace(`/?id=${pageId}`);
         } else if (isGenerating) {
           const prompt = sessionStorage.getItem("generationPrompt");
           const siteSections = sessionStorage.getItem("siteSections");

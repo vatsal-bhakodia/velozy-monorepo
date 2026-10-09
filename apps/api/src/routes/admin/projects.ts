@@ -49,6 +49,31 @@ const projectUpdate = projectInput.omit({ creationKey: true }).partial().extend(
     .enum(["catalogue", "enquiry", "quote", "checkout"])
     .optional(),
 });
+const safeChromeClass = z.string().min(1).max(600).regex(/^[A-Za-z0-9\s:/._%#[\](),!\-]+$/);
+const siteChromeInput = z.object({
+  projectId: z.string().uuid(),
+  siteChrome: z.object({
+    version: z.literal(1),
+    navbar: z.object({
+      wrapperClassName: safeChromeClass,
+      innerClassName: safeChromeClass,
+      brandClassName: safeChromeClass,
+      linksClassName: safeChromeClass,
+      linkClassName: safeChromeClass,
+      mobileClassName: safeChromeClass,
+      mobileToggleClassName: safeChromeClass,
+    }),
+    footer: z.object({
+      wrapperClassName: safeChromeClass,
+      innerClassName: safeChromeClass,
+      brandClassName: safeChromeClass,
+      linksClassName: safeChromeClass,
+      linkClassName: safeChromeClass,
+      description: z.string().max(300),
+      copyright: z.string().max(160),
+    }),
+  }),
+});
 
 function standardRoles(scope: "project" | "organization", scopeId: string, createdBy: string) {
   const target = scope === "project"
@@ -250,13 +275,36 @@ export function adminProjectsRouter(environment: Environment): ExpressRouter {
     const input = parseBody(projectUpdate, request.body);
     const { id, ...changes } = input;
     await authz.project(id, user.id, "settings:write");
-    const [project] = await db
-      .update(schema.projects)
-      .set({ ...changes, updatedAt: new Date() })
-      .where(
-        eq(schema.projects.id, id),
-      )
-      .returning();
+    const project = await db.transaction(async (tx) => {
+      const [current] = await tx
+        .select({ designPreference: schema.projects.designPreference })
+        .from(schema.projects)
+        .where(eq(schema.projects.id, id))
+        .for("update");
+      if (!current) return undefined;
+      const currentPreference = (current.designPreference as Record<string, unknown> | null) || {};
+      const incomingPreference = changes.designPreference && typeof changes.designPreference === "object"
+        ? changes.designPreference as Record<string, unknown>
+        : null;
+      const themeChanged = Boolean(incomingPreference && incomingPreference.theme !== undefined &&
+        JSON.stringify(incomingPreference.theme) !== JSON.stringify(currentPreference.theme));
+      if (themeChanged && incomingPreference) delete incomingPreference.designSystem;
+      const designPreference = incomingPreference
+        ? {
+            ...incomingPreference,
+            ...(!themeChanged && currentPreference.designSystem !== undefined ? { designSystem: currentPreference.designSystem } : {}),
+            ...(!themeChanged && currentPreference.designSystemUpdatedAt !== undefined ? { designSystemUpdatedAt: currentPreference.designSystemUpdatedAt } : {}),
+            ...(currentPreference.navigation !== undefined ? { navigation: currentPreference.navigation } : {}),
+            ...(currentPreference.siteChrome !== undefined ? { siteChrome: currentPreference.siteChrome } : {}),
+          }
+        : changes.designPreference;
+      const [updated] = await tx
+        .update(schema.projects)
+        .set({ ...changes, ...(designPreference !== undefined ? { designPreference } : {}), updatedAt: new Date() })
+        .where(eq(schema.projects.id, id))
+        .returning();
+      return updated;
+    });
     if (!project)
       throw new HttpError(404, "Project not found or access denied");
     return response.json({ project });
@@ -281,6 +329,30 @@ export function adminProjectsRouter(environment: Environment): ExpressRouter {
     return response.json({ success: true });
   });
 
+  router.put("/projects/site-chrome", async (request, response) => {
+    const user = await ensureUser(db, request.auth);
+    const input = parseBody(siteChromeInput, request.body);
+    await authz.project(input.projectId, user.id, "settings:write");
+    const siteChrome = await db.transaction(async (tx) => {
+      const [lockedProject] = await tx
+        .select({ designPreference: schema.projects.designPreference })
+        .from(schema.projects)
+        .where(eq(schema.projects.id, input.projectId))
+        .for("update");
+      if (!lockedProject) throw new HttpError(404, "Project not found or access denied");
+      const current = (lockedProject.designPreference as Record<string, any> | null) || {};
+      const saved = current.siteChrome?.version === 1
+        ? current.siteChrome
+        : input.siteChrome;
+      await tx
+        .update(schema.projects)
+        .set({ designPreference: { ...current, siteChrome: saved }, updatedAt: new Date() })
+        .where(eq(schema.projects.id, input.projectId));
+      return saved;
+    });
+    return response.json({ success: true, siteChrome });
+  });
+
   router.put("/projects/theme", async (request, response) => {
     const user = await ensureUser(db, request.auth);
     const projectId = z.string().uuid().safeParse(request.body?.projectId);
@@ -291,8 +363,13 @@ export function adminProjectsRouter(environment: Environment): ExpressRouter {
         "validation_error",
       );
     const project = await authz.project(projectId.data, user.id, "settings:write");
+    const currentPreference = (project.designPreference as Record<string, unknown> | null) || {};
+    const themeChanged = JSON.stringify(currentPreference.theme) !== JSON.stringify(request.body.theme);
+    const withoutOldDesignSystem = { ...currentPreference };
+    delete withoutOldDesignSystem.designSystem;
+    delete withoutOldDesignSystem.designSystemUpdatedAt;
     const designPreference = {
-      ...((project.designPreference as Record<string, unknown> | null) || {}),
+      ...(themeChanged ? withoutOldDesignSystem : currentPreference),
       theme: request.body.theme,
     };
     const [updated] = await db

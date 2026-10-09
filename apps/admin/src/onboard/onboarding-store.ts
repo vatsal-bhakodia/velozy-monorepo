@@ -5,6 +5,8 @@ import themes from "@/src/onboard/constants/themes";
 import { siteStyles } from "@/src/onboard/constants/site-style";
 import type {
   ChatMessage,
+  GeneratedSiteChrome,
+  GeneratedSiteNavigation,
   SiteProfile,
   SiteSection,
   StructureStage,
@@ -39,6 +41,8 @@ export type OnboardingStore = {
   isProcessing: boolean;
   siteProfile: SiteProfile;
   siteSections: SiteSection[];
+  siteChrome: GeneratedSiteChrome | null;
+  siteNavigation: GeneratedSiteNavigation | null;
   selectedStyle: string;
   isStyleConfirmed: boolean;
   selectedTheme: string;
@@ -64,6 +68,8 @@ export type OnboardingStore = {
   setIsProcessing: Setter<boolean>;
   setSiteProfile: Setter<SiteProfile>;
   setSiteSections: Setter<SiteSection[]>;
+  setSiteChrome: Setter<GeneratedSiteChrome | null>;
+  setSiteNavigation: Setter<GeneratedSiteNavigation | null>;
   setSelectedStyle: Setter<string>;
   setIsStyleConfirmed: Setter<boolean>;
   setSelectedTheme: Setter<string>;
@@ -95,6 +101,8 @@ export const useOnboardingStore = create<OnboardingStore>()(
       isProcessing: false,
       siteProfile: initialSiteProfile,
       siteSections: [],
+      siteChrome: null,
+      siteNavigation: null,
       selectedStyle: siteStyles[0].id,
       isStyleConfirmed: false,
       selectedTheme: themes[0].id,
@@ -129,6 +137,10 @@ export const useOnboardingStore = create<OnboardingStore>()(
         set((state) => ({ siteProfile: resolve(value, state.siteProfile) })),
       setSiteSections: (value) =>
         set((state) => ({ siteSections: resolve(value, state.siteSections) })),
+      setSiteChrome: (value) =>
+        set((state) => ({ siteChrome: resolve(value, state.siteChrome) })),
+      setSiteNavigation: (value) =>
+        set((state) => ({ siteNavigation: resolve(value, state.siteNavigation) })),
       setSelectedStyle: (value) =>
         set((state) => ({
           selectedStyle: resolve(value, state.selectedStyle),
@@ -199,6 +211,8 @@ export const useOnboardingStore = create<OnboardingStore>()(
             plannedPages: [],
           },
           siteSections: [],
+          siteChrome: null,
+          siteNavigation: null,
           selectedStyle: siteStyles[0].id,
           isStyleConfirmed: false,
           selectedTheme: themes[0].id,
@@ -243,6 +257,8 @@ export const useOnboardingStore = create<OnboardingStore>()(
             : state.siteProfile.logo,
         },
         siteSections: state.siteSections,
+        siteChrome: state.siteChrome,
+        siteNavigation: state.siteNavigation,
         selectedStyle: state.selectedStyle,
         isStyleConfirmed: state.isStyleConfirmed,
         selectedTheme: state.selectedTheme,

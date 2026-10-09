@@ -9,7 +9,7 @@ const workspaceRoot = path.join(
 export default {
   outputFileTracingRoot: workspaceRoot,
   serverExternalPackages: ["tailwindcss", "postcss"],
-  transpilePackages: ["@velozy/db"],
+  transpilePackages: ["@velozy/db", "@velozy/site-chrome"],
   webpack(config) {
     config.resolve.extensionAlias = {
       ...config.resolve.extensionAlias,

@@ -4,6 +4,7 @@ import type React from "react";
 import { cloneElement, isValidElement } from "react";
 import { unstable_cache } from "next/cache";
 import { and, eq } from "drizzle-orm";
+import { parse } from "node-html-parser";
 import { db } from "@/lib/db";
 import {
   blogs,
@@ -26,6 +27,16 @@ import {
 import { PublicEnquiryForm } from "@/components/public-enquiry-form";
 import { GrowthTracker } from "@/components/growth-tracker";
 import { meterPublishedPageView } from "@/lib/growth-server";
+import {
+  DEFAULT_SITE_CHROME,
+  DEFAULT_SITE_NAVIGATION,
+  SiteFooterView,
+  SiteNavbarView,
+  isValidSiteChrome,
+  resolveSiteNavigation,
+  type SiteChromeConfig,
+  type SiteNavigation,
+} from "@velozy/site-chrome";
 
 const getCachedSite = (hostname: string) =>
   unstable_cache(
@@ -57,10 +68,19 @@ type PublicNode = {
 };
 
 function cleanHtml(value: unknown) {
-  return String(value || "").replace(
-    /<script[\s\S]*?>[\s\S]*?<\/script>/gi,
-    "",
-  );
+  const root = parse(String(value || ""));
+  root.querySelectorAll("script, style, iframe, object, embed, svg, math").forEach((node) => node.remove());
+  root.querySelectorAll("*").forEach((node) => {
+    for (const [name, content] of Object.entries(node.attributes)) {
+      if (name.toLowerCase().startsWith("on") || name.toLowerCase() === "style") {
+        node.removeAttribute(name);
+      } else if (["href", "src", "xlink:href"].includes(name.toLowerCase()) &&
+        /^(?:javascript|data|vbscript):/i.test(content.trim())) {
+        node.removeAttribute(name);
+      }
+    }
+  });
+  return root.toString();
 }
 
 function classes(props: Record<string, any>) {
@@ -70,6 +90,34 @@ function classes(props: Record<string, any>) {
 function componentName(node: PublicNode) {
   if (typeof node.type === "string") return node.type;
   return node.type?.resolvedName || "";
+}
+
+async function SiteFrame({
+  project,
+  pageData,
+  children,
+}: {
+  project: any;
+  pageData: unknown;
+  children: React.ReactNode;
+}) {
+  const preference = project.designPreference || {};
+  const theme = preference.theme;
+  const chrome: SiteChromeConfig = isValidSiteChrome(preference.siteChrome)
+    ? preference.siteChrome
+    : DEFAULT_SITE_CHROME;
+  const navigation: SiteNavigation = resolveSiteNavigation(
+    preference.navigation || DEFAULT_SITE_NAVIGATION,
+  );
+  const css = await publishedPageCss(pageData, theme, chrome);
+  return (
+    <div>
+      <style dangerouslySetInnerHTML={{ __html: css }} />
+      <SiteNavbarView navigation={navigation} chrome={chrome} projectLogo={project.logo || ""} />
+      <main>{children}</main>
+      <SiteFooterView navigation={navigation} chrome={chrome} projectLogo={project.logo || ""} />
+    </div>
+  );
 }
 
 async function collectionItems(
@@ -209,6 +257,12 @@ async function renderNode(
   );
   const name = componentName(node).toLowerCase();
   const common = { className: classes(props), style: props.style };
+
+  // Shared chrome is rendered once by SiteFrame. Keep old per-page chrome data
+  // stored, but do not show it a second time.
+  if (name === "navbar" || name === "sitefooter" || name === "footer" || props.tag === "footer") {
+    return null;
+  }
 
   if (name === "text") {
     const Tag = props.tag || "p";
@@ -408,7 +462,9 @@ async function renderPageData(
     const headlineUsed = { value: false };
     const buttonUsed = { value: false };
     return Promise.all(
-      pageData.sections.flatMap((section: any, sectionIndex: number) =>
+      pageData.sections.filter((section: any) =>
+        !/(?:^|[-_\s])footer(?:$|[-_\s])/i.test(`${section?.id || ""} ${section?.name || ""}`),
+      ).flatMap((section: any, sectionIndex: number) =>
         (section.components || []).map(
           async (component: any, index: number) => {
             const element = await renderNode(
@@ -574,7 +630,8 @@ export default async function PublicSitePage({
       : "";
     return (
       <>
-        <main className="mx-auto grid max-w-6xl gap-8 px-5 py-10 md:grid-cols-2">
+        <SiteFrame project={site.project} pageData={null}>
+        <section className="mx-auto grid max-w-6xl gap-8 px-5 py-10 md:grid-cols-2">
           <div className="overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-900">
             {image ? (
               <img
@@ -618,13 +675,48 @@ export default async function PublicSitePage({
               />
             </div>
           </section>
-        </main>
+        </section>
+        </SiteFrame>
         <GrowthTracker
           assignments={assignments}
           targetType="product"
           targetId={product.id}
         />
       </>
+    );
+  }
+  const blogMatch = slug.match(/^\/blogs\/([^/]+)$/);
+  if (blogMatch) {
+    const blog = await db.query.blogs.findFirst({
+      where: and(
+        eq(blogs.projectId, site.project.id),
+        eq(blogs.slug, blogMatch[1]),
+        eq(blogs.status, "published"),
+        eq(blogs.isPublished, true),
+      ),
+    });
+    if (!blog) notFound();
+    await meterPublishedPageView(hostname, slug, userAgent);
+    return (
+      <SiteFrame project={site.project} pageData={null}>
+        <article className="mx-auto max-w-3xl px-5 py-12">
+          {blog.featuredImage ? (
+            <img
+              src={blog.featuredImage}
+              alt=""
+              className="mb-8 max-h-[32rem] w-full rounded-2xl object-cover"
+            />
+          ) : null}
+          <h1 className="text-4xl font-bold leading-tight">{blog.title}</h1>
+          {blog.excerpt ? (
+            <p className="mt-4 text-lg leading-7 text-muted-foreground">{blog.excerpt}</p>
+          ) : null}
+          <div
+            className="published-blog-content mt-8 whitespace-pre-line"
+            dangerouslySetInnerHTML={{ __html: cleanHtml(blog.content) }}
+          />
+        </article>
+      </SiteFrame>
     );
   }
   const pageSlug = slug === "/" ? "home" : slug.slice(1);
@@ -637,29 +729,12 @@ export default async function PublicSitePage({
       (item: any) => item.experience && typeof item.experience === "object",
     )?.experience || {};
 
-  const theme = (site.project.designPreference as any)?.theme;
-  const colors = theme?.colors || {};
   const pageData = page.publishedPageData || page.pageData;
-  const css = await publishedPageCss(pageData, theme);
   return (
     <>
-      <main
-        style={
-          {
-            "--color-primary": colors.primary,
-            "--color-secondary": colors.secondary,
-            "--color-background": colors.background,
-            "--color-foreground": colors.foreground,
-            "--color-accent": colors.accent,
-            "--color-muted": colors.muted,
-            "--color-border": colors.border,
-            "--color-ring": colors.ring,
-          } as React.CSSProperties
-        }
-      >
-        <style dangerouslySetInnerHTML={{ __html: css }} />
+      <SiteFrame project={site.project} pageData={pageData}>
         {await renderPageData(pageData, site.project.id, page.id, experience)}
-      </main>
+      </SiteFrame>
       <GrowthTracker
         assignments={assignments}
         targetType="page"

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { supabase, useSession } from "@/src/lib/auth";
 import { apiFetch } from "@/src/lib/api";
 import { SiteSection, Question } from "./types";
+import { isValidSiteChrome, isValidSiteNavigation } from "@velozy/site-chrome";
 import themes from "@/src/onboard/constants/themes";
 import { getSiteStyleGuidance } from "@/src/onboard/constants/site-style";
 import {
@@ -137,6 +138,10 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
     setSiteProfile,
     siteSections,
     setSiteSections,
+    siteChrome,
+    setSiteChrome,
+    siteNavigation,
+    setSiteNavigation,
     selectedStyle,
     setSelectedStyle,
     isStyleConfirmed,
@@ -400,7 +405,13 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
       const sectionsToGenerate = validateGeneratedSections(
         analysisData.sections,
       );
+      if (!isValidSiteChrome(analysisData.siteChrome) ||
+        !isValidSiteNavigation(analysisData.navigation)) {
+        throw new Error("The generated navbar or footer design was invalid. Please retry.");
+      }
       setSiteSections(sectionsToGenerate);
+      setSiteChrome(analysisData.siteChrome);
+      setSiteNavigation(analysisData.navigation);
       setGeneratedSectionsKey(getSectionsGenerationKey());
       setSectionsGenerated(true);
       return true;
@@ -467,7 +478,7 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
     }
   };
 
-  const createProject = async (): Promise<any | null> => {
+  const createProject = async (persistSiteChrome = false): Promise<any | null> => {
     if (!siteSections) return null;
 
     setIsCreatingProject(true);
@@ -501,6 +512,8 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
       }
       const uploadFile =
         logoFile || (pendingLogo ? dataUrlToFile(pendingLogo) : null);
+      const previousDesignPreference =
+        (createdProjectRef.current?.designPreference as Record<string, unknown> | undefined) || {};
       const projectData = {
         name: siteProfile.name,
         industry: siteProfile.industry,
@@ -512,6 +525,7 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
         capabilities: siteProfile.capabilities,
         creationKey: projectCreationKeyRef.current,
         designPreference: {
+          ...previousDesignPreference,
           style: selectedStyle,
           sections: siteSections,
           businessDescription: siteProfile.businessDescription,
@@ -562,6 +576,39 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
           throw new Error(
             "Could not save the latest homepage design to the project.",
           );
+      }
+
+      const designSystemResponse = await apiFetch("/api/generate/design-system", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": crypto.randomUUID(),
+        },
+        body: JSON.stringify({ projectId: project.id }),
+      });
+      const designSystemData = await designSystemResponse.json();
+      if (!designSystemResponse.ok)
+        throw new Error(designSystemData.error || "Could not save the confirmed theme design system.");
+      sessionStorage.setItem("designSystem", designSystemData.designSystem || "");
+
+      if (persistSiteChrome && siteChrome) {
+        const chromeResponse = await apiFetch("/api/admin/projects/site-chrome", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectId: project.id, siteChrome }),
+        });
+        if (!chromeResponse.ok) throw new Error("Could not save the shared navbar and footer design.");
+      }
+      if (persistSiteChrome && siteNavigation) {
+        const navigationResponse = await apiFetch(
+          `/api/admin/navigation?projectId=${encodeURIComponent(project.id)}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ navigation: siteNavigation, initialize: true }),
+          },
+        );
+        if (!navigationResponse.ok) throw new Error("Could not save the generated navigation menus.");
       }
 
       if (uploadFile && !project.logo) {
@@ -616,7 +663,7 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
 
     try {
       // Create project first
-      const project = await createProject();
+      const project = await createProject(true);
 
       if (!project) {
         return; // Project creation failed, error already handled
@@ -647,7 +694,8 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
         homePage = (await pageResponse.json()).page;
       }
       if (!homePage?.id) throw new Error("Home page could not be opened.");
-      const prompt = `My business name is ${siteProfile.name}, industry is ${siteProfile.industry}, and site archetype is ${siteProfile.archetype}. ${siteProfile.businessDescription ? `About the business: ${siteProfile.businessDescription}.` : ""} Enabled modules: ${siteProfile.modules.join(", ") || "none"}. ${siteProfile.storeType ? `Store model: ${siteProfile.storeType}.` : ""} ${siteProfile.subType ? `Site focus: ${siteProfile.subType}.` : ""} Planned pages after the homepage: ${siteProfile.plannedPages.join(", ") || "not provided"}. Generate and preview the homepage only. ${getSiteStyleGuidance(selectedStyle)}`;
+      const designSystem = sessionStorage.getItem("designSystem") || "";
+      const prompt = `My business name is ${siteProfile.name}, industry is ${siteProfile.industry}, and site archetype is ${siteProfile.archetype}. ${siteProfile.businessDescription ? `About the business: ${siteProfile.businessDescription}.` : ""} Enabled modules: ${siteProfile.modules.join(", ") || "none"}. ${siteProfile.storeType ? `Store model: ${siteProfile.storeType}.` : ""} ${siteProfile.subType ? `Site focus: ${siteProfile.subType}.` : ""} Planned pages after the homepage: ${siteProfile.plannedPages.join(", ") || "not provided"}. Generate and preview the homepage only. ${getSiteStyleGuidance(selectedStyle)}\n\nConfirmed design system:\n${designSystem}`;
       sessionStorage.removeItem("pageData");
       sessionStorage.setItem("generationPrompt", prompt);
       sessionStorage.setItem("siteSections", JSON.stringify(siteSections));
@@ -674,7 +722,7 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
         { once: true },
       );
       window.location.assign(
-        `/page-builder/builder?id=${encodeURIComponent(homePage.id)}&generating=true`,
+        `/page-builder?id=${encodeURIComponent(homePage.id)}&generating=true`,
       );
     } catch (error) {
       setIsCreatingProject(false);

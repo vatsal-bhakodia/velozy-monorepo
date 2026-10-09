@@ -7,7 +7,7 @@ import { Theme } from "@/components/common/theme-manager/types";
 import { sectionToReactElements } from "@/lib/sectionToReactElements";
 import { refreshTailwind } from "@/components/builder/canvas";
 import { ensureNavbarOnCanvas } from "./use-content-initialization";
-import { normalizeGeneratedFormFields } from "@/src/legacy-lib/form-utils";
+import { normalizeGeneratedFormFields } from "@/lib/form-utils";
 
 export const useContentGeneration = (
   setContentReady: (ready: boolean) => void,
@@ -51,7 +51,7 @@ export const useContentGeneration = (
 
   // Live append for generation mode - directly adds to Craft.js canvas
   const appendSectionLive = useCallback(
-    (section: any) => {
+    async (section: any) => {
       if (!actions || !query || !isGenerating) {
         console.warn(
           "Craft.js actions/query not available or not in generation mode",
@@ -60,35 +60,24 @@ export const useContentGeneration = (
       }
 
       try {
-        // Import BuilderElements dynamically to access component mapping
-        import("@/components/builder/elements").then(({ BuilderElements }) => {
-          // Convert section components to React elements
-          const reactElements = sectionToReactElements(
-            section,
-            BuilderElements,
-          );
+        const { BuilderElements } = await import("@/components/builder/elements");
+        const reactElements = sectionToReactElements(section, BuilderElements);
 
-          // Process elements asynchronously to prevent UI freezing
-          const processElements = async () => {
-            for (const element of reactElements) {
-              const nodeTree = query.parseReactElement(element).toNodeTree();
-              // Prevent history state from bloating and causing huge memory spikes
-              actions.history.ignore().addNodeTree(nodeTree, "ROOT");
-              await new Promise((resolve) => setTimeout(resolve, 5));
-            }
+        for (const element of reactElements) {
+          const nodeTree = query.parseReactElement(element).toNodeTree();
+          actions.setCustom(nodeTree.rootNodeId, (custom: Record<string, unknown>) => {
+            custom.displayName = String(section.name || "Section").slice(0, 80);
+          });
+          // Prevent history state from bloating and causing huge memory spikes
+          actions.history.ignore().addNodeTree(nodeTree, "ROOT");
+          await new Promise((resolve) => setTimeout(resolve, 5));
+        }
 
-            // One refresh after the entire section is mounted
-            refreshTailwind();
-
-            console.log(
-              `Appended section with ${reactElements.length} components to canvas`,
-            );
-          };
-
-          processElements();
-        });
+        refreshTailwind();
+        console.log(`Appended section with ${reactElements.length} components to canvas`);
       } catch (error) {
         console.error("Error appending section to canvas:", error);
+        throw error;
       }
     },
     [actions, query, isGenerating],
@@ -128,6 +117,9 @@ export const useContentGeneration = (
         }
 
         const sectionsToGenerate: Section[] = JSON.parse(siteSectionsData);
+        const generatedSections = sectionsToGenerate.filter(
+          (section: any) => !/(?:^|[-_\s])footer(?:$|[-_\s])/i.test(`${section?.id || ""} ${section?.name || ""}`),
+        );
         const theme: Theme = selectedThemeData
           ? JSON.parse(selectedThemeData)
           : themes[0];
@@ -151,8 +143,21 @@ export const useContentGeneration = (
         const pageId = sessionStorage.getItem("pageId");
         const projectId = sessionStorage.getItem("projectId");
 
+        if (projectId) {
+          const themeResponse = await fetch("/api/admin/projects/theme", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ projectId, theme }),
+          });
+          if (!themeResponse.ok) {
+            throw new Error("Could not save the selected site theme");
+          }
+        }
+
         // The navbar is the first page section. Generated sections follow it.
-        const totalSteps = sectionsToGenerate.length + 1;
+        // Reserve a final step for durable page/theme persistence so the bar
+        // reaches 100% only after the generated page is safe to reload.
+        const totalSteps = generatedSections.length + 2;
         setTotalSteps(totalSteps);
         setCurrentStep(1);
         setCurrentStepText("Adding navbar...");
@@ -168,7 +173,7 @@ export const useContentGeneration = (
           totalSteps,
           currentStepText: "Navbar added",
           completedSections: navbarCompletedSections,
-          sectionsToGenerate,
+          sectionsToGenerate: generatedSections,
         };
 
         // Small delay to show setup completion
@@ -189,21 +194,29 @@ export const useContentGeneration = (
         const existingSections = Array.isArray(existingPageData?.pageData?.sections)
           ? existingPageData.pageData.sections
           : [];
+        const existingFooterSections = existingSections.filter(
+          (section: any) => /(?:^|[-_\s])footer(?:$|[-_\s])/i.test(`${section?.id || ""} ${section?.name || ""}`),
+        );
         const existingById = new Map(
           existingSections
             .filter((section: any) => typeof section?.id === "string")
             .map((section: any) => [section.id, section]),
         );
-        sectionsAccumulator = sectionsToGenerate
+        sectionsAccumulator = generatedSections
           .map((section: any) => existingById.get(section.id))
           .filter(Boolean);
+        if (isGenerating && actions && query) {
+          for (const section of sectionsAccumulator) {
+            await appendSectionLive(section);
+          }
+        }
         const failedSections: string[] = [];
 
-        for (let i = 0; i < sectionsToGenerate.length; i++) {
-          const section = sectionsToGenerate[i];
+        for (let i = 0; i < generatedSections.length; i++) {
+          const section = generatedSections[i];
           if (existingById.has(section.id)) continue;
           const stepNumber = i + 2;
-          const isLastSection = i === sectionsToGenerate.length - 1;
+          const isLastSection = i === generatedSections.length - 1;
 
           setCurrentStep(stepNumber);
           setCurrentStepText(`Creating ${section.name}...`);
@@ -227,6 +240,15 @@ export const useContentGeneration = (
                 themeColors: theme.colors,
                 kind: section.kind || "static",
                 dynamicConfig: section.dynamic,
+                neighborSections: generatedSections
+                  .map((candidate, candidateIndex) => ({ candidate, candidateIndex }))
+                  .filter(({ candidate }) => candidate.id !== section.id)
+                  .map(({ candidate, candidateIndex }) => ({
+                    name: candidate.name,
+                    description: candidate.description,
+                    position: candidateIndex < i ? "before" : "after",
+                  }))
+                  .slice(0, 12),
                 projectId,
               }),
             });
@@ -256,13 +278,13 @@ export const useContentGeneration = (
             // durable, so a retry can discover it and avoid appending it twice.
             sectionsAccumulator.push(sectionWithImages);
             if (isGenerating && actions && query) {
-              appendSectionLive(sectionWithImages);
+              await appendSectionLive(sectionWithImages);
             }
 
             // Update completed sections
             const newCompletedSections = [
               ...navbarCompletedSections,
-              ...sectionsToGenerate.slice(0, i).map((item) => item.name),
+              ...generatedSections.slice(0, i).map((item) => item.name),
               section.name,
             ];
             setCompletedSections(newCompletedSections);
@@ -291,19 +313,19 @@ export const useContentGeneration = (
         }
 
         // All page sections are complete; finalize and store complete data.
-        setCurrentStep(totalSteps);
+        setCurrentStep(totalSteps - 1);
         setCurrentStepText("Finalizing your page...");
 
-        if (sectionsToGenerate.length > 0 && sectionsAccumulator.length === 0) {
+        if (generatedSections.length > 0 && sectionsAccumulator.length === 0) {
           throw new Error("No sections could be generated. Check the AI provider configuration and try again.");
         }
 
         // Create final landing page data
         const pageData = {
-          sections: sectionsAccumulator,
+          sections: [...sectionsAccumulator, ...existingFooterSections],
           metadata: {
             prompt,
-            sectionsGenerated: sectionsToGenerate.length,
+            sectionsGenerated: generatedSections.length,
             completedSections: sectionsAccumulator.length,
             isComplete: true,
           },
@@ -317,6 +339,8 @@ export const useContentGeneration = (
           });
           if (!savedPage.ok) throw new Error("Could not save the generated page");
         }
+
+        setCurrentStep(totalSteps);
 
         // Store data as draft in localStorage (page-specific key for unsaved changes)
         const currentPageId = sessionStorage.getItem("pageId");
@@ -342,7 +366,8 @@ export const useContentGeneration = (
         setCurrentStepText("Generation complete!");
         setCompletedSections([
           "Navbar",
-          ...sectionsToGenerate.map((s) => s.name),
+          ...generatedSections.map((s) => s.name),
+          "Footer",
         ]);
 
         // Show completion state briefly
@@ -351,7 +376,7 @@ export const useContentGeneration = (
         // Clean URL — only keep pageId
         const generatedPageId = sessionStorage.getItem("pageId");
         if (generatedPageId) {
-          router.replace(`/builder?id=${generatedPageId}`);
+          router.replace(`/?id=${generatedPageId}`);
         }
       } catch (error) {
         console.error("Error generating landing page:", error);

@@ -1,3 +1,5 @@
+import type { SiteChromeConfig, SiteNavigation } from "@velozy/site-chrome";
+
 // types.ts
 export type ChatMessage = {
   type: "bot" | "user";
@@ -89,6 +91,9 @@ export type SiteSection = {
   kind?: "static" | "dynamic";
   dynamic?: DynamicSectionConfig;
 };
+
+export type GeneratedSiteChrome = SiteChromeConfig;
+export type GeneratedSiteNavigation = SiteNavigation;
 
 export type Step = {
   id: number;

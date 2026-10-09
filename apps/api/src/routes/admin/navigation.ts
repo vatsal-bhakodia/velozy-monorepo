@@ -34,16 +34,31 @@ export function adminNavigationRouter(environment: Environment): ExpressRouter {
     const navigation = req.body?.navigation;
     if (!navigation?.menus || !navigation?.locations)
       throw new HttpError(400, "Invalid navigation data");
-    const current =
-      (p.designPreference as Record<string, unknown> | null) || {};
-    await db
-      .update(schema.projects)
-      .set({
-        designPreference: { ...current, navigation },
-        updatedAt: new Date(),
-      })
-      .where(eq(schema.projects.id, p.id));
-    res.json({ success: true, navigation });
+    const initialize = req.body?.initialize === true;
+    const savedNavigation = await db.transaction(async (tx) => {
+      const [lockedProject] = await tx
+        .select({ designPreference: schema.projects.designPreference })
+        .from(schema.projects)
+        .where(eq(schema.projects.id, p.id))
+        .for("update");
+      const current = (lockedProject?.designPreference as Record<string, unknown> | null) || {};
+      const existingNavigation = current.navigation as typeof navigation | undefined;
+      const hasSavedNavigation = existingNavigation && Array.isArray(existingNavigation.menus);
+      const nextNavigation = initialize && hasSavedNavigation
+        ? existingNavigation
+        : initialize
+          ? { ...navigation, ...(existingNavigation?.logo ? { logo: existingNavigation.logo } : {}) }
+          : navigation;
+      await tx
+        .update(schema.projects)
+        .set({
+          designPreference: { ...current, navigation: nextNavigation },
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.projects.id, p.id));
+      return nextNavigation;
+    });
+    res.json({ success: true, navigation: savedNavigation });
   });
   return router;
 }
