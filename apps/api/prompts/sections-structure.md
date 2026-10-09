@@ -53,7 +53,7 @@ Generate sections that push beyond predictably generic patterns. NEVER output ge
 - Hero/Banner (Required)
 - Unexpected Layout / Bento Grid
 - Bold Manifesto / Typography Showcase
-- Interactive Features / Staggered Flow 
+- Interactive Features / Staggered Flow
 - Minimalist Portfolio / Dense Gallery
 - FAQ / Technical Specs Matrix
 
