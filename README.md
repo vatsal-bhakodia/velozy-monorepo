@@ -1,9 +1,8 @@
 # Velozy monorepo
 
 This workspace is being migrated from the legacy application in `../main`. It
-is not the production entrypoint until the migration is complete. See
-[`docs/monorepo-migration-plan.md`](docs/monorepo-migration-plan.md) for the
-migration order and source ownership map.
+is not the production entrypoint until the migration is complete. See the
+[documentation index](docs/README.md) for current product plans and guides.
 
 ## Local setup
 
