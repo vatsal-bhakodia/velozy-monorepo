@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   ArrowLeft,
-  Code,
   Laptop,
   TabletIcon,
   Smartphone,
@@ -21,7 +20,6 @@ import {
   PanelLeftClose,
 } from "lucide-react";
 
-import { CodeView } from "./code-viewer";
 import { PublishDialog } from "./publish-dialog";
 import { useTheme } from "next-themes";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
@@ -43,6 +41,8 @@ interface TopBarProps {
   onThemeChange?: (theme: Theme) => void;
   // save
   onSave?: () => Promise<void>;
+  liveSiteUrl: string | null;
+  onSitePublished: (url: string) => void;
 }
 
 export function TopBar({
@@ -56,6 +56,8 @@ export function TopBar({
   setCustomThemes,
   onThemeChange,
   onSave,
+  liveSiteUrl,
+  onSitePublished,
 }: TopBarProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -105,7 +107,6 @@ export function TopBar({
   }, [actions, canUndo, canRedo]);
 
   // Dialog states
-  const [codeViewerOpen, setCodeViewerOpen] = useState(false);
   const [publishDialogOpen, setPublishDialogOpen] = useState(false);
 
   // Handle theme changes
@@ -230,29 +231,18 @@ export function TopBar({
 
           <div className="h-6 w-px bg-border mx-1" />
 
-          {/* View Code */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hover:bg-muted/50 h-9 w-9"
-            onClick={() => setCodeViewerOpen(true)}
-            title="View code"
-          >
-            <Code className="h-[1.2rem] w-[1.2rem]" />
-          </Button>
-
-          {/* Code Viewer Component */}
-          <CodeView open={codeViewerOpen} onOpenChange={setCodeViewerOpen} />
-
-          {/* View Deployed */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hover:bg-muted/50 h-9 w-9"
-            title="View deployed"
-          >
-            <ExternalLink className="h-[1.2rem] w-[1.2rem]" />
-          </Button>
+          {liveSiteUrl && (
+            <a
+              href={liveSiteUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-muted/50"
+              title="View live site"
+              aria-label="View live site"
+            >
+              <ExternalLink className="h-[1.2rem] w-[1.2rem]" />
+            </a>
+          )}
 
           {/* Save Button */}
           <button
@@ -275,7 +265,7 @@ export function TopBar({
 
           {/* Publish Button */}
           <button
-            className="bg-gradient hover:bg-gradient flex align-center justify-center gap-2 rounded-md text-sm font-semibold text-white px-4 py-2"
+            className="bg-gradient inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-semibold text-white transition-[filter] duration-200 hover:brightness-110"
             onClick={() => setPublishDialogOpen(true)}
             title="Publish your project"
           >
@@ -287,6 +277,7 @@ export function TopBar({
           <PublishDialog
             open={publishDialogOpen}
             onOpenChange={setPublishDialogOpen}
+            onPublished={onSitePublished}
           />
         </div>
       </div>

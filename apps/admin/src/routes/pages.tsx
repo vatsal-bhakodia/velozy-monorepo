@@ -203,7 +203,7 @@ export default function PagesPage() {
       }
     }
     window.location.assign(
-      `/page-builder/builder?id=${encodeURIComponent(page.id)}${generating ? "&generating=true" : ""}`,
+      `/page-builder?id=${encodeURIComponent(page.id)}${generating ? "&generating=true" : ""}`,
     );
   };
 

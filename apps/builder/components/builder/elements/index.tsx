@@ -12,6 +12,7 @@ import { Icon } from "./icon";
 import { Iframe } from "./iframe";
 import { DynamicCollection } from "./dynamic-collection";
 import { Navbar } from "./navbar";
+import { SiteFooter } from "./site-footer";
 import { AiLoadingSection } from "./ai-loading-section";
 import {
   Type,
@@ -40,6 +41,7 @@ export const BuilderElements = {
   Iframe,
   DynamicCollection,
   Navbar,
+  SiteFooter,
   AiLoadingSection,
 };
 

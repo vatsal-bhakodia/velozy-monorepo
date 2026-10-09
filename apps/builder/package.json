@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@velozy/site-chrome": "workspace:*",
     "@velozy/theme-presets": "workspace:*",
     "@craftjs/core": "^0.2.4",
     "@craftjs/layers": "^0.2.7",
@@ -40,7 +41,6 @@
     "node-vibrant": "^4.0.4",
     "re-resizable": "^6.11.2",
     "react": "19.2.8",
-    "react-code-blocks": "^0.1.6",
     "react-colorful": "^5.8.1",
     "react-dom": "19.2.8",
     "tailwind-merge": "^3.7.0",

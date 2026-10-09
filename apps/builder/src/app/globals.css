@@ -80,7 +80,7 @@
 }
 
 body {
-  font-family: "Montserrat", sans-serif;
+  font-family: var(--font-montserrat), sans-serif;
 }
 
 /* AnimatedThemeToggler owns the root view-transition while active. Disable the
@@ -356,23 +356,10 @@ html.dark .ck.ck-color-grid__tile:focus {
 }
 
 .bg-gradient {
-  --btn-bg-1: rgb(34 211 238 / 1);
-  --btn-bg-2: hsla(217, 100%, 56%, 1);
-
-  background-image: linear-gradient(
-    120deg,
-    var(--btn-bg-2),
-    var(--btn-bg-1),
-    var(--btn-bg-2)
-  );
-  background-size: 200% 100%;
-  background-position: 100% 0;
-
-  transition: background-position 0.5s;
-}
-
-.hover\:bg-gradient:hover {
-  background-position: 0 0;
+  background:
+    radial-gradient(ellipse at center, transparent 64%, rgba(112, 250, 255, 0.28) 100%),
+    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.2), transparent 56%),
+    linear-gradient(135deg, #12dedf 0%, #08a9ed 48%, #1557f5 100%);
 }
 
 /* Onboarding coach marks: a quiet cue that draws attention to the next action. */

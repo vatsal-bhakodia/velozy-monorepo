@@ -15,7 +15,7 @@
     "isolatedModules": true,
     "paths": {
       "@/src/lib/utils": [
-        "./src/legacy-lib/utils.ts"
+        "./src/lib/utils.ts"
       ],
       "@/components/ui/*": [
         "./components/ui/*.tsx"
@@ -24,13 +24,13 @@
         "./components/*"
       ],
       "@/constants/*": [
-        "./src/legacy-constants/*"
+        "./src/constants/*"
       ],
       "@/hooks/*": [
-        "./src/legacy-hooks/*"
+        "./src/hooks/*"
       ],
       "@/lib/*": [
-        "./src/legacy-lib/*"
+        "./src/lib/*"
       ],
       "@/*": [
         "./*"

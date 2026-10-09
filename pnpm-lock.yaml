@@ -119,6 +119,9 @@ importers:
       '@velozy/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
+      '@velozy/site-chrome':
+        specifier: workspace:*
+        version: link:../../packages/site-chrome
       '@velozy/theme-presets':
         specifier: workspace:*
         version: link:../../packages/theme-presets
@@ -272,7 +275,7 @@ importers:
         version: 5.0.5
       sharp:
         specifier: 0.35.4
-        version: 0.35.4(@types/node@20.6.2)
+        version: 0.35.4(@types/node@22.20.1)
       zod:
         specifier: ^3.24.2
         version: 3.25.76
@@ -358,6 +361,9 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.112.4
         version: 2.112.4
+      '@velozy/site-chrome':
+        specifier: workspace:*
+        version: link:../../packages/site-chrome
       '@velozy/theme-presets':
         specifier: workspace:*
         version: link:../../packages/theme-presets
@@ -388,9 +394,6 @@ importers:
       react:
         specifier: 19.2.8
         version: 19.2.8
-      react-code-blocks:
-        specifier: ^0.1.6
-        version: 0.1.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react-colorful:
         specifier: ^5.8.1
         version: 5.8.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -531,12 +534,18 @@ importers:
       '@velozy/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@velozy/site-chrome':
+        specifier: workspace:*
+        version: link:../../packages/site-chrome
       drizzle-orm:
         specifier: ^0.44.7
         version: 0.44.7(gel@2.2.0)(postgres@3.4.9)
       next:
         specifier: ^15.2.3
         version: 15.5.25(@types/node@22.20.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      node-html-parser:
+        specifier: ^7.0.1
+        version: 7.1.0
       postcss:
         specifier: ^8.5.26
         version: 8.5.26
@@ -634,6 +643,16 @@ importers:
       typescript:
         specifier: ^5.7.3
         version: 5.9.3
+
+  packages/site-chrome:
+    dependencies:
+      react:
+        specifier: '>=19'
+        version: 19.2.8
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.10
+        version: 19.2.18
 
   packages/theme-presets:
     devDependencies:
@@ -4590,12 +4609,6 @@ packages:
     peerDependencies:
       react: ^16.13.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
-  react-code-blocks@0.1.6:
-    resolution: {integrity: sha512-ENNuxG07yO+OuX1ChRje3ieefPRz6yrIpHmebQlaFQgzcAHbUfVeTINpOpoI9bSRSObeYo/OdHsporeToZ7fcg==}
-    engines: {node: '>=16'}
-    peerDependencies:
-      react: '>=16'
 
   react-colorful@5.8.1:
     resolution: {integrity: sha512-oz68bhsnFWnpDf1ZR8daiQbYpXUnM2h2J6hl9Zg2rTpM/DU6vCqe1E+CpqmqLnJucMZetHZeifSAfJ+geN9lcA==}
@@ -9669,18 +9682,6 @@ snapshots:
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
 
-  react-code-blocks@0.1.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
-    dependencies:
-      '@babel/runtime': 7.29.7
-      react: 19.2.8
-      react-syntax-highlighter: 15.6.6(react@19.2.8)
-      styled-components: 6.5.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - css-to-react-native
-      - react-dom
-      - react-native
-
   react-colorful@5.8.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       react: 19.2.8
@@ -10055,6 +10056,7 @@ snapshots:
       '@img/sharp-win32-ia32': 0.35.4
       '@img/sharp-win32-x64': 0.35.4
       '@types/node': 20.6.2
+    optional: true
 
   sharp@0.35.4(@types/node@22.20.1):
     dependencies:
@@ -10088,7 +10090,6 @@ snapshots:
       '@img/sharp-win32-ia32': 0.35.4
       '@img/sharp-win32-x64': 0.35.4
       '@types/node': 22.20.1
-    optional: true
 
   shell-quote@1.10.0:
     optional: true

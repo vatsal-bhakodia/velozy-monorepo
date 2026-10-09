@@ -6,7 +6,6 @@ import { LayersPanel } from "./layers";
 import { PropertiesPanel } from "./properties";
 import { AiPanel } from "./ai";
 import { Theme } from "@/components/common/theme-manager/types";
-import { Layers as LayersIcon, Settings, Sparkles } from "lucide-react";
 import { ResponsiveDevice } from "../toolbar/responsive";
 
 interface SideBarProps {
@@ -46,7 +45,7 @@ export function Sidebar({
       >
         <TabsList className="grid w-full grid-cols-4 rounded-none border-b px-2 h-14">
           <TabsTrigger value="ai" className="flex items-center px-2 text-xs">
-            <Sparkles className="h-4 w-4 mr-1.5" /> AI
+            AI
           </TabsTrigger>
           <TabsTrigger
             value="elements"
@@ -58,14 +57,12 @@ export function Sidebar({
             value="layers"
             className="flex items-center px-2 text-xs"
           >
-            <LayersIcon className="h-4 w-4 mr-1.5" />
             Layers
           </TabsTrigger>
           <TabsTrigger
             value="properties"
             className="flex items-center px-2 text-xs"
           >
-            <Settings className="h-4 w-4 mr-1.5" />
             Properties
           </TabsTrigger>
         </TabsList>

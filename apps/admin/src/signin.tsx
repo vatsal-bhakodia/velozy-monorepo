@@ -27,7 +27,7 @@ export default function SignIn() {
       .then((result) => {
         if (cancelled) return;
         if (!result.projects?.length) navigate("/onboard", { replace: true });
-        else if (builderDestination?.startsWith("/page-builder/builder"))
+        else if (builderDestination?.startsWith("/page-builder"))
           window.location.replace(builderDestination);
         else navigate(destination, { replace: true });
       })

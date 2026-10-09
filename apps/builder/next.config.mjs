@@ -7,6 +7,7 @@ const nextConfig = {
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY,
   },
   experimental: { externalDir: true },
+  transpilePackages: ["@velozy/site-chrome"],
 };
 
 export default nextConfig;

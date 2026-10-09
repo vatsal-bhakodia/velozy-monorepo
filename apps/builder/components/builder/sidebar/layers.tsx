@@ -3,7 +3,7 @@
 import { Layers, useLayer } from "@craftjs/layers";
 import { useEditor } from "@craftjs/core";
 import { ChevronDown, Eye, EyeOff, Settings2 } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 
 function BuilderLayer({
   children,
@@ -18,7 +18,7 @@ function BuilderLayer({
     children: layerChildren,
     expanded,
     connectors: { layer, drag, layerHeader },
-    actions: { toggleLayer },
+    actions: { toggleLayer, setExpandedState },
   } = useLayer((layerState) => ({
     expanded: layerState.expanded,
   }));
@@ -35,66 +35,75 @@ function BuilderLayer({
     },
   );
 
+  useEffect(() => {
+    if (id === "ROOT" && !expanded) setExpandedState(true);
+  }, [id, expanded, setExpandedState]);
+
   if (!layerChildren) return null;
 
   return (
     <div
       ref={(element) => {
-        if (element) layer(element);
+        if (element) {
+          layer(element);
+          if (id === "ROOT") layerHeader(element);
+        }
       }}
       className={`builder-layer ${selected ? "is-selected" : ""}`}
     >
-      <div
-        ref={(element) => {
-          if (element) drag(element);
-        }}
-        className="builder-layer-row"
-        style={{ paddingLeft: `${10 + depth * 14}px` }}
-      >
-        <button
-          type="button"
-          className="builder-layer-visibility"
-          aria-label={hidden ? `Show ${displayName}` : `Hide ${displayName}`}
-          onClick={() => actions.setHidden(id, !hidden)}
-        >
-          {hidden ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
-        </button>
+      {id !== "ROOT" && (
         <div
           ref={(element) => {
-            if (element) layerHeader(element);
+            if (element) drag(element);
           }}
-          className="builder-layer-header"
+          className="builder-layer-row"
+          style={{ paddingLeft: `${10 + Math.max(0, depth - 1) * 14}px` }}
         >
-          <span className="builder-layer-name">{displayName}</span>
           <button
             type="button"
-            className="builder-layer-settings"
-            aria-label={`Open properties for ${displayName}`}
-            onClick={(event) => {
-              event.stopPropagation();
-              actions.selectNode(id);
-              onOpenProperties();
-            }}
+            className="builder-layer-visibility"
+            aria-label={hidden ? `Show ${displayName}` : `Hide ${displayName}`}
+            onClick={() => actions.setHidden(id, !hidden)}
           >
-            <Settings2 aria-hidden="true" />
+            {hidden ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
           </button>
-          {hasChildren && (
+          <div
+            ref={(element) => {
+              if (element) layerHeader(element);
+            }}
+            className="builder-layer-header"
+          >
+            <span className="builder-layer-name">{displayName}</span>
             <button
               type="button"
-              className={`builder-layer-chevron ${expanded ? "is-expanded" : ""}`}
-              aria-label={`${expanded ? "Collapse" : "Expand"} ${displayName}`}
-              aria-expanded={expanded}
-              onMouseDown={(event) => {
+              className="builder-layer-settings"
+              aria-label={`Open properties for ${displayName}`}
+              onClick={(event) => {
                 event.stopPropagation();
-                toggleLayer();
+                actions.selectNode(id);
+                onOpenProperties();
               }}
-              onClick={(event) => event.stopPropagation()}
             >
-              <ChevronDown aria-hidden="true" />
+              <Settings2 aria-hidden="true" />
             </button>
-          )}
+            {hasChildren && (
+              <button
+                type="button"
+                className={`builder-layer-chevron ${expanded ? "is-expanded" : ""}`}
+                aria-label={`${expanded ? "Collapse" : "Expand"} ${displayName}`}
+                aria-expanded={expanded}
+                onMouseDown={(event) => {
+                  event.stopPropagation();
+                  toggleLayer();
+                }}
+                onClick={(event) => event.stopPropagation()}
+              >
+                <ChevronDown aria-hidden="true" />
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
       {expanded && <div className="builder-layer-children">{children}</div>}
     </div>
   );

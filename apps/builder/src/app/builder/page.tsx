@@ -65,7 +65,7 @@ function BuilderInner() {
 
   // State management
   const [viewport, setViewport] = useState<Viewport>(VIEWPORT_PRESETS.desktop);
-  const [activeTab, setActiveTab] = useState("elements");
+  const [activeTab, setActiveTab] = useState("ai");
   const [isLoading, setIsLoading] = useState(false);
   const [contentReady, setContentReady] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
@@ -146,10 +146,12 @@ function BuilderInner() {
 
   // Project and theme state (loaded from DB)
   const [projectId, setProjectId] = useState<string | null>(null);
+  const [liveSiteUrl, setLiveSiteUrl] = useState<string | null>(null);
   const [initialTheme, setInitialTheme] = useState<Theme | null>(null);
 
   // Fetch project theme from DB when we have a pageId
   useEffect(() => {
+    setLiveSiteUrl(null);
     if (!pageId || isGenerating) return;
 
     const fetchProjectTheme = async () => {
@@ -167,6 +169,11 @@ function BuilderInner() {
         const projRes = await fetch(`/api/admin/projects?projectId=${pid}`);
         if (!projRes.ok) return;
         const projData = await projRes.json();
+        setLiveSiteUrl(
+          typeof projData.project?.publicUrl === "string"
+            ? projData.project.publicUrl
+            : null,
+        );
         const dbTheme = projData.project?.designPreference?.theme;
         if (dbTheme) {
           setInitialTheme(dbTheme);
@@ -339,6 +346,8 @@ function BuilderInner() {
         setCustomThemes={setCustomThemes}
         onThemeChange={handleThemeChange}
         onSave={handleSave}
+        liveSiteUrl={liveSiteUrl}
+        onSitePublished={setLiveSiteUrl}
       />
 
       <div className="flex flex-1">

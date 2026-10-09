@@ -81,12 +81,7 @@ export function FontManager({
             <SelectContent className="max-h-[300px]">
               {headingFonts.map((font) => (
                 <SelectItem key={font.tailwindClass} value={font.tailwindClass}>
-                  <div className="flex flex-col text-left">
-                    <span>{font.name}</span>
-                    <span className="text-[10px] text-neutral-500">
-                      {font.category}
-                    </span>
-                  </div>
+                  {font.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -107,12 +102,7 @@ export function FontManager({
             <SelectContent className="max-h-[300px]">
               {bodyFonts.map((font) => (
                 <SelectItem key={font.tailwindClass} value={font.tailwindClass}>
-                  <div className="flex flex-col text-left">
-                    <span>{font.name}</span>
-                    <span className="text-[10px] text-neutral-500">
-                      {font.category}
-                    </span>
-                  </div>
+                  {font.name}
                 </SelectItem>
               ))}
             </SelectContent>

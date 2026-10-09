@@ -101,7 +101,7 @@ export default function ThemeSelectorModal({
           </Button>
           <Button
             onClick={handleApply}
-            className="gap-2 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white border-0 p-2"
+            className="gap-2 bg-gradient border-0 p-2 text-white transition-[filter] duration-200 hover:brightness-110"
           >
             Apply Theme
             <Paintbrush className="w-5 h-5" />

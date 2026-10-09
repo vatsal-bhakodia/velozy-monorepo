@@ -25,9 +25,14 @@ import { usePublish } from "@/hooks/usePublish";
 interface PublishDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onPublished: (url: string) => void;
 }
 
-export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
+export function PublishDialog({
+  open,
+  onOpenChange,
+  onPublished,
+}: PublishDialogProps) {
   const [copied, setCopied] = useState(false);
 
   const {
@@ -40,7 +45,8 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
   } = usePublish();
 
   const handlePublish = async () => {
-    await publish();
+    const result = await publish();
+    if (result.success && result.url) onPublished(result.url);
   };
 
   const handleCopyUrl = async () => {
