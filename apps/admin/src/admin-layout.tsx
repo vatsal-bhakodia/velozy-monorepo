@@ -36,6 +36,11 @@ function getAdminPageTitle(pathname: string, search = "") {
   if (pathname === "/media") return "Media Library";
   if (pathname === "/pages") return "Pages";
   if (pathname === "/content-collections") return "Content Collections";
+  if (pathname.startsWith("/content-collections/")) {
+    if (pathname.includes("/records/"))
+      return pathname.endsWith("/new") ? "Add Record" : "Edit Record";
+    return pathname.endsWith("/new") ? "New Collection" : "Edit Collection";
+  }
   if (pathname === "/blogs") return "Blog Posts";
   if (pathname === "/blog-categories") return "Blog Categories";
   if (pathname.startsWith("/blogs/")) {

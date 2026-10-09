@@ -85,6 +85,17 @@ export function adminCustomCollectionsRouter(
     response.json({ collections });
   });
 
+  router.get(
+    "/content-collections/:collectionId",
+    async (request, response) => {
+      const collection = await collectionFor(
+        request,
+        request.params.collectionId,
+      );
+      response.json({ collection });
+    },
+  );
+
   router.post("/content-collections", async (request, response) => {
     const input = collectionInput.safeParse(request.body);
     if (!input.success)
@@ -304,6 +315,31 @@ export function adminCustomCollectionsRouter(
         })
         .returning();
       response.status(201).json({ record });
+    },
+  );
+
+  router.get(
+    "/content-collections/:collectionId/records/:recordId",
+    async (request, response) => {
+      const collection = await collectionFor(
+        request,
+        request.params.collectionId,
+      );
+      const recordId = idSchema.safeParse(request.params.recordId);
+      if (!recordId.success)
+        throw new HttpError(
+          400,
+          "Valid record ID is required",
+          "validation_error",
+        );
+      const record = await db.query.customCollectionRecords.findFirst({
+        where: and(
+          eq(schema.customCollectionRecords.id, recordId.data),
+          eq(schema.customCollectionRecords.collectionId, collection.id),
+        ),
+      });
+      if (!record) throw new HttpError(404, "Record not found");
+      response.json({ record, collection });
     },
   );
 

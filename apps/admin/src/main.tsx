@@ -46,6 +46,8 @@ const Product = page("products/slug");
 const ProductAttributes = page("product/attributes");
 const Collections = page("collections/index");
 const ContentCollections = page("content-collections");
+const ContentCollectionSchema = page("content-collections/schema");
+const ContentCollectionRecord = page("content-collections/record");
 const Collection = page("collections/slug");
 const CommerceCarts = page("commerce/carts");
 const CommerceCart = page("commerce/carts-id");
@@ -153,6 +155,19 @@ function App() {
                   {r("/product-attributes", ProductAttributes)}
                   {r("/collections", Collections)}
                   {r("/collections/:slug", Collection)}
+                  {r("/content-collections/new", ContentCollectionSchema)}
+                  {r(
+                    "/content-collections/:collectionId/edit",
+                    ContentCollectionSchema,
+                  )}
+                  {r(
+                    "/content-collections/:collectionId/records/new",
+                    ContentCollectionRecord,
+                  )}
+                  {r(
+                    "/content-collections/:collectionId/records/:recordId/edit",
+                    ContentCollectionRecord,
+                  )}
                   {r("/content-collections", ContentCollections)}
                   <Route
                     path="/product-categories"
