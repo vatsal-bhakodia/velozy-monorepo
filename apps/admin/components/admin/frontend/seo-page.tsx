@@ -956,13 +956,13 @@ export function SeoKeywordPage({ data }: { data: SeoWorkspaceData }) {
           shared SEO data budget.
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
-          <input
+          <Input
             value={serpKeyword}
             onChange={(event) => setSerpKeyword(event.target.value)}
             maxLength={120}
             required
             placeholder="Enter a keyword"
-            className="h-9 min-w-64 flex-1 rounded-md border border-neutral-300 bg-white px-3 text-sm dark:border-neutral-700 dark:bg-neutral-950"
+            className="min-w-64 flex-1"
           />
           <Button
             type="submit"
@@ -1134,28 +1134,30 @@ export function SeoCompetitorPage({ data }: { data: SeoWorkspaceData }) {
               : "Find competitors"}
         </Button>
       </div>
-      <RecordTable
-        contained
-        title="Backlink competitors"
-        description="DataForSEO Domain Rank is not comparable to Ahrefs DR. Competitor domains are external sites, not project records."
-        data={competitors}
-        columns={[
-          { header: "Domain", accessor: "domain" },
-          { header: "Domain Rank", accessor: "rank" },
-          { header: "Common keywords", accessor: "commonKeywords" },
-          { header: "Organic keywords", accessor: "organicKeywords" },
-          { header: "Backlinks", accessor: "backlinks" },
-          { header: "Referring domains", accessor: "referringDomains" },
-        ]}
-        loading={loading}
-        exportName="seo-competitors"
-        emptyState={{
-          icon: BarChart3,
-          message: "No competitor data loaded",
-          description:
-            "Run an on-demand competitor analysis for the verified project domain.",
-        }}
-      />
+      <div className="mt-6">
+        <RecordTable
+          contained
+          title="Backlink competitors"
+          description="DataForSEO Domain Rank is not comparable to Ahrefs DR. Competitor domains are external sites, not project records."
+          data={competitors}
+          columns={[
+            { header: "Domain", accessor: "domain" },
+            { header: "Domain Rank", accessor: "rank" },
+            { header: "Common keywords", accessor: "commonKeywords" },
+            { header: "Organic keywords", accessor: "organicKeywords" },
+            { header: "Backlinks", accessor: "backlinks" },
+            { header: "Referring domains", accessor: "referringDomains" },
+          ]}
+          loading={loading}
+          exportName="seo-competitors"
+          emptyState={{
+            icon: BarChart3,
+            message: "No competitor data loaded",
+            description:
+              "Run an on-demand competitor analysis for the verified project domain.",
+          }}
+        />
+      </div>
     </div>
   );
 }
@@ -1257,13 +1259,13 @@ export function SeoAiPage({ data }: { data: SeoWorkspaceData }) {
         </p>
         <label className="mt-4 block max-w-md text-xs font-medium text-neutral-600 dark:text-neutral-300">
           Optional target keyword
-          <input
+          <Input
             value={keyword}
             onChange={(event) => setKeyword(event.target.value)}
             maxLength={120}
             list="seo-search-console-keywords"
             placeholder="Use a Search Console query or planned keyword"
-            className="mt-1 h-9 w-full rounded-md border border-neutral-300 bg-white px-3 text-sm dark:border-neutral-700 dark:bg-neutral-950"
+            className="mt-1"
           />
           <datalist id="seo-search-console-keywords">
             {data.searchRows.map((row) => (
