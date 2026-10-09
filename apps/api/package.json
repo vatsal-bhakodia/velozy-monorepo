@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsup src/index.ts --format esm --dts --out-dir dist",
+    "build": "tsup src/index.ts --format esm --dts --out-dir dist && node scripts/copy-prompts.mjs",
     "start": "node dist/index.js",
     "test": "node --import tsx --test src/lib/inventory-pagination.test.ts src/lib/growth.test.ts src/lib/custom-domains.test.ts src/lib/custom-collections.test.ts src/lib/platform-billing.test.ts src/routes/admin/commerce.inventory.test.ts src/routes/admin/enquiries.test.ts src/routes/admin/operations.dashboard.test.ts src/routes/admin/seo.test.ts src/routes/admin/seo-campaign.test.ts src/routes/admin/migration.test.ts",
     "typecheck": "tsc --noEmit"

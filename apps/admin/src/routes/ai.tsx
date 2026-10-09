@@ -23,6 +23,7 @@ type Message = {
   role: "user" | "assistant";
   content: string;
   attachments?: Attachment[];
+  operations?: Array<{ type?: string; product?: Record<string, unknown>; blog?: Record<string, unknown> }>;
 };
 type Chat = { id: string; title: string; messages: Message[] };
 
@@ -77,6 +78,7 @@ export default function AdminAiPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
+  const [applyingProducts, setApplyingProducts] = useState(false);
   const [error, setError] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
   const [chats, setChats] = useState<Chat[]>([]);
@@ -84,13 +86,19 @@ export default function AdminAiPage() {
   const previewUrls = useRef(new Set<string>());
 
   useEffect(() => {
-    void apiFetch("/api/admin/ai/chats")
+    setMessages([]);
+    setChatId(null);
+    if (!selectedProjectId) {
+      setChats([]);
+      return;
+    }
+    void apiFetch(`/api/admin/ai/chats?projectId=${encodeURIComponent(selectedProjectId)}`)
       .then((response) => (response.ok ? response.json() : null))
       .then((data) => {
         if (data?.chats) setChats(data.chats);
       });
     return () => previewUrls.current.forEach((url) => URL.revokeObjectURL(url));
-  }, []);
+  }, [selectedProjectId]);
 
   const startNewChat = () => {
     setMessages([]);
@@ -101,11 +109,14 @@ export default function AdminAiPage() {
   };
 
   const saveChat = async (nextMessages: Message[]) => {
+    if (!selectedProjectId) return;
     const response = await apiFetch("/api/admin/ai/chats", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         chatId,
+        projectId: selectedProjectId,
+        surface: "admin",
         messages: nextMessages
           .slice(-2)
           .map(({ role, content, attachments }) => ({
@@ -166,6 +177,7 @@ export default function AdminAiPage() {
       const assistantMessage: Message = {
         role: "assistant",
         content: `${data.message || "I’m ready to help with your site."}${operationText}`,
+        operations,
       };
       const nextMessages = [...messages, userMessage, assistantMessage];
       setMessages((current) => [...current, assistantMessage]);
@@ -175,6 +187,39 @@ export default function AdminAiPage() {
       setError(cause instanceof Error ? cause.message : "AI request failed");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const saveDraftRecords = async (operations: Message["operations"]) => {
+    if (!selectedProjectId || applyingProducts) return;
+    const records = (operations || []).filter((operation) =>
+      (operation.type === "create_product" && operation.product?.name) ||
+      (operation.type === "create_blog" && operation.blog?.title),
+    );
+    if (!records.length) return;
+    if (!window.confirm(`Save ${records.length} product or blog record${records.length === 1 ? "" : "s"} as drafts?`)) return;
+    setApplyingProducts(true);
+    try {
+      for (const operation of records) {
+        const isProduct = operation.type === "create_product";
+        const response = await apiFetch(isProduct ? "/api/admin/products" : "/api/admin/blogs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            projectId: selectedProjectId,
+            ...(isProduct ? operation.product : operation.blog),
+            status: "draft",
+            ...(isProduct ? { isActive: false } : {}),
+          }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Could not save a product draft");
+      }
+      setMessages((current) => [...current, { role: "assistant", content: `Saved ${records.length} draft record${records.length === 1 ? "" : "s"}. Review them in the Products or Blogs area before publishing.` }]);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Could not save product drafts");
+    } finally {
+      setApplyingProducts(false);
     }
   };
 
@@ -240,7 +285,7 @@ export default function AdminAiPage() {
                 </div>
               )}
               <div
-                className={`max-w-[80%] whitespace-pre-wrap rounded-xl px-4 py-3 text-sm ${message.role === "user" ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900" : "bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"}`}
+                className={`relative max-w-[85%] whitespace-pre-wrap rounded-lg px-4 py-3 text-sm ${message.role === "user" ? "rounded-tr-none bg-[#cbe1f9] text-blue-950 after:absolute after:-right-1.5 after:top-0 after:h-2.5 after:w-2.5 after:bg-[#cbe1f9] after:[clip-path:polygon(0_100%,0_0,100%_0)] after:content-['']" : "rounded-tl-none bg-white text-neutral-800 before:absolute before:-left-1.5 before:top-0 before:h-2.5 before:w-2.5 before:bg-white before:[clip-path:polygon(100%_100%,100%_0,0_0)] before:content-[''] dark:bg-[#303236] dark:text-neutral-100 dark:before:bg-[#303236]"}`}
               >
                 {message.attachments?.length ? (
                   <div className="mb-2 grid gap-1.5 sm:grid-cols-2">
@@ -271,6 +316,16 @@ export default function AdminAiPage() {
                 ) : null}
                 {message.content}
               </div>
+              {message.role === "assistant" && message.operations?.some((operation) => ["create_product", "create_blog"].includes(operation.type || "")) && (
+                <button
+                  type="button"
+                  onClick={() => void saveDraftRecords(message.operations)}
+                  disabled={applyingProducts || !selectedProjectId}
+                  className="self-end rounded-lg border border-cyan-300 bg-white px-3 py-2 text-xs font-medium text-cyan-800 transition hover:bg-cyan-50 disabled:opacity-50 dark:border-cyan-800 dark:bg-neutral-900 dark:text-cyan-200"
+                >
+                  {applyingProducts ? "Saving drafts…" : "Review and save drafts"}
+                </button>
+              )}
               {message.role === "user" && (
                 <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-neutral-200 text-neutral-500 dark:border-neutral-700">
                   <UserRound className="h-4 w-4" />

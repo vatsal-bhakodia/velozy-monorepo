@@ -46,6 +46,7 @@ export const aiChats = pgTable(
     projectId: uuid("project_id").references(() => projects.id, {
       onDelete: "cascade",
     }),
+    surface: varchar("surface", { length: 30 }).notNull().default("admin"),
     title: varchar("title", { length: 255 }).notNull().default("New chat"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -53,6 +54,10 @@ export const aiChats = pgTable(
   (table) => ({
     userUpdated: index("ai_chats_user_updated_idx").on(
       table.userId,
+      table.updatedAt,
+    ),
+    projectUpdated: index("ai_chats_project_updated_idx").on(
+      table.projectId,
       table.updatedAt,
     ),
   }),

@@ -27,6 +27,7 @@ import {
   decryptCredentials,
 } from "../../lib/integration-secrets.js";
 import { generateAIText } from "../../lib/process-prompt.js";
+import { loadPrompt } from "../../lib/prompts.js";
 import { HttpError } from "../../middleware/errors.js";
 import { flushGrowthUsage } from "../../lib/growth.js";
 import { googleJson, googleToken } from "../../lib/google-search-console.js";
@@ -1169,7 +1170,7 @@ export function adminGrowthRouter(
         clientKey,
         action: "generate_content_brief",
       }, () => generateAIText(
-          "Return JSON with title and explanation for one conservative website growth recommendation. Only use the supplied measurements. Never predict percentage lift or invent causal claims. Keep title under 120 characters and explanation under 500. If evidence is insufficient, say so.",
+          loadPrompt("growth-recommendation.md"),
           [{ type: "text", text: JSON.stringify(evidence) }],
           "chat",
         ));

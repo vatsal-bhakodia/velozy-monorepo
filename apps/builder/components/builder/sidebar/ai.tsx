@@ -3,7 +3,6 @@
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useEditor } from "@craftjs/core";
 import {
-  Bot,
   FileText,
   Loader2,
   Mic,
@@ -18,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Theme } from "@/components/common/theme-manager/types";
 import { sectionToReactElements } from "@/lib/sectionToReactElements";
-import { normalizeGeneratedFormFields } from "@/src/legacy-lib/form-utils";
+import { normalizeGeneratedFormFields } from "@/lib/form-utils";
 import { BuilderElements } from "@/components/builder/elements";
 import { AiLoadingSection } from "@/components/builder/elements/ai-loading-section";
 import { refreshTailwind } from "@/components/builder/canvas";
@@ -149,6 +148,7 @@ export function AiPanel({
   const [prompt, setPrompt] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [chatId, setChatId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [error, setError] = useState("");
@@ -157,6 +157,28 @@ export function AiPanel({
   const recognitionRef = useRef<any>(null);
   const chatPreviewUrlsRef = useRef(new Set<string>());
   const pendingRecordMediaRef = useRef<any[]>([]);
+
+  useEffect(() => {
+    setMessages([]);
+    setChatId(null);
+    if (!projectId) return;
+    let active = true;
+    void fetch(`/api/admin/ai/chats?projectId=${encodeURIComponent(projectId)}`)
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => {
+        if (!active) return;
+        const chat = data?.chats?.find((item: any) => item.surface === "builder");
+        if (!chat) return;
+        setChatId(chat.id);
+        setMessages((chat.messages || []).slice().reverse().map((item: any) => ({
+          role: item.role,
+          content: item.content,
+          attachments: (item.attachments || []).map((attachment: any) => ({ name: attachment.name, kind: attachment.kind })),
+        })));
+      })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, [projectId]);
 
   const linkForms = async (section: any, sectionName = "AI generated") => {
     const visit = async (node: any): Promise<void> => {
@@ -571,7 +593,7 @@ export function AiPanel({
         "A project is required before media can be added to a record.",
       );
     const uploaded: any[] = [];
-    for (const file of recordFiles) {
+    for (const file of recordFiles.filter((candidate) => candidate.type.startsWith("image/"))) {
       const body = new FormData();
       body.append("projectId", projectId);
       body.append("file", file);
@@ -620,6 +642,7 @@ export function AiPanel({
     operations: any[],
     pending: PendingCanvasState,
     uploadedMedia: any[] = [],
+    sourceFiles: string[] = [],
   ) => {
     for (const operation of operations) {
       if (
@@ -655,7 +678,9 @@ export function AiPanel({
       ) {
         try {
           query.node(operation.nodeId).get();
-          actions.delete(operation.nodeId);
+          if (window.confirm("Delete this section from the page? This change can be undone with Undo.")) {
+            actions.delete(operation.nodeId);
+          }
         } catch {
           /* skip */
         }
@@ -687,6 +712,9 @@ export function AiPanel({
         )) {
           const tree = query.parseReactElement(element).toNodeTree();
           actions.addNodeTree(tree, pending.parentId || "ROOT", insertionIndex);
+          actions.setCustom(tree.rootNodeId, (custom: Record<string, unknown>) => {
+            custom.displayName = String(operation.name || "New section").slice(0, 80);
+          });
           scrollToNode(tree.rootNodeId);
           revealNode(tree.rootNodeId);
           if (insertionIndex !== undefined) insertionIndex += 1;
@@ -731,18 +759,21 @@ export function AiPanel({
           body: JSON.stringify({
             projectId,
             ...operation.product,
-            status: isShownByPageCollection
-              ? "published"
-              : operation.product.status,
-            isActive: isShownByPageCollection
-              ? true
-              : operation.product.isActive,
+            status: "draft",
+            isActive: false,
             isFeatured: isShownByFeaturedCollection
               ? true
               : operation.product.isFeatured,
             images: Array.from(
               new Set([...uploadedImageUrls, ...modelImageUrls]),
             ),
+            ...(sourceFiles.length ? {
+              sourceMetadata: {
+                ...(operation.product.sourceMetadata && typeof operation.product.sourceMetadata === "object" ? operation.product.sourceMetadata : {}),
+                source: "ai_assistant_attachment",
+                files: sourceFiles,
+              },
+            } : {}),
           }),
         });
         if (!response.ok)
@@ -751,6 +782,14 @@ export function AiPanel({
           );
         pendingRecordMediaRef.current = [];
         refreshMatchingCollections("products");
+      }
+      if (operation.type === "create_blog" && projectId && operation.blog?.title) {
+        const response = await fetch("/api/admin/blogs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectId, ...operation.blog, status: "draft" }),
+        });
+        if (!response.ok) throw new Error((await response.json()).error || "Could not create the blog draft");
       }
     }
     refreshTailwind();
@@ -781,7 +820,7 @@ export function AiPanel({
       if (
         RECORD_CREATE_INTENT.test(text) &&
         !VISUAL_ADD_TARGET.test(text) &&
-        outgoingFiles.length
+        outgoingFiles.some((file) => file.type.startsWith("image/"))
       ) {
         const newlyUploaded = await uploadRecordMedia(outgoingFiles);
         uploadedMedia = [...uploadedMedia, ...newlyUploaded].filter(
@@ -848,15 +887,43 @@ export function AiPanel({
         throw new Error(
           data.error || "The assistant could not complete that request.",
         );
-      await applyOperations(
-        data.operations || [],
-        pendingCanvas,
-        uploadedMedia,
-      );
+      const operations = Array.isArray(data.operations) ? data.operations : [];
+      const productImportCount = operations.filter((operation: any) => operation.type === "create_product").length;
+      const blogImportCount = operations.filter((operation: any) => operation.type === "create_blog").length;
+      const importCount = productImportCount + blogImportCount;
+      const requiresImportConfirmation = outgoingFiles.some((file) => file.type === "application/pdf") && importCount > 1;
+      const importApproved = !requiresImportConfirmation || window.confirm(`Save ${importCount} draft records from the attached document?`);
+      if (importApproved) await applyOperations(operations, pendingCanvas, uploadedMedia, outgoingFiles.filter((file) => file.type === "application/pdf").map((file) => file.name));
+      const assistantMessage = {
+        role: "assistant" as const,
+        content: importApproved ? data.message : `I found ${importCount} records in the document. I did not save them; you can ask me to import them when you are ready.`,
+      };
+      const nextMessages: ChatMessage[] = [
+        ...messages,
+        { role: "user" as const, content: text, attachments },
+        assistantMessage,
+      ];
       setMessages((current) => [
         ...current,
-        { role: "assistant", content: data.message },
+        assistantMessage,
       ]);
+      if (projectId) {
+        const saved = await fetch("/api/admin/ai/chats", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chatId,
+            projectId,
+            surface: "builder",
+            messages: nextMessages.slice(-2).map(({ role, content, attachments: attached }) => ({
+              role,
+              content,
+              attachments: attached?.map(({ name, kind }: ChatAttachment) => ({ name, kind })),
+            })),
+          }),
+        });
+        if (saved.ok) setChatId((await saved.json()).chatId);
+      }
     } catch (requestError) {
       const message =
         requestError instanceof Error
@@ -948,15 +1015,12 @@ export function AiPanel({
         className="min-h-0 flex-1 overflow-y-auto px-3 py-4"
       >
         {messages.length === 0 && (
-          <div className="flex items-start gap-2.5">
-            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800">
-              <Bot className="h-3.5 w-3.5 text-cyan-500 dark:text-cyan-400" />
-            </span>
-            <div className="max-w-[82%] rounded-lg rounded-tl-sm border border-neutral-200 bg-neutral-100 px-3 py-2.5 dark:border-neutral-700 dark:bg-neutral-800">
-              <p className="text-xs leading-relaxed text-neutral-700 dark:text-neutral-200">
+          <div className="flex items-start">
+            <div className="relative max-w-[85%] rounded-lg rounded-tl-none bg-white px-4 py-3 text-neutral-800 before:absolute before:-left-1.5 before:top-0 before:h-2.5 before:w-2.5 before:bg-white before:[clip-path:polygon(100%_100%,100%_0,0_0)] before:content-[''] dark:bg-[#303236] dark:text-neutral-100 dark:before:bg-[#303236]">
+              <p className="text-xs leading-relaxed text-neutral-800 dark:text-neutral-100">
                 What would you like to change?
               </p>
-              <p className="mt-1.5 text-[11px] leading-relaxed text-neutral-500 dark:text-neutral-400">
+              <p className="mt-1.5 text-[11px] leading-relaxed text-neutral-800 dark:text-neutral-100">
                 Select an element for a focused edit, or ask me to update the
                 entire page. You can also attach an image or PDF as a reference.
               </p>
@@ -969,21 +1033,17 @@ export function AiPanel({
               key={index}
               className={`flex items-start gap-2.5 ${message.role === "user" ? "flex-row-reverse" : ""}`}
             >
-              <span
-                className={`grid h-7 w-7 shrink-0 place-items-center rounded-md border ${message.role === "user" ? "border-neutral-300 bg-neutral-200 dark:border-neutral-600 dark:bg-neutral-700" : "border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800"}`}
-              >
-                {message.role === "user" ? (
+              {message.role === "user" && (
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-neutral-300 bg-neutral-200 dark:border-neutral-600 dark:bg-neutral-700">
                   <UserRound className="h-3.5 w-3.5 text-neutral-600 dark:text-neutral-300" />
-                ) : (
-                  <Bot className="h-3.5 w-3.5 text-cyan-500 dark:text-cyan-400" />
-                )}
-              </span>
+                </span>
+              )}
               <div
-                className={`max-w-[82%] overflow-hidden rounded-lg border text-xs leading-relaxed ${message.role === "user" ? "rounded-tr-sm border-neutral-600 bg-neutral-700 text-white dark:border-neutral-600 dark:bg-neutral-700" : "rounded-tl-sm border-neutral-200 bg-neutral-100 text-neutral-700 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"}`}
+                className={`relative max-w-[85%] rounded-lg px-4 py-3 text-xs leading-relaxed ${message.role === "user" ? "rounded-tr-none bg-[#cbe1f9] text-blue-950 after:absolute after:-right-1.5 after:top-0 after:h-2.5 after:w-2.5 after:bg-[#cbe1f9] after:[clip-path:polygon(0_100%,0_0,100%_0)] after:content-['']" : "rounded-tl-none bg-white text-neutral-800 before:absolute before:-left-1.5 before:top-0 before:h-2.5 before:w-2.5 before:bg-white before:[clip-path:polygon(100%_100%,100%_0,0_0)] before:content-[''] dark:bg-[#303236] dark:text-neutral-100 dark:before:bg-[#303236]"}`}
               >
                 {message.attachments && message.attachments.length > 0 && (
                   <div
-                    className={`grid gap-1.5 p-1.5 ${message.attachments.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}
+                    className={`grid gap-1.5 ${message.attachments.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}
                   >
                     {message.attachments.map((attachment, attachmentIndex) =>
                       attachment.kind === "image" && attachment.previewUrl ? (
@@ -1011,16 +1071,13 @@ export function AiPanel({
                     )}
                   </div>
                 )}
-                <p className="px-3 py-2.5">{message.content}</p>
+                <p>{message.content}</p>
               </div>
             </div>
           ))}
           {isLoading && (
-            <div className="flex items-start gap-2.5">
-              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800">
-                <Bot className="h-3.5 w-3.5 text-cyan-500 dark:text-cyan-400" />
-              </span>
-              <div className="flex items-center gap-2 rounded-lg rounded-tl-sm border border-neutral-200 bg-neutral-100 px-3 py-2.5 text-xs text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400">
+            <div className="flex items-start">
+              <div className="relative flex items-center gap-2 rounded-lg rounded-tl-none bg-white px-4 py-3 text-xs text-neutral-800 before:absolute before:-left-1.5 before:top-0 before:h-2.5 before:w-2.5 before:bg-white before:[clip-path:polygon(100%_100%,100%_0,0_0)] before:content-[''] dark:bg-[#303236] dark:text-neutral-100 dark:before:bg-[#303236]">
                 <Loader2 className="h-3.5 w-3.5 animate-spin text-cyan-500 dark:text-cyan-400" />{" "}
                 Applying your changes…
               </div>

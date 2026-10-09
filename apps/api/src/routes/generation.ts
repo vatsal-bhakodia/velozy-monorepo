@@ -1,26 +1,30 @@
 import { Router } from "express";
 import type { Router as ExpressRouter } from "express";
-import { COMPONENT_REVISION_PROMPT } from "../constants/component-revision-prompt.js";
-import { SECTIONS_STRUCTURE_PROMPT } from "../constants/sections-structure-prompt.js";
-import { THEME_PROMPT } from "../constants/theme-prompt.js";
-import { PAGES_STRUCTURE_PROMPT } from "../constants/pages-structure-prompt.js";
-import { SECTION_HTML_PROMPT } from "../constants/section-html-prompt.js";
-import { DYNAMIC_SECTION_PROMPT } from "../constants/dynamic-section-prompt.js";
 import { extractHtml, htmlToSectionJson } from "../lib/html-to-section-json.js";
-import { processPrompt } from "../lib/process-prompt.js";
-import { generateAIText, type AIInputPart } from "../lib/process-prompt.js";
-import { BUILDER_ASSISTANT_PROMPT } from "../constants/builder-assistant-prompt.js";
+import { createTextEmbedding, generateAIText, processPrompt, type AIInputPart } from "../lib/process-prompt.js";
+import { loadPrompt } from "../lib/prompts.js";
+import { getFontClassesForPrompt } from "../constants/fonts.js";
 import multer from "multer";
 import { extractJson } from "../lib/utils.js";
 import { HttpError } from "../middleware/errors.js";
 import type { RequestHandler } from "express";
-import { and, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { createDb, schema } from "@velozy/db";
 import type { Environment } from "../config/env.js";
 import { adminAccess } from "../lib/admin-auth.js";
 import { collectionFieldsSchema, collectionKey, compatibleFields, validateCollectionValues } from "../lib/custom-collections.js";
 import { requireProjectPlanLimit, withAiCredits, withRequestAiCredits } from "../lib/platform-billing.js";
+
+const COMPONENT_REVISION_PROMPT = loadPrompt("component-revision.md");
+const SECTIONS_STRUCTURE_PROMPT = loadPrompt("sections-structure.md");
+const THEME_PROMPT = loadPrompt("theme.md").replace("{{AVAILABLE_FONT_CLASSES}}", getFontClassesForPrompt());
+const PAGES_STRUCTURE_PROMPT = loadPrompt("pages-structure.md");
+const SECTION_HTML_PROMPT = loadPrompt("section-html.md");
+const DYNAMIC_SECTION_PROMPT = loadPrompt("dynamic-section.md");
+const BUILDER_ASSISTANT_PROMPT = loadPrompt("builder-assistant.md");
+const DESIGN_SYSTEM_PROMPT = loadPrompt("site-design-system.md");
+const SECTION_PLACEMENT_PROMPT = loadPrompt("section-placement.md");
 
 const BLOCKED_PROPS = new Set([
   "children",
@@ -65,6 +69,78 @@ function validString(value: unknown, maximum = 5000): value is string {
   );
 }
 
+const chromeClassName = (value: unknown): value is string =>
+  typeof value === "string" &&
+  value.length <= 600 &&
+  /^[A-Za-z0-9\s:/._%#[\](),!\-]+$/.test(value);
+
+function sanitizeSiteChrome(value: any) {
+  const navbarKeys = ["wrapperClassName", "innerClassName", "brandClassName", "linksClassName", "linkClassName", "mobileClassName", "mobileToggleClassName"];
+  const footerKeys = ["wrapperClassName", "innerClassName", "brandClassName", "linksClassName", "linkClassName"];
+  if (!value || value.version !== 1 || !value.navbar || !value.footer ||
+    !navbarKeys.every((key) => chromeClassName(value.navbar[key])) ||
+    !footerKeys.every((key) => chromeClassName(value.footer[key])) ||
+    typeof value.footer.description !== "string" || value.footer.description.length > 300 ||
+    typeof value.footer.copyright !== "string" || value.footer.copyright.length > 160) {
+    throw new HttpError(502, "AI returned an invalid site chrome design", "invalid_generation_output");
+  }
+  return {
+    version: 1 as const,
+    navbar: Object.fromEntries(navbarKeys.map((key) => [key, value.navbar[key]])),
+    footer: {
+      ...Object.fromEntries(footerKeys.map((key) => [key, value.footer[key]])),
+      description: value.footer.description,
+      copyright: value.footer.copyright,
+    },
+  };
+}
+
+function sanitizeNavigation(value: any) {
+  if (!Array.isArray(value?.menus) || value.menus.length !== 2 ||
+    value.locations?.header !== "header" || value.locations?.footer !== "footer") {
+    throw new HttpError(502, "AI returned invalid navigation menus", "invalid_generation_output");
+  }
+  const menuIds = new Set<string>();
+  const itemIds = new Set<string>();
+  const menus = value.menus.map((menu: any) => {
+    if (!menu || !["header", "footer"].includes(menu.id) || menuIds.has(menu.id) ||
+      typeof menu.name !== "string" || menu.name.length > 100 ||
+      !Array.isArray(menu.items) || menu.items.length > 12) {
+      throw new HttpError(502, "AI returned invalid navigation menus", "invalid_generation_output");
+    }
+    menuIds.add(menu.id);
+    const items = menu.items.map((item: any) => {
+      if (!item || typeof item.id !== "string" || !/^[a-z0-9-]{1,80}$/i.test(item.id) ||
+        itemIds.has(item.id) || !validString(item.label, 60) ||
+        typeof item.url !== "string" || item.url.length > 255 ||
+        !item.url.startsWith("/") || item.url.startsWith("//") || /[\\\s<>"']/.test(item.url)) {
+        throw new HttpError(502, "AI returned an invalid navigation link", "invalid_generation_output");
+      }
+      itemIds.add(item.id);
+      if (item.parentId !== undefined && (typeof item.parentId !== "string" || !/^[a-z0-9-]{1,80}$/i.test(item.parentId))) {
+        throw new HttpError(502, "AI returned an invalid navigation link", "invalid_generation_output");
+      }
+      return {
+        id: item.id,
+        label: item.label.trim(),
+        url: item.url,
+        ...(item.parentId ? { parentId: item.parentId } : {}),
+      };
+    });
+    if (items.some((item: any) => item.parentId && (
+      item.parentId === item.id ||
+      !items.some((parent: any) => parent.id === item.parentId && !parent.parentId)
+    ))) {
+      throw new HttpError(502, "AI returned invalid navigation nesting", "invalid_generation_output");
+    }
+    return { id: menu.id, name: menu.name.trim(), items };
+  });
+  if (!menuIds.has("header") || !menuIds.has("footer")) {
+    throw new HttpError(502, "AI returned invalid navigation menus", "invalid_generation_output");
+  }
+  return { menus, locations: { header: "header", footer: "footer" } };
+}
+
 function sanitizeSection(section: any) {
   if (
     !section ||
@@ -98,7 +174,7 @@ function sanitizeSection(section: any) {
       key: z.string().trim().min(1).max(80),
       description: z.string().trim().max(2000).optional(),
       fields: collectionFieldsSchema,
-      initialRecords: z.array(z.record(z.string(), z.unknown())).min(1).max(8),
+      initialRecords: z.array(z.record(z.string(), z.unknown())).max(8).default([]),
     }).safeParse(section.dynamic.collection);
     if (!parsed.success) throw new HttpError(502, "AI returned an invalid collection schema", "invalid_generation_output");
     collection = { ...parsed.data, key: collectionKey(parsed.data.key) };
@@ -157,13 +233,21 @@ const structure = (db: ReturnType<typeof createDb>, projectAccess: ReturnType<ty
   const result = await withRequestAiCredits(db, request, projectAccess, "generate_content_brief", async () => {
     const parsed = JSON.parse(extractJson(await processPrompt(SECTIONS_STRUCTURE_PROMPT, prompt, "chat", { disableReasoning: true })));
     if (!Array.isArray(parsed?.sections) || parsed.sections.length < 1 || parsed.sections.length > 12) throw new HttpError(502, "AI did not return a usable homepage structure. Please retry.", "invalid_generation_output");
-    const sections = parsed.sections.map(sanitizeSection);
+    const sections = parsed.sections.map(sanitizeSection).filter((section: any) =>
+      !/(?:^|[-_\s])footer(?:$|[-_\s])/i.test(`${section.id} ${section.name}`),
+    );
+    if (!sections.length) throw new HttpError(502, "AI returned no page sections after moving the footer to shared site chrome.", "invalid_generation_output");
     const ids = new Set<string>();
     for (const section of sections) {
       if (ids.has(section.id)) throw new HttpError(502, "AI returned duplicate homepage section IDs. Please retry.", "invalid_generation_output");
       ids.add(section.id);
     }
-    return { sections, success: true };
+    return {
+      sections,
+      siteChrome: sanitizeSiteChrome(parsed.siteChrome),
+      navigation: sanitizeNavigation(parsed.navigation),
+      success: true,
+    };
   });
   response.json(result);
 };
@@ -250,13 +334,48 @@ const theme = (db: ReturnType<typeof createDb>, projectAccess: ReturnType<typeof
   response.json(result);
 };
 
+const generateDesignSystem = (db: ReturnType<typeof createDb>, projectAccess: ReturnType<typeof adminAccess>['project']): RequestHandler => async (request, response) => {
+  const projectId = z.string().uuid().safeParse(request.body?.projectId);
+  if (!projectId.success || !request.auth?.userId) throw new HttpError(400, "Project and login are required", "project_required");
+  const project = await projectAccess(projectId.data, request.auth.userId, "content:write");
+  const preference = (project.designPreference as Record<string, any> | null) || {};
+  if (typeof preference.designSystem === "string" && preference.designSystem.trim()) {
+    return response.json({ designSystem: preference.designSystem, reused: true });
+  }
+  const generated = await withRequestAiCredits(db, request, projectAccess, "generate_content_brief", async () => {
+    const result = await generateAIText(
+      DESIGN_SYSTEM_PROMPT,
+      [{ type: "text", text: JSON.stringify({ name: project.name, industry: project.industry, designPreference: preference }) }],
+      "chat",
+    );
+    const document = result.trim();
+    if (!document || document.length > 12000) throw new HttpError(502, "AI returned an invalid design system", "invalid_generation_output");
+    return document;
+  });
+  const designSystem = await db.transaction(async (tx) => {
+    const [current] = await tx.select({ designPreference: schema.projects.designPreference }).from(schema.projects).where(eq(schema.projects.id, projectId.data)).for("update");
+    const currentPreference = (current?.designPreference as Record<string, any> | null) || {};
+    if (typeof currentPreference.designSystem === "string" && currentPreference.designSystem.trim()) return currentPreference.designSystem;
+    await tx.update(schema.projects).set({
+      designPreference: { ...currentPreference, designSystem: generated, designSystemUpdatedAt: new Date().toISOString() },
+      updatedAt: new Date(),
+    }).where(eq(schema.projects.id, projectId.data));
+    return generated;
+  });
+  response.json({ designSystem, reused: false });
+};
+
 const section = (db: ReturnType<typeof createDb>, projectAccess: ReturnType<typeof adminAccess>['project']): RequestHandler => async (request, response) => {
-  const { prompt, sectionId, sectionName, sectionDescription, themeColors, kind, dynamicConfig, projectId } = request.body ?? {};
+  const { prompt, sectionId, sectionName, sectionDescription, themeColors, kind, dynamicConfig, projectId, neighborSections = [] } = request.body ?? {};
   if (!validString(prompt) || !validString(sectionId, 255) || !validString(sectionName, 255) || !validString(sectionDescription, 2000) || !themeColors || typeof themeColors !== "object" || Array.isArray(themeColors))
     throw new HttpError(400, "Missing or invalid section parameters");
   const validProjectId = z.string().uuid().safeParse(projectId);
   if (!validProjectId.success || !request.auth?.userId) throw new HttpError(400, "Project and login are required to generate a section", "project_required");
-  await projectAccess(validProjectId.data, request.auth.userId, "content:write");
+  const project = await projectAccess(validProjectId.data, request.auth.userId, "content:write");
+  const neighbors = z.array(z.object({ name: z.string().max(120), description: z.string().max(500), position: z.enum(["before", "after"]) })).max(24).safeParse(neighborSections);
+  if (!neighbors.success) throw new HttpError(400, "Invalid neighboring section context");
+  const designPreference = (project.designPreference as Record<string, any> | null) || {};
+  const designSystem = typeof designPreference.designSystem === "string" ? designPreference.designSystem.slice(0, 12000) : "";
   const clientKey = request.header("idempotency-key");
   if (!clientKey || clientKey.length > 255) throw new HttpError(400, "An Idempotency-Key is required for AI generation", "idempotency_key_required");
 
@@ -265,7 +384,7 @@ const section = (db: ReturnType<typeof createDb>, projectAccess: ReturnType<type
     if (!sources.has(dynamicConfig.source)) throw new HttpError(400, "Invalid dynamic section source");
     let collectionId: string | undefined;
     if (dynamicConfig.source === "custom") {
-      const parsedCollection = z.object({ name: z.string().trim().min(1).max(120), key: z.string().trim().min(1).max(80), description: z.string().trim().max(2000).optional(), fields: collectionFieldsSchema, initialRecords: z.array(z.record(z.string(), z.unknown())).min(1).max(8) }).safeParse(dynamicConfig.collection);
+      const parsedCollection = z.object({ name: z.string().trim().min(1).max(120), key: z.string().trim().min(1).max(80), description: z.string().trim().max(2000).optional(), fields: collectionFieldsSchema, initialRecords: z.array(z.record(z.string(), z.unknown())).max(8).default([]) }).safeParse(dynamicConfig.collection);
       if (!parsedCollection.success) throw new HttpError(400, "Invalid dynamic collection proposal", "validation_error");
       const proposed = { ...parsedCollection.data, key: collectionKey(parsedCollection.data.key) };
       for (const record of proposed.initialRecords) {
@@ -294,7 +413,7 @@ const section = (db: ReturnType<typeof createDb>, projectAccess: ReturnType<type
       });
     }
     const config = await withAiCredits(db, { projectId: validProjectId.data, actorId: request.auth.userId, clientKey, action: "generate_section" }, async () => {
-      const generated = await processPrompt(`${DYNAMIC_SECTION_PROMPT}\nSection: ${sectionName}\nDescription: ${sectionDescription}\nSource: ${dynamicConfig.source}\nLayout: ${dynamicConfig.layout}\nCustom field keys: ${dynamicConfig.source === "custom" ? JSON.stringify(dynamicConfig.collection.fields.map((field: any) => field.key)) : "none"}\nTheme: ${JSON.stringify(themeColors)}`, prompt, "coding");
+      const generated = await processPrompt(`${DYNAMIC_SECTION_PROMPT}\nSection: ${sectionName}\nDescription: ${sectionDescription}\nSource: ${dynamicConfig.source}\nLayout: ${dynamicConfig.layout}\nCustom field keys: ${dynamicConfig.source === "custom" ? JSON.stringify(dynamicConfig.collection.fields.map((field: any) => field.key)) : "none"}\nTheme: ${JSON.stringify(themeColors)}\nDesign system:\n${designSystem || "Not saved yet; follow the confirmed theme."}\nNeighboring page sections: ${JSON.stringify(neighbors.data)}`, prompt, "coding");
       return JSON.parse(extractJson(generated));
     });
     return response.json({ section: {
@@ -312,7 +431,7 @@ const section = (db: ReturnType<typeof createDb>, projectAccess: ReturnType<type
   }
 
   const parsed = await withAiCredits(db, { projectId: validProjectId.data, actorId: request.auth.userId, clientKey, action: "generate_section" }, async () => {
-    const generated = await processPrompt(`${SECTION_HTML_PROMPT}\nSection to Generate:\n- ID: ${sectionId}\n- Name: ${sectionName}\n- Description: ${sectionDescription}\n- Theme Colors: ${JSON.stringify(themeColors)}`, prompt, "coding");
+    const generated = await processPrompt(`${SECTION_HTML_PROMPT}\nSection to Generate:\n- ID: ${sectionId}\n- Name: ${sectionName}\n- Description: ${sectionDescription}\n- Theme Colors: ${JSON.stringify(themeColors)}\n- Design system:\n${designSystem || "Not saved yet; follow the confirmed theme."}\n- Neighboring page sections: ${JSON.stringify(neighbors.data)}\nKeep this section composition distinct from adjacent sections while matching the site's palette, typography, spacing, and component style.`, prompt, "coding");
     const html = extractHtml(generated);
     if (!html) throw new Error("AI returned empty section HTML");
     const result = await enrichSectionImages(htmlToSectionJson(html, sectionId));
@@ -329,10 +448,13 @@ const builderAssistant = (db: ReturnType<typeof createDb>, projectAccess: Return
   const mode = String(request.body?.mode || "generate");
   if (!validString(prompt) || context.length > 120_000 || history.length > 12_000) throw new HttpError(400, "Invalid builder request");
   const parsedContext = JSON.parse(context);
+  const validProjectId = z.string().uuid().safeParse(request.body?.projectId);
+  if (!validProjectId.success || !request.auth?.userId) throw new HttpError(400, "Select a project before using the assistant", "project_required");
+  const project = await projectAccess(validProjectId.data, request.auth.userId, "content:read");
   if (mode === "placement") {
     const sections = Array.isArray(parsedContext.sections) ? parsedContext.sections.slice(0, 100) : [];
     const result = await withRequestAiCredits(db, request, projectAccess, "generate_ai_followup_text", async () => {
-      const answer = await generateAIText("Choose the insertion point for a new website section. Return JSON only: {\"index\": number, \"replaceNodeId\": string|null, \"reason\": string}.", [{ type: "text", text: `Sections: ${JSON.stringify(sections)}\nRequest: ${prompt}` }], "chat");
+      const answer = await generateAIText(SECTION_PLACEMENT_PROMPT, [{ type: "text", text: `Sections: ${JSON.stringify(sections)}\nRequest: ${prompt}` }], "chat");
       const placement = JSON.parse(extractJson(answer));
       const replacement = sections.find((item: any) => item.nodeId === placement.replaceNodeId);
       const raw = Number(placement.index);
@@ -341,7 +463,30 @@ const builderAssistant = (db: ReturnType<typeof createDb>, projectAccess: Return
     return response.json(result);
   }
 
-  const parts: AIInputPart[] = [{ type: "text", text: `Recent conversation:\n${history}\nRelevant page context:\n${context}\nUser request:\n${prompt}` }];
+  const recentMessages = await db.select({ role: schema.aiChatMessages.role, content: schema.aiChatMessages.content, surface: schema.aiChats.surface })
+    .from(schema.aiChatMessages)
+    .innerJoin(schema.aiChats, eq(schema.aiChatMessages.chatId, schema.aiChats.id))
+    .where(and(eq(schema.aiChats.projectId, validProjectId.data), eq(schema.aiChats.userId, request.auth.userId)))
+    .orderBy(desc(schema.aiChatMessages.createdAt)).limit(16);
+  let retrieved = recentMessages.reverse().map((item) => `[${item.surface}] ${item.role}: ${item.content}`).join("\n");
+  try {
+    const embedding = await createTextEmbedding(prompt);
+    if (embedding) {
+      const vectorLiteral = `[${embedding.join(",")}]`;
+      const chunks = await db.select({ content: schema.aiContextChunks.content })
+        .from(schema.aiContextChunks)
+        .innerJoin(schema.aiChats, eq(schema.aiContextChunks.chatId, schema.aiChats.id))
+        .where(and(eq(schema.aiChats.projectId, validProjectId.data), eq(schema.aiChats.userId, request.auth.userId), sql`${schema.aiContextChunks.embedding} IS NOT NULL`))
+        .orderBy(sql`${schema.aiContextChunks.embedding} <=> ${vectorLiteral}::vector`)
+        .limit(5);
+      if (chunks.length) retrieved += `\nSemantically related saved context:\n${chunks.map((chunk) => chunk.content).join("\n")}`;
+    }
+  } catch (error) {
+    console.warn("AI history embedding retrieval unavailable:", error);
+  }
+  const designPreference = (project.designPreference as Record<string, any> | null) || {};
+  const designSystem = typeof designPreference.designSystem === "string" ? designPreference.designSystem.slice(0, 12000) : "";
+  const parts: AIInputPart[] = [{ type: "text", text: `Recent conversation from this project across assistant surfaces:\n${retrieved || history}\nStored design system:\n${designSystem || "No confirmed design system is saved."}\nRelevant page context:\n${context}\nUser request:\n${prompt}` }];
   for (const file of (request.files || []) as Express.Multer.File[]) {
     if (!["application/pdf", "image/png", "image/jpeg", "image/webp", "image/gif"].includes(file.mimetype)) throw new HttpError(400, "Unsupported attachment type");
     const dataUrl = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
@@ -354,7 +499,7 @@ const builderAssistant = (db: ReturnType<typeof createDb>, projectAccess: Return
     for (const [index, operation] of (Array.isArray(plan.operations) ? plan.operations.slice(0, 12) : []).entries()) {
       if (operation?.type === "add_section" && typeof operation.html === "string") {
         operations.push({ type: "add_section", name: typeof operation.name === "string" ? operation.name : "New section", index: Number.isFinite(Number(operation.index)) ? Number(operation.index) : undefined, section: await enrichSectionImages(htmlToSectionJson(operation.html, `ai-${Date.now()}-${index}`)) });
-      } else if (["update_node", "delete_node", "set_theme", "create_product"].includes(operation?.type)) operations.push(operation);
+      } else if (["update_node", "delete_node", "set_theme", "create_product", "create_blog"].includes(operation?.type)) operations.push(operation);
     }
     return { message: typeof plan.message === "string" ? plan.message : "Your changes are ready.", operations };
   });
@@ -398,5 +543,6 @@ export function generationRouter(environment: Environment, requireAuth: RequestH
     .post("/generate/section", requireAuth, rateLimiter, section(db, project))
     .post("/generate/builder-assistant", requireAuth, rateLimiter, assistantUpload, builderAssistant(db, project))
     .post("/generate/theme", requireAuth, rateLimiter, theme(db, project))
+    .post("/generate/design-system", requireAuth, rateLimiter, generateDesignSystem(db, project))
     .post("/get-image", requireAuth, rateLimiter, image);
 }

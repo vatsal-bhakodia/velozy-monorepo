@@ -30,6 +30,7 @@ const create = z.object({
   lowStockThreshold: z.coerce.number().int().min(0).optional(),
   trackInventory: z.boolean().optional(),
   status: z.enum(["draft", "published", "private"]).optional(),
+  sourceMetadata: z.unknown().optional(),
 });
 export function adminProductsRouter(env: Environment): ExpressRouter {
   const db = createDb(env.DATABASE_URL),

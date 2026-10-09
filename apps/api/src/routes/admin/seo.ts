@@ -10,6 +10,7 @@ import { HttpError } from "../../middleware/errors.js";
 import { adminAccess } from "../../lib/admin-auth.js";
 import { googleJson, googleToken } from "./growth.js";
 import { processPrompt } from "../../lib/process-prompt.js";
+import { loadPrompt } from "../../lib/prompts.js";
 import { requestAiIdempotencyKey, withAiCredits } from "../../lib/platform-billing.js";
 import { postDataForSeo } from "../../lib/dataforseo-client.js";
 import { reserveSeoProviderBudget, settleSeoProviderBudget } from "../../lib/seo-provider-budget.js";
@@ -1196,7 +1197,7 @@ export function adminSeoRouter(
       clientKey: requestAiIdempotencyKey(request),
       action: "generate_metadata",
     }, () => processPrompt(
-      "You are an SEO editor. Return only a JSON object with keys after and rationale. Write accurate metadata based only on supplied content. Never invent product claims, prices, locations, or facts. Keep after within the requested character limit.",
+      loadPrompt("seo-editor.md"),
       JSON.stringify({
         field: input.data.field,
         characterLimit: maxLength,

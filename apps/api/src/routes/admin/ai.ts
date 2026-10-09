@@ -6,7 +6,10 @@ import { schema } from "@velozy/db";
 import type { Environment } from "../../config/env.js";
 import { HttpError } from "../../middleware/errors.js";
 import { adminAccess } from "../../lib/admin-auth.js";
-import { generateAIText } from "../../lib/process-prompt.js";
+import { createTextEmbedding, generateAIText } from "../../lib/process-prompt.js";
+import { loadPrompt } from "../../lib/prompts.js";
+
+const CHAT_TITLE_PROMPT = loadPrompt("chat-title.md");
 
 const message = z.object({
   role: z.enum(["user", "assistant"]),
@@ -14,12 +17,15 @@ const message = z.object({
   attachments: z.array(z.unknown()).max(4).optional(),
 });
 export function adminAIRouter(environment: Environment): ExpressRouter {
-  const { db, user } = adminAccess(environment.DATABASE_URL);
+  const { db, user, project } = adminAccess(environment.DATABASE_URL);
   const router = Router();
   router.get("/ai/chats", async (req, res) => {
     const current = await user(req);
+    const projectId = z.string().uuid().safeParse(req.query.projectId);
+    if (!projectId.success) throw new HttpError(400, "Select a project to view AI history", "project_required");
+    await project(projectId.data, current.id, "content:read");
     const chats = await db.query.aiChats.findMany({
-      where: eq(schema.aiChats.userId, current.id),
+      where: and(eq(schema.aiChats.userId, current.id), eq(schema.aiChats.projectId, projectId.data)),
       orderBy: [desc(schema.aiChats.updatedAt)],
     });
     const result = await Promise.all(
@@ -38,16 +44,21 @@ export function adminAIRouter(environment: Environment): ExpressRouter {
     const body = z
       .object({
         chatId: z.string().uuid().optional(),
+        projectId: z.string().uuid(),
+        surface: z.enum(["admin", "builder", "onboarding"]),
         messages: z.array(message).min(1).max(20),
       })
       .safeParse(req.body);
     if (!body.success)
       throw new HttpError(400, "Messages are required", "validation_error");
+    await project(body.data.projectId, current.id, "content:write");
     let chat = body.data.chatId
       ? await db.query.aiChats.findFirst({
           where: and(
             eq(schema.aiChats.id, body.data.chatId),
             eq(schema.aiChats.userId, current.id),
+            eq(schema.aiChats.projectId, body.data.projectId),
+            eq(schema.aiChats.surface, body.data.surface),
           ),
         })
       : undefined;
@@ -60,7 +71,7 @@ export function adminAIRouter(environment: Environment): ExpressRouter {
         title =
           (
             await generateAIText(
-              "Create a concise 3-6 word title. Return only the title.",
+              CHAT_TITLE_PROMPT,
               [{ type: "text", text: titleSource }],
               "chat",
             )
@@ -73,17 +84,31 @@ export function adminAIRouter(environment: Environment): ExpressRouter {
       }
       [chat] = await db
         .insert(schema.aiChats)
-        .values({ userId: current.id, title })
+        .values({ userId: current.id, projectId: body.data.projectId, surface: body.data.surface, title })
         .returning();
     }
-    await db.insert(schema.aiChatMessages).values(
+    const savedMessages = await db.insert(schema.aiChatMessages).values(
       body.data.messages.map((item) => ({
         chatId: chat!.id,
         role: item.role,
         content: item.content,
         attachments: item.attachments ?? null,
       })),
-    );
+    ).returning();
+    for (const saved of savedMessages) {
+      try {
+        const embedding = await createTextEmbedding(saved.content);
+        await db.insert(schema.aiContextChunks).values({
+          chatId: chat!.id,
+          messageId: saved.id,
+          content: saved.content.slice(0, 8000),
+          embedding,
+          metadata: { surface: body.data.surface, role: saved.role },
+        });
+      } catch (error) {
+        console.warn("Could not index AI conversation message:", error);
+      }
+    }
     await db
       .update(schema.aiChats)
       .set({ updatedAt: new Date() })

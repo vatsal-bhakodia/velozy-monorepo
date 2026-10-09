@@ -39,6 +39,16 @@ function getOpenAIClient(): OpenAI {
   return new OpenAI({ apiKey });
 }
 
+export async function createTextEmbedding(text: string): Promise<number[] | null> {
+  if (!process.env.OPENAI_API_KEY?.trim() || !text.trim()) return null;
+  const result = await getOpenAIClient().embeddings.create({
+    model: "text-embedding-3-small",
+    input: text.slice(0, 8000),
+    dimensions: 1536,
+  });
+  return result.data[0]?.embedding ?? null;
+}
+
 function parseDataUrl(dataUrl: string): { mimeType: string; data: string } {
   const match = /^data:([^;,]+);base64,(.+)$/s.exec(dataUrl);
   if (!match) throw new Error("AI attachment must be a base64 data URL");
