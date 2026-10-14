@@ -7,14 +7,14 @@ These instructions cover documentation organization and maintenance. They do not
 | Document | Purpose |
 | --- | --- |
 | `docs/README.md` | Documentation index and contributor entry point. |
-| `docs/admin-design.md` | Single visual and interaction guide for admin pages. |
-| `docs/marketing-design.md` | Visual and interaction guidance for marketing pages. |
+| `docs/style/admin-design.md` | Single visual and interaction guide for admin pages. |
+| `docs/style/marketing-design.md` | Visual and interaction guidance for marketing pages. |
 | `docs/platform-billing.md` | Platform subscription billing setup and operations. |
 | `docs/pricing_config.json` | Canonical product pricing and plan-limit configuration. |
 | `docs/marketing-site-expansion.md` | Marketing site expansion requirements and phases. |
-| `docs/ai/assistant.md` | Unified AI assistant behavior, harness architecture, implementation phases, and production readiness. |
-| `docs/ai/seo-specialist.md` | SEO specialist product specification and implementation blueprint. |
-| `docs/onboarding/reliability.md` | Onboarding input, generation, subscription, and paid-module requirements. |
+| `docs/features/assistant.md` | Unified AI assistant behavior, harness architecture, implementation phases, and production readiness. |
+| `docs/features/agentic-seo-manual.md` | Canonical SEO engine design, algorithms, implementation milestones, safety gates, and verification plan. |
+| `docs/features/onboarding.md` | Onboarding input, generation, subscription, and paid-module requirements. |
 | `apps/api/prompts/*.md` | Runtime instructions for individual AI tasks. These are loaded by the API and are not product-planning documents. |
 | `apps/*/components/README.md` | Local component ownership and migration notes for each app. |
 

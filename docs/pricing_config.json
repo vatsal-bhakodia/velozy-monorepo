@@ -46,7 +46,7 @@
   "foundation_plans": [
     {
       "id": "free", "name": "Free", "prices": {"india": {"monthly": 0, "annual_total": 0, "annual_monthly_equivalent": 0}, "international": {"monthly": 0, "annual_total": 0, "annual_monthly_equivalent": 0}},
-      "included_ai_credits_per_month": 0, "one_time_trial_ai_credits": 50, "paid_credits_purchase_allowed": false,
+      "included_ai_credits_per_month": 0, "one_time_trial_ai_credits": 100, "paid_credits_purchase_allowed": false,
       "limits": {"published_sites": 1, "published_pages": 1, "custom_domains": 0, "media_storage_gb": 0.5, "team_editors_including_owner": 1, "bandwidth_gb_per_month": 5},
       "features": ["velozy_subdomain", "branding_required", "responsive_builder", "basic_forms", "manual_onpage_seo", "seo_sitemap", "ssl"],
       "purchase_modules_allowed": false
