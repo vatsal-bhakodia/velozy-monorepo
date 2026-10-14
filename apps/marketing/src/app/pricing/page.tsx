@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import Header from "@/components/landing/header";
 import Pricing from "@/components/landing/pricing";
 import FAQ from "@/components/landing/faq";
-import Footer from "@/components/landing/footer";
 
 export const metadata: Metadata = {
   title: "Pricing Plans | Velozy",
@@ -19,10 +17,8 @@ export default async function PricingPage() {
 
   return (
     <main className="font-[var(--font-montserrat)] min-h-screen overflow-x-clip bg-black text-white">
-      <Header />
       <Pricing initialRegion={initialRegion} />
       <FAQ />
-      <Footer />
     </main>
   );
 }

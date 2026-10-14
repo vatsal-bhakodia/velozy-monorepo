@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
-import { supabase, useSession } from "@/src/lib/auth";
+import { getRememberSession, setRememberSession, supabase, useSession } from "@/src/lib/auth";
 import { apiFetch } from "@/src/lib/api";
 import { AuthLayout } from "@/src/auth-layout";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,8 @@ export default function SignIn() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [rememberMe, setRememberMe] = useState(getRememberSession);
   const destination = (location.state as { from?: string } | null)?.from ?? "/";
   const builderDestination = new URLSearchParams(location.search).get("next");
 
@@ -49,6 +51,7 @@ export default function SignIn() {
     setSubmitting(true);
     setError("");
     const form = new FormData(event.currentTarget);
+    setRememberSession(rememberMe);
     try {
       const { error: authError } = await supabase.auth.signInWithPassword({
         email: String(form.get("email")),
@@ -64,6 +67,7 @@ export default function SignIn() {
 
   async function signInWithGoogle() {
     setError("");
+    setRememberSession(rememberMe);
     const { error: authError } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: `${window.location.origin}/auth/callback` },
@@ -73,12 +77,9 @@ export default function SignIn() {
 
   return (
     <AuthLayout
-      eyebrow="Your workspace awaits"
-      headline="Build something"
-      mutedHeadline="worth sharing."
-      description="Pick up where you left off and turn your next idea into a polished website with Velozy."
       title="Welcome back"
       subtitle="Sign in to your account to continue"
+      footer={<p>Don&apos;t have an account? <Link to="/signup" className="font-medium text-cyan-300 hover:text-cyan-100">Sign up</Link></p>}
     >
       {error && (
         <p
@@ -101,8 +102,10 @@ export default function SignIn() {
               name="email"
               type="email"
               autoComplete="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
               placeholder="Enter your email"
-              className="h-10 w-full rounded-md border border-transparent bg-white/[0.035] pl-10 pr-3 text-sm text-white placeholder:text-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/30"
+              className="h-11 w-full rounded-md border border-white/[0.08] bg-white/[0.08] pl-10 pr-3 text-sm text-white placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/40"
             />
           </div>
         </div>
@@ -122,7 +125,7 @@ export default function SignIn() {
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               placeholder="Enter your password"
-              className="h-10 w-full rounded-md border border-transparent bg-white/[0.035] pl-10 pr-10 text-sm text-white placeholder:text-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/30"
+              className="h-11 w-full rounded-md border border-white/[0.08] bg-white/[0.08] pl-10 pr-10 text-sm text-white placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/40"
             />
             <button
               type="button"
@@ -137,6 +140,13 @@ export default function SignIn() {
               )}
             </button>
           </div>
+        </div>
+        <div className="flex items-center justify-between gap-4 text-sm">
+          <label htmlFor="signin-remember" className="inline-flex cursor-pointer items-center gap-2 text-white/65">
+            <input id="signin-remember" type="checkbox" checked={rememberMe} onChange={(event) => setRememberMe(event.target.checked)} className="h-4 w-4 rounded border-white/25 bg-white/10 accent-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/50" />
+            Remember me
+          </label>
+          <Link to="/forgot-password" className="text-white/60 hover:text-cyan-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/40">Forgot password?</Link>
         </div>
         <Button
           type="submit"
@@ -153,17 +163,11 @@ export default function SignIn() {
           )}
         </Button>
       </form>
-      <div className="relative text-center text-xs uppercase">
-        <div className="absolute inset-x-0 top-1/2 border-t border-white/40" />
-        <span className="relative bg-[#090d13] px-2 text-white/40">
-          Or continue with
-        </span>
-      </div>
       <button
         type="button"
         onClick={signInWithGoogle}
         disabled={submitting}
-        className="flex h-10 w-full items-center justify-center rounded-md border border-transparent bg-white/[0.04] text-sm font-medium text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/40 disabled:opacity-50"
+        className="flex h-11 w-full items-center justify-center rounded-md bg-white/[0.04] text-sm font-medium text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/40 disabled:opacity-50"
       >
         <img
           src="/icons/google.svg"
@@ -174,15 +178,6 @@ export default function SignIn() {
         />
         Continue with Google
       </button>
-      <p className="text-center text-sm">
-        Don&apos;t have an account?{" "}
-        <Link
-          to="/signup"
-          className="font-medium text-cyan-300 hover:text-cyan-100"
-        >
-          Sign up
-        </Link>
-      </p>
     </AuthLayout>
   );
 }

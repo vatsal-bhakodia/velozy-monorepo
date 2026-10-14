@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 const config: Config = {
   darkMode: ["class"],
@@ -64,13 +65,43 @@ const config: Config = {
         },
       },
       animation: {
+        "loading-dot": "loading-dot 1.2s ease-in-out infinite backwards",
+        "loading-dot-reduced": "loading-dot-reduced 1.2s ease-in-out infinite",
+        "steps-answer": "steps-reveal 0.5s 0.3s ease backwards",
+        "steps-content": "steps-reveal 0.5s 0.8s ease backwards",
+        "steps-page": "steps-reveal 0.5s ease backwards",
+        "steps-cursor": "steps-cursor-move 1.3s 1.2s ease",
+        "steps-published": "steps-reveal 0.6s 2.1s ease backwards",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "shiny-text": "shiny-text 8s infinite",
+        "shiny-text": "shiny-text 2.8s ease-in-out infinite",
         marquee: "marquee var(--duration) linear infinite",
         "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
       },
       keyframes: {
+        "loading-dot": {
+          "0%, 60%, 100%": {
+            opacity: "0.65",
+            transform: "scale(0.85)",
+          },
+          "30%": {
+            opacity: "1",
+            transform: "scale(1.15)",
+          },
+        },
+        "loading-dot-reduced": {
+          "0%, 100%": { opacity: "0.55" },
+          "50%": { opacity: "1" },
+        },
+        "steps-reveal": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        "steps-cursor-move": {
+          from: { transform: "translate(8px, 10px)" },
+          "60%": { transform: "translate(-24px, -30px)" },
+          to: { transform: "translate(0)" },
+        },
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -80,10 +111,10 @@ const config: Config = {
           to: { height: "0" },
         },
         "shiny-text": {
-          "0%, 90%, 100%": {
+          "0%": {
             "background-position": "calc(-100% - var(--shiny-width)) 0",
           },
-          "30%, 60%": {
+          "70%, 100%": {
             "background-position": "calc(100% + var(--shiny-width)) 0",
           },
         },
@@ -98,7 +129,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 };
 
 export default config;

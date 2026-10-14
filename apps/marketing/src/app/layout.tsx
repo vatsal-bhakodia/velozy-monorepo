@@ -2,6 +2,9 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import Header from "@/components/landing/header";
+import Footer from "@/components/landing/footer";
+// import PromotionBar from "@/components/landing/promotion-bar";
 
 // Load Montserrat
 const montserrat = Montserrat({
@@ -39,7 +42,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          {/* <PromotionBar /> Temporarily disabled. */}
+          <Header />
           {children}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

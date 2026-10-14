@@ -1,52 +1,54 @@
 import type { ReactNode } from "react";
-import { ArrowUpRight } from "lucide-react";
+import logo from "../../marketing/public/logo.svg";
 
 const marketingUrl = (import.meta.env.VITE_MARKETING_URL ?? "http://localhost:3000").replace(/\/$/, "");
+const authGradient = "radial-gradient(ellipse 112% 136% at 50% 114%, #010204 0%, #010204 35%, #030914 46%, #071d42 63%, #104d86 80%, #26aec7 90%, #d8fbff 97%, transparent 100%), linear-gradient(180deg, #010204 0%, #010204 100%)";
 
-export function AuthLayout({ eyebrow, headline, mutedHeadline, description, title, subtitle, children }: {
-  eyebrow: string;
-  headline: string;
-  mutedHeadline: string;
-  description: string;
+export function AuthGradientBackground() {
+  return <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+    <div className="absolute inset-0" style={{ backgroundImage: authGradient }} />
+    <div
+      className="absolute inset-0 opacity-[0.09] mix-blend-screen"
+      style={{ backgroundImage: "radial-gradient(rgba(255,255,255,.45) .65px, transparent .8px)", backgroundSize: "4px 4px" }}
+    />
+    <div className="absolute inset-0 bg-gradient-to-b from-white/[0.04] via-transparent to-black/40" />
+  </div>;
+}
+
+export function AuthLayout({ title, subtitle, children, footer }: {
   title: string;
   subtitle: string;
   children: ReactNode;
+  footer?: ReactNode;
 }) {
-  return <div className="min-h-screen bg-black text-white">
-    <header className="absolute left-0 right-0 top-4 z-20 mx-auto max-w-7xl rounded-2xl py-3">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 md:px-6">
-        <a href={marketingUrl} className="flex items-center gap-3 text-xl font-bold text-white">
-          <img src="/brand/logo.png" alt="" width="32" height="32" className="rounded-md shadow-lg" />
-          <span>Velozy</span>
+  return <div className="min-h-screen bg-black text-white lg:grid lg:h-screen lg:min-h-0 lg:grid-cols-2 lg:overflow-hidden">
+    <div className="hidden min-h-0 p-6 lg:block">
+      <div className="relative flex h-full items-end justify-center overflow-hidden rounded-2xl bg-[#03060b] lg:px-10 lg:pb-6">
+      <AuthGradientBackground />
+      <div className="relative z-10 max-w-lg text-left">
+        <blockquote>
+          <p className="text-4xl font-normal leading-[1.12] tracking-[-0.04em] text-white sm:text-5xl">“Think big, think fast, think ahead. Ideas are no one&apos;s monopoly.”</p>
+          <footer className="mt-5 text-sm font-medium tracking-[-0.01em] text-white/70">Dhirubhai Ambani</footer>
+        </blockquote>
+      </div>
+      </div>
+    </div>
+    <section className="flex min-h-screen flex-col lg:min-h-0">
+      <header className="flex h-24 shrink-0 items-center justify-center px-5 sm:px-8">
+        <a href={marketingUrl} aria-label="Velozy home" className="inline-flex rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300">
+          <img src={logo} alt="Velozy" width="140" height="35" className="h-8 w-auto brightness-0 invert" />
         </a>
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">
-          <a href={marketingUrl} className="text-base text-gray-300 hover:text-white">Home</a>
-          <a href={`${marketingUrl}/#features`} className="text-base text-gray-300 hover:text-white">Features</a>
-          <a href={`${marketingUrl}/pricing`} className="text-base text-gray-300 hover:text-white">Pricing</a>
-          <a href={`${marketingUrl}/#support`} className="text-base text-gray-300 hover:text-white">Support</a>
-        </nav>
-        <a href="/signin" className="bg-gradient hidden items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold text-white md:inline-flex">Sign In <ArrowUpRight className="h-4 w-4" /></a>
-      </div>
-    </header>
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black px-4 py-32 text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(34,211,238,0.14),transparent_32%),radial-gradient(circle_at_15%_75%,rgba(37,99,235,0.18),transparent_30%)]" />
-      <div className="relative z-10 grid w-full max-w-5xl items-center gap-16 lg:grid-cols-[1fr_420px]">
-        <div className="hidden max-w-lg lg:block">
-          <p className="mb-5 font-mono text-xs uppercase tracking-[0.22em] text-cyan-300">{eyebrow}</p>
-          <h1 className="text-6xl font-medium leading-[.95] tracking-[-.07em]">{headline}<br /><span className="text-white/45">{mutedHeadline}</span></h1>
-          <p className="mt-7 max-w-md text-base leading-7 text-white/50">{description}</p>
-        </div>
-        <section className="relative mt-10 w-full max-w-md rounded-xl border border-white/10 bg-[#090d13]/90 text-white shadow-[0_30px_100px_rgba(0,0,0,.45)]">
-          <div className="space-y-2 px-6 pb-4 pt-6 text-center">
+      </header>
+      <main className="flex flex-1 items-center justify-center px-5 py-8 sm:px-8 lg:min-h-0 lg:px-12">
+        <section className="w-full max-w-md text-white">
+          <div className="space-y-2 pb-8 text-center">
             <h2 className="text-3xl font-medium tracking-[-.05em]">{title}</h2>
-            <p className="text-sm text-white/50">{subtitle}</p>
+            <p className="text-sm text-white/55">{subtitle}</p>
           </div>
-          <div className="space-y-4 px-6 pb-6">{children}</div>
+          <div className="space-y-4">{children}</div>
         </section>
-      </div>
-    </main>
-    <footer className="border-t border-white/10 px-6 py-7 text-sm text-white/50">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4"><span>© {new Date().getFullYear()} Velozy</span><a href={marketingUrl} className="hover:text-white">Back to Velozy <ArrowUpRight className="inline h-4 w-4" /></a></div>
-    </footer>
+      </main>
+      {footer && <footer className="shrink-0 px-5 pb-12 text-center text-sm sm:px-8">{footer}</footer>}
+    </section>
   </div>;
 }

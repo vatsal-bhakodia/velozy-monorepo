@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+.landing-home-canvas {
+  background-color: #000;
+  background-image:
+    radial-gradient(ellipse 60% 42% at 50% 28%, rgb(8 145 178 / 0.09), transparent 75%),
+    radial-gradient(ellipse 46% 38% at 12% 56%, rgb(37 99 235 / 0.075), transparent 75%),
+    radial-gradient(ellipse 48% 40% at 88% 78%, rgb(8 145 178 / 0.055), transparent 75%);
+  background-attachment: fixed;
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -725,53 +734,6 @@ html.dark .ck.ck-color-grid__tile:focus {
 
 .animate-slideIn {
   animation: slideIn 0.4s ease-out;
-}
-
-.circle-grow {
-  opacity: 0;
-  transform: scale(0.5);
-  will-change: transform, opacity;
-}
-
-.circle-grow-active {
-  animation: circle-grow-in 2s cubic-bezier(0.1, 0.4, 0.2, 1) forwards;
-}
-
-@keyframes circle-grow-in {
-  from {
-    opacity: 0;
-    transform: scale(0.5);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes footer-zap-flip {
-  0%,
-  100% {
-    transform: perspective(1em) rotateY(0deg) scale(1);
-  }
-
-  50% {
-    transform: perspective(1em) rotateY(180deg) scale(0.72);
-  }
-}
-
-.footer-zap {
-  transform-origin: center;
-}
-
-.footer-logo.is-visible .footer-zap {
-  animation: footer-zap-flip 1.3s ease-in-out both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .footer-logo.is-visible .footer-zap {
-    animation: none;
-  }
 }
 
 .plan-grain {

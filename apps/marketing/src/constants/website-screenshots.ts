@@ -1,8 +1,6 @@
-export const websiteScreenshots = [
-  "/sample/1.avif",
-  "/sample/2.avif",
-  "/sample/3.avif",
-  "/sample/4.avif",
-  "/sample/5.avif",
-  "/sample/6.avif",
+export const websiteShowcaseSlides = [
+  { image: "/mockups/sample/1.webp" },
+  { image: "/mockups/sample/2.webp" },
+  { image: "/mockups/sample/3.webp" },
+  { image: "/mockups/sample/4.webp" },
 ];

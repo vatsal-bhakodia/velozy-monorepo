@@ -199,20 +199,20 @@ export default function Features() {
   return (
     <section
       id="features"
-      className="relative isolate overflow-hidden bg-black px-4 py-24 text-white sm:px-8 sm:py-28 lg:px-12 lg:py-36"
+      className="relative isolate scroll-mt-20 overflow-hidden px-5 py-20 text-white sm:px-8 sm:py-28 lg:px-[4.65vw]"
     >
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 -z-20 h-[48rem] bg-[radial-gradient(ellipse_at_50%_38%,rgba(34,211,238,0.14),transparent_38%),radial-gradient(ellipse_at_12%_68%,rgba(37,99,235,0.22),transparent_34%),radial-gradient(ellipse_at_88%_70%,rgba(99,102,241,0.18),transparent_34%)] blur-3xl"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-20 h-[48rem] bg-[radial-gradient(ellipse_at_50%_28%,rgba(34,211,238,.12),transparent_42%),radial-gradient(ellipse_at_12%_72%,rgba(37,99,235,.18),transparent_36%)] blur-3xl"
         aria-hidden="true"
       />
       <div
-        className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(rgba(100,180,220,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(100,180,220,0.06)_1px,transparent_1px)] bg-[size:54px_54px] opacity-30 [mask-image:linear-gradient(to_bottom,black,transparent_85%)]"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_50%_10%,rgba(34,211,238,.035),transparent_55%)]"
         aria-hidden="true"
       />
 
-      <div className="relative z-10 mx-auto max-w-[1280px]">
+      <div className="relative z-10 w-full">
         <div className="grid items-end gap-8 md:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.75fr)] md:gap-16">
-          <h2 className="pb-2 text-[3rem] font-medium leading-[.92] tracking-[-.07em] text-white sm:text-6xl lg:text-[5.25rem]">
+          <h2 className="pb-2 text-[clamp(2.5rem,6vw,5.2rem)] font-medium leading-[.94] tracking-[-.07em] text-white">
             More than templates,
             <span className="block w-fit bg-gradient-to-r from-white via-cyan-100 to-blue-400 bg-clip-text pr-[.08em] text-transparent">
               built to evolve.
@@ -234,7 +234,7 @@ export default function Features() {
           </div>
         </div>
 
-        <div className="mt-16 overflow-hidden rounded-[28px] border border-white/10 bg-white/10 shadow-[0_30px_100px_rgba(0,0,0,.45)] backdrop-blur-xl">
+        <div className="mt-14 overflow-hidden rounded-[24px] border border-white/[.12] bg-[#050505]/95 shadow-[0_24px_80px_rgba(0,0,0,.35)]">
           <GlowCardGroup className="glow-card-group-joined grid sm:grid-cols-2 lg:grid-cols-3">
             {features.map(([id, Icon, title, copy, label], index) => (
               <GlowCard

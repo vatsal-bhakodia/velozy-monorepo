@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, Plus, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { useState } from "react";
 
 const faqs = [
@@ -41,42 +41,29 @@ export default function FAQ() {
   return (
     <section
       id="faq"
-      className="relative isolate overflow-hidden bg-black px-4 py-24 text-white sm:px-8 sm:py-28 lg:px-12 lg:py-36"
+      className="relative isolate overflow-x-clip px-5 py-20 text-white sm:px-8 sm:py-28 lg:px-[4.65vw]"
     >
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 -z-20 h-[42rem] bg-[radial-gradient(ellipse_at_52%_38%,rgba(34,211,238,0.14),transparent_38%),radial-gradient(ellipse_at_12%_65%,rgba(37,99,235,0.22),transparent_34%),radial-gradient(ellipse_at_88%_70%,rgba(99,102,241,0.18),transparent_34%)] blur-3xl"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-20 h-[42rem] bg-[radial-gradient(ellipse_at_50%_28%,rgba(34,211,238,.12),transparent_42%),radial-gradient(ellipse_at_12%_72%,rgba(37,99,235,.18),transparent_36%)] blur-3xl"
         aria-hidden="true"
       />
       <div
-        className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(rgba(100,180,220,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(100,180,220,0.06)_1px,transparent_1px)] bg-[size:54px_54px] opacity-30 [mask-image:linear-gradient(to_bottom,black,transparent_85%)]"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_50%_10%,rgba(34,211,238,.035),transparent_55%)]"
         aria-hidden="true"
       />
 
-      <div className="relative z-10 mx-auto max-w-[1280px]">
-        <div className="grid items-end gap-8 md:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.75fr)] md:gap-16">
-          <h2 className="text-[3rem] font-medium leading-[.92] tracking-[-.07em] text-white sm:text-6xl lg:text-[5.25rem]">
-            Questions,
-            <span className="block w-fit bg-gradient-to-r from-white via-cyan-100 to-blue-400 bg-clip-text pb-2 text-transparent">
-              clearly answered.
+      <div className="relative z-10 grid w-full gap-12 lg:grid-cols-[minmax(19rem,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+        <h2 className="overflow-visible text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.08] tracking-[-.07em] text-white lg:sticky lg:top-24 lg:self-start">
+          <span className="block">Website</span>
+          <span className="block whitespace-nowrap">
+            Builder{" "}
+            <span className="inline-block bg-gradient-to-r from-white via-cyan-100 to-blue-400 bg-clip-text pb-4 text-transparent">
+              FAQ
             </span>
-          </h2>
+          </span>
+        </h2>
 
-          <div className="pb-1 md:text-right">
-            <p className="ml-auto max-w-[440px] text-[15px] leading-7 text-white/50 sm:text-base">
-              Everything worth knowing before you turn your idea into a live
-              website.
-            </p>
-            <a
-              className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-cyan-300 transition hover:text-cyan-100"
-              href="mailto:hello@example.com"
-            >
-              Still curious? Talk to us
-              <ArrowUpRight className="h-4 w-4" />
-            </a>
-          </div>
-        </div>
-
-        <div className="mt-16 overflow-hidden rounded-[28px] border border-white/10 bg-[#050505] px-5 shadow-[0_30px_100px_rgba(0,0,0,.45)] backdrop-blur-xl sm:px-9 lg:px-12">
+        <div className="relative overflow-hidden rounded-[24px] border border-white/[.12] bg-[#050505]/95 px-6 shadow-[0_24px_80px_rgba(0,0,0,.35)] sm:px-9">
           {faqs.map(([question, answer], index) => {
             const isOpen = index === active;
             const answerId = `faq-answer-${index}`;
@@ -84,14 +71,14 @@ export default function FAQ() {
             return (
               <div
                 key={question}
-                className="border-b border-white/10 last:border-b-0"
+                className="border-b border-white/[.10] last:border-b-0"
               >
                 <button
                   type="button"
                   aria-expanded={isOpen}
                   aria-controls={answerId}
                   onClick={() => setActive(isOpen ? -1 : index)}
-                  className="group flex min-h-[104px] w-full items-center justify-between gap-5 py-7 text-left text-[1.08rem] font-normal leading-tight tracking-[-0.025em] text-white transition-colors hover:text-cyan-200 sm:min-h-[118px] sm:gap-8 sm:text-[1.3rem]"
+                  className="group flex min-h-[88px] w-full items-center justify-between gap-5 py-6 text-left text-[1.08rem] font-medium leading-tight tracking-[-0.035em] text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 sm:min-h-[96px] sm:gap-8 sm:text-xl"
                 >
                   <span className="flex items-center gap-5 sm:gap-7">
                     <span className="hidden font-mono text-[10px] tracking-[0.16em] text-slate-600 sm:block">
@@ -99,13 +86,11 @@ export default function FAQ() {
                     </span>
                     {question}
                   </span>
-                  <span
-                    className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-all duration-300 ${isOpen ? "rotate-0 border-cyan-300/50 bg-cyan-300 text-slate-950" : "border-white/15 bg-white/[0.04] text-cyan-300 group-hover:border-cyan-300/50 group-hover:bg-cyan-300/10"}`}
-                  >
+                  <span className="shrink-0 text-white">
                     {isOpen ? (
-                      <X className="h-4 w-4 stroke-[1.75]" />
+                      <X className="h-6 w-6 stroke-[1.5]" />
                     ) : (
-                      <Plus className="h-4 w-4 stroke-[1.75]" />
+                      <Plus className="h-6 w-6 stroke-[1.5]" />
                     )}
                   </span>
                 </button>

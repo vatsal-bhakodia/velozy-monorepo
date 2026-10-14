@@ -18,9 +18,11 @@ import AdminLayout from "@/src/admin-layout";
 import { AuthProvider, useSession } from "@/src/lib/auth";
 import { ThemeProvider } from "@/src/lib/theme";
 import SignIn from "@/src/signin";
+import ForgotPassword from "@/src/forgot-password";
 import { queryClient } from "@/src/lib/query-client";
 import SignUp from "@/src/signup";
 import AuthCallback from "@/src/auth-callback";
+import ResetPassword from "@/src/reset-password";
 import "@/src/globals.css";
 
 const routeModules = import.meta.glob("./routes/**/*.tsx");
@@ -124,7 +126,9 @@ function App() {
               <Routes>
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/onboard" element={<Onboard />} />
                 <Route element={<ProtectedRoute />}>
                   {r("/", Dashboard)}

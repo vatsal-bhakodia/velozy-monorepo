@@ -1,41 +1,16 @@
-"use client";
-
+import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 import { adminUrl } from "@/lib/admin-url";
-import {
-  Github,
-  Instagram,
-  Linkedin,
-  Twitter,
-  Youtube,
-  Zap,
-} from "lucide-react";
+import logo from "../../public/logo.svg";
 
 export default function Footer() {
-  const logoRef = useRef<HTMLDivElement>(null);
-  const [isLogoVisible, setIsLogoVisible] = useState(false);
-
-  useEffect(() => {
-    const logo = logoRef.current;
-    if (!logo) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsLogoVisible(entry.isIntersecting),
-      { threshold: 0.25 },
-    );
-
-    observer.observe(logo);
-    return () => observer.disconnect();
-  }, []);
-
   const groups = [
     {
       title: "Get started",
       links: [
         ["Features", "#product"],
         ["How it works", "#process"],
-        ["Start building", adminUrl("/onboard")],
+        ["Start Building", adminUrl("/onboard")],
         ["Showcase", "#showcase"],
         ["Pricing", "#pricing"],
       ],
@@ -71,105 +46,62 @@ export default function Footer() {
       ],
     },
   ];
-  const socials = [
-    ["YouTube", "https://youtube.com", Youtube],
-    ["Instagram", "https://instagram.com", Instagram],
-    ["X", "https://x.com", Twitter],
-    ["LinkedIn", "https://linkedin.com", Linkedin],
-    ["GitHub", "https://github.com", Github],
-  ] as const;
 
   return (
-    <footer className="relative overflow-hidden bg-black text-white">
-      <div className="relative z-10 mx-auto max-w-[1440px] px-6 pb-20 pt-10 sm:px-10 lg:px-14">
-        <nav
-          aria-label="Footer navigation"
-          className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-4"
-        >
-          {groups.map((group) => (
-            <div key={group.title}>
-              <div className="mb-4 text-[10px] uppercase tracking-[0.2em] text-gray-500">
-                {group.title}
-              </div>
-              <div className="space-y-0.5">
-                {group.links.map(([label, href]) => (
-                  <Link
-                    key={label}
-                    className="block w-fit py-0.5 text-[14px] leading-5 text-gray-300 transition-colors hover:text-white"
-                    href={href}
-                  >
-                    {label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          ))}
-        </nav>
-      </div>
-
-      <div className="relative z-10 mx-auto flex max-w-[1440px] flex-col gap-6 px-6 py-7 text-[12px] sm:px-10 lg:flex-row lg:items-center lg:justify-between lg:px-14">
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-gray-500">
-          <span>© 2026 Velozy</span>
-          <Link className="transition-colors hover:text-white" href="#terms">
-            Terms
-          </Link>
-          <Link className="transition-colors hover:text-white" href="#privacy">
-            Privacy
-          </Link>
-          <Link className="transition-colors hover:text-white" href="#controls">
-            Data controls
-          </Link>
-        </div>
-        <div
-          className="flex items-center gap-5 text-gray-500"
-          aria-label="Social links"
-        >
-          {socials.map(([label, href, Icon]) => (
-            <a
-              key={label}
-              aria-label={label}
-              className="transition-colors hover:text-cyan-300"
-              href={href}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Icon className="h-[17px] w-[17px]" strokeWidth={2.2} />
-            </a>
-          ))}
-        </div>
-      </div>
-
-      <div className="relative">
-        <div className="relative z-10 mx-auto max-w-[1440px] px-6 sm:px-10 lg:px-14">
-          <div
-            ref={logoRef}
-            className={`footer-logo flex w-full select-none items-center justify-center pb-10 text-[clamp(3.8rem,17.5vw,18.5rem)] leading-none ${isLogoVisible ? "is-visible" : ""}`}
+    <footer className="overflow-hidden bg-black text-white">
+      <div className="w-full px-5 pt-16 sm:px-8 sm:pt-20 lg:px-[4.65vw] lg:pt-24">
+        <div className="pb-14 lg:pb-20">
+          <nav
+            aria-label="Footer navigation"
+            className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4"
           >
-            <Zap
-              aria-hidden="true"
-              className="footer-zap h-[1.08em] w-[1.08em] shrink-0"
-              fill="url(#footer-zap-gradient)"
-              stroke="url(#footer-zap-gradient)"
-              strokeWidth={1.6}
-            >
-              <defs>
-                <linearGradient
-                  id="footer-zap-gradient"
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop offset="0%" stopColor="#f8fafc" />
-                  <stop offset="50%" stopColor="#94a3b8" />
-                  <stop offset="100%" stopColor="#334155" />
-                </linearGradient>
-              </defs>
-            </Zap>
-            <span className="shrink-0 whitespace-nowrap bg-gradient-to-b from-slate-50 via-slate-400 to-slate-700 bg-clip-text pb-10 px-5 font-black tracking-[-0.061em] text-transparent">
-              Velozy
-            </span>
-          </div>
+            {groups.map((group) => (
+              <div key={group.title}>
+                <h2 className="mb-5 text-xs font-medium uppercase tracking-[0.14em] text-gray-400">
+                  {group.title}
+                </h2>
+                <ul>
+                  {group.links.map(([label, href]) => (
+                    <li key={label}>
+                      <Link
+                        className="inline-flex min-h-11 items-center rounded-sm py-2 text-sm leading-6 text-gray-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
+                        href={href}
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
+        </div>
+
+        <div className="flex flex-col gap-3 border-t border-white/10 py-6 text-xs text-gray-400 sm:flex-row sm:items-center sm:justify-between">
+          <span>© 2026 Velozy</span>
+          <nav aria-label="Legal" className="flex flex-wrap gap-x-6 gap-y-1">
+            {[
+              ["Terms", "#terms"],
+              ["Privacy", "#privacy"],
+              ["Data controls", "#controls"],
+            ].map(([label, href]) => (
+              <Link
+                key={label}
+                className="inline-flex min-h-11 items-center rounded-sm transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
+                href={href}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        <div className="footer-logo w-full select-none -mb-5 pt-4 sm:pt-8">
+          <Image
+            alt="Velozy"
+            src={logo}
+            className="h-auto w-full opacity-20 [filter:invert(1)] [mask-image:linear-gradient(to_bottom,black_0%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_0%,transparent_100%)]"
+          />
         </div>
       </div>
     </footer>

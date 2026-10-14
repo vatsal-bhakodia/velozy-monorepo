@@ -1,105 +1,383 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { adminUrl } from "@/lib/admin-url";
-import { PrimaryLink } from "./primary-link";
+import logo from "../../public/logo.svg";
 
-const links = [
-  { name: "Home", href: "/" },
-  { name: "Features", href: "#features" },
-  { name: "Pricing", href: "/pricing" },
-  { name: "Support", href: "#support" },
+const useCases = [
+  {
+    label: "Founders",
+    href: "/use-cases/founders",
+    description: "Turn an idea into a product people can try.",
+  },
+  {
+    label: "Website resellers",
+    href: "/use-cases/website-resellers",
+    description: "Build and deliver client websites at higher margins.",
+  },
+  {
+    label: "Startups",
+    href: "/use-cases/startups",
+    description: "Validate, build, and launch without a large team.",
+  },
+  {
+    label: "Agencies",
+    href: "/use-cases/agencies",
+    description: "Deliver more client sites without slowing down.",
+  },
+  {
+    label: "Freelancers",
+    href: "/use-cases/freelancers",
+    description: "Turn briefs into polished client work faster.",
+  },
+  {
+    label: "Students",
+    href: "/use-cases/students",
+    description: "Build real projects while learning by doing.",
+  },
+  {
+    label: "Enterprise",
+    href: "/use-cases/enterprise",
+    description: "Give every team speed with the control IT needs.",
+  },
 ];
 
-export default function Header({ showNav = true }: { showNav?: boolean }) {
-  const [expanded, setExpanded] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+const industries = [
+  {
+    label: "Beauty & salons",
+    href: "/industries/salon-website-builder",
+    description: "Present your services, treatments and appointment options.",
+  },
+  {
+    label: "Cafes & bakeries",
+    href: "/industries/cafe-website-builder",
+    description: "Share your menu, opening hours and neighborhood address.",
+  },
+  {
+    label: "Construction",
+    href: "/industries/construction-website-builder",
+    description: "Show your projects, areas served and how to request a quote.",
+  },
+  {
+    label: "Education",
+    href: "/industries/education-website-builder",
+    description: "Introduce your courses, teachers and enrollment information.",
+  },
+  {
+    label: "Events",
+    href: "/industries/event-website-builder",
+    description:
+      "Make the program, practical details and registration path easy to find.",
+  },
+  {
+    label: "Fitness & coaching",
+    href: "/industries/fitness-coaching-website-builder",
+    description: "Present classes, coaching and the next step for new members.",
+  },
+  {
+    label: "Healthcare",
+    href: "/industries/healthcare-website-builder",
+    description:
+      "Help visitors find your care services, team and contact details.",
+  },
+  {
+    label: "Law firms",
+    href: "/industries/law-firm-website-builder",
+    description: "Explain your practice areas and how to contact your firm.",
+  },
+  {
+    label: "Nonprofits",
+    href: "/industries/nonprofit-website-builder",
+    description: "Tell your story and explain how people can get involved.",
+  },
+  {
+    label: "Professional services",
+    href: "/industries/professional-services-website-builder",
+    description: "Present your expertise, service offers and contact options.",
+  },
+  {
+    label: "Real estate",
+    href: "/industries/real-estate-website-builder",
+    description:
+      "Organize property information, local expertise and inquiries.",
+  },
+  {
+    label: "Restaurants",
+    href: "/industries/restaurant-website-builder",
+    description:
+      "Put your menu, opening hours and booking options within reach.",
+  },
+];
+
+type SolutionItem = {
+  label: string;
+  href: string;
+  description: string;
+};
+
+function SolutionGroup({
+  title,
+  items,
+  onNavigate,
+}: {
+  title: string;
+  items: SolutionItem[];
+  onNavigate: () => void;
+}) {
+  return (
+    <section>
+      <h3 className="mb-5 border-b border-white/10 px-2 pb-3 text-sm font-medium uppercase tracking-[0.08em] text-white/50">
+        {title}
+      </h3>
+      <div
+        className={`grid gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-flow-col lg:grid-rows-4 ${items.length > 9 ? "lg:grid-cols-3" : "lg:grid-cols-2"}`}
+      >
+        {items.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={onNavigate}
+            className="group block rounded-lg px-2 py-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
+          >
+            <span className="block text-base font-semibold leading-6 text-white transition-colors group-hover:text-cyan-300 lg:text-lg">
+              {item.label}
+            </span>
+            <span className="mt-1 block text-sm leading-6 text-white/60 lg:text-base">
+              {item.description}
+            </span>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function SolutionsDirectory({ onNavigate }: { onNavigate: () => void }) {
+  return (
+    <div className="grid gap-8 xl:grid-cols-[minmax(0,3fr)_minmax(0,5fr)] xl:gap-8">
+      <div>
+        <SolutionGroup
+          title="Use cases"
+          items={useCases}
+          onNavigate={onNavigate}
+        />
+      </div>
+      <div>
+        <SolutionGroup
+          title="Industries"
+          items={industries}
+          onNavigate={onNavigate}
+        />
+      </div>
+    </div>
+  );
+}
+
+export default function Header() {
+  const isHome = usePathname() === "/";
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [solutionsOpen, setSolutionsOpen] = useState(false);
+  const [mobileSolutionsOpen, setMobileSolutionsOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
-    onScroll();
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    const updateScroll = () => setIsScrolled(window.scrollY > 16);
+    updateScroll();
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    return () => window.removeEventListener("scroll", updateScroll);
   }, []);
 
-  const signIn = adminUrl("/signin");
+  useEffect(() => {
+    if (!menuOpen && !solutionsOpen) return;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setMenuOpen(false);
+      setSolutionsOpen(false);
+      setMobileSolutionsOpen(false);
+    };
+    const closeOnOutsideClick = (event: PointerEvent) => {
+      if (
+        event.target instanceof Node &&
+        !headerRef.current?.contains(event.target)
+      ) {
+        setMenuOpen(false);
+        setSolutionsOpen(false);
+        setMobileSolutionsOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+    window.addEventListener("pointerdown", closeOnOutsideClick);
+    return () => {
+      window.removeEventListener("keydown", closeOnEscape);
+      window.removeEventListener("pointerdown", closeOnOutsideClick);
+    };
+  }, [menuOpen, solutionsOpen]);
+
+  const closeMenus = () => {
+    setMenuOpen(false);
+    setSolutionsOpen(false);
+    setMobileSolutionsOpen(false);
+  };
+
   return (
     <header
-      className={`fixed left-0 right-0 top-4 z-50 mx-auto max-w-7xl rounded-2xl py-3 transition-colors ${scrolled ? "bg-black shadow-lg shadow-gray-700/20" : "bg-transparent"}`}
+      ref={headerRef}
+      className={`sticky top-0 z-50 w-full border-b text-white transition-colors duration-200 motion-reduce:transition-none ${isHome ? "-mb-[73px]" : ""} ${!isHome || isScrolled || menuOpen || solutionsOpen ? "border-white/10 bg-black" : "border-transparent bg-transparent"}`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 md:px-6">
-        <Link
-          href="/"
-          className="flex items-center gap-3 text-xl font-bold text-white"
-        >
-          <Image
-            src="/brand/logo.png"
-            alt=""
-            width={32}
-            height={32}
-            className="rounded-md shadow-lg"
-          />
-          <span>Velozy</span>
-        </Link>
-        {showNav && (
+      <div className="flex h-[72px] w-full items-center justify-between px-3">
+        <div className="flex min-w-0 items-center gap-10">
+          <Link
+            href="/"
+            aria-label="Velozy home"
+            className="flex items-center gap-2 text-xl font-bold shrink-0"
+          >
+            <Image
+              src={logo}
+              alt="Velozy"
+              width={140}
+              height={35}
+              priority
+              className="h-9 w-auto brightness-0 invert"
+            />
+          </Link>
+
           <nav
-            className="hidden items-center gap-8 md:flex"
             aria-label="Main navigation"
+            className="hidden items-center gap-9 text-base lg:flex"
           >
-            {links.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-base text-gray-300 transition-colors hover:text-white"
-              >
-                {link.name}
-              </Link>
-            ))}
+            <button
+              type="button"
+              aria-expanded={solutionsOpen}
+              aria-controls="solutions-mega-menu"
+              onClick={() => setSolutionsOpen((open) => !open)}
+              className="inline-flex items-center gap-1.5 font-medium text-white hover:[text-shadow:0_0_0.45px_currentColor] focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
+            >
+              Solutions
+              <ChevronDown
+                className={`h-4 w-4 transition-transform ${solutionsOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+            <Link
+              href="/tools"
+              className="font-medium text-white hover:[text-shadow:0_0_0.45px_currentColor] focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
+            >
+              Tools
+            </Link>
+            <Link
+              href="/pricing"
+              className="font-medium text-white hover:[text-shadow:0_0_0.45px_currentColor] focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
+            >
+              Pricing
+            </Link>
           </nav>
-        )}
-        <div className="hidden md:block">
-          <PrimaryLink
-            href={signIn}
-            icon={
-              <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            }
-          >
-            Sign In
-          </PrimaryLink>
         </div>
-        {showNav && (
+
+        <div className="hidden items-center gap-6 text-sm lg:flex">
+          <Link
+            href={adminUrl("/signin")}
+            className="text-white hover:[text-shadow:0_0_0.45px_currentColor] focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
+          >
+            Log in
+          </Link>
+          <Link
+            href={adminUrl("/onboard")}
+            className="rounded-md bg-white px-5 py-3 font-medium text-neutral-950 transition-colors hover:bg-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+          >
+            Start Building
+          </Link>
+        </div>
+
+        <button
+          type="button"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-full text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 lg:hidden"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          aria-controls="dark-theme-mobile-menu"
+          onClick={() => {
+            setMenuOpen((open) => !open);
+            if (menuOpen) setMobileSolutionsOpen(false);
+          }}
+        >
+          {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+      </div>
+
+      {solutionsOpen && (
+        <div
+          id="solutions-mega-menu"
+          aria-label="Solutions"
+          className="absolute inset-x-0 top-full z-50 hidden max-h-[calc(100svh-72px)] overflow-y-auto overscroll-contain border-y border-white/10 bg-black px-6 py-7 shadow-[0_24px_70px_rgba(0,0,0,.45)] lg:block lg:px-[4vw] lg:py-8"
+        >
+          <SolutionsDirectory onNavigate={() => setSolutionsOpen(false)} />
+        </div>
+      )}
+
+      <nav
+        id="dark-theme-mobile-menu"
+        aria-label="Mobile navigation"
+        hidden={!menuOpen}
+        className="max-h-[calc(100svh-73px)] overflow-y-auto border-t border-white/10 bg-black px-3 py-4 text-white lg:hidden"
+      >
+        <div className="flex flex-col gap-1">
           <button
             type="button"
-            className="text-white md:hidden"
-            aria-label="Toggle menu"
-            aria-expanded={expanded}
-            onClick={() => setExpanded(!expanded)}
+            aria-expanded={mobileSolutionsOpen}
+            aria-controls="mobile-solutions-directory"
+            onClick={() => setMobileSolutionsOpen((open) => !open)}
+            className="flex min-h-12 items-center justify-between rounded-lg px-3 py-3 text-left text-base text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
           >
-            <span className="text-2xl">{expanded ? "×" : "☰"}</span>
+            Solutions
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${mobileSolutionsOpen ? "rotate-180" : ""}`}
+            />
           </button>
-        )}
-      </div>
-      {expanded && showNav && (
-        <nav
-          className="mx-4 mt-4 flex flex-col gap-2 rounded-2xl border border-gray-700/30 bg-neutral-950/95 p-4 text-white md:hidden"
-          aria-label="Mobile navigation"
-        >
-          {links.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              onClick={() => setExpanded(false)}
-              className="rounded-lg px-3 py-2 hover:bg-white/5"
+          {mobileSolutionsOpen && (
+            <div
+              id="mobile-solutions-directory"
+              className="mx-2 mb-3 border-l border-white/10 py-3 pl-3"
             >
-              {link.name}
+              <SolutionsDirectory onNavigate={closeMenus} />
+            </div>
+          )}
+          <Link
+            href="/tools"
+            onClick={closeMenus}
+            className="rounded-lg px-3 py-3 text-base text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
+          >
+            Tools
+          </Link>
+          <Link
+            href="/pricing"
+            onClick={closeMenus}
+            className="rounded-lg px-3 py-3 text-base text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
+          >
+            Pricing
+          </Link>
+          <div className="mt-2 flex items-center gap-4 border-t border-white/10 pt-4">
+            <Link
+              href={adminUrl("/signin")}
+              onClick={closeMenus}
+              className="px-3 py-3 text-sm text-white hover:[text-shadow:0_0_0.45px_currentColor] focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
+            >
+              Log in
             </Link>
-          ))}
-          <PrimaryLink href={signIn}>Sign In</PrimaryLink>
-        </nav>
-      )}
+            <Link
+              href={adminUrl("/onboard")}
+              onClick={closeMenus}
+              className="rounded-md bg-white px-5 py-3 text-sm font-medium text-neutral-950 transition-colors hover:bg-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              Start Building
+            </Link>
+          </div>
+        </div>
+      </nav>
     </header>
   );
 }

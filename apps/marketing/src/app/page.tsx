@@ -1,23 +1,21 @@
-import Header from "@/components/landing/header";
 import Hero from "@/components/landing/hero";
-import BentoGrid from "@/components/landing/bento-grid";
-import Features from "@/components/landing/features";
+import Platform from "@/components/landing/platform";
 import Process from "@/components/landing/process";
+import HowToCreate from "@/components/landing/how-to-create";
+import AgenticSeo from "@/components/landing/agentic-seo";
 import FAQ from "@/components/landing/faq";
 import FinalCTA from "@/components/landing/final-cta";
-import Footer from "@/components/landing/footer";
 
 export default function Home() {
   return (
-    <main className="font-[var(--font-montserrat)] min-h-screen overflow-x-clip bg-black text-white">
-      <Header />
+    <main className="landing-home-canvas font-[var(--font-montserrat)] min-h-screen overflow-x-clip text-white">
       <Hero />
-      <BentoGrid />
+      <Platform />
       <Process />
-      <Features />
+      <HowToCreate />
+      <AgenticSeo />
       <FAQ />
       <FinalCTA />
-      <Footer />
     </main>
   );
 }

@@ -14,7 +14,7 @@ import {
   Sparkles,
   Wand2,
 } from "lucide-react";
-import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
+import { Pill } from "@/components/magicui/pill";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -639,17 +639,13 @@ export default function Process() {
     <section
       ref={sectionRef}
       id="process"
-      className="relative isolate overflow-hidden bg-black py-20 text-white sm:py-28"
+      className="relative isolate z-10 overflow-hidden bg-black py-20 text-white sm:py-28 lg:flex lg:min-h-[calc(100svh-4.5rem)] lg:flex-col lg:justify-center"
     >
       <div className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[52rem] bg-[radial-gradient(ellipse_at_50%_28%,rgba(34,211,238,.16),transparent_42%),radial-gradient(ellipse_at_12%_72%,rgba(37,99,235,.22),transparent_36%)] blur-3xl" />
 
-      <div className="relative z-10 mx-auto max-w-[1280px] px-4 sm:px-10 xl:px-0">
+      <div className="relative z-10 w-full px-5 sm:px-8 lg:px-[4.65vw]">
         <div className="max-w-2xl">
-          <span className="mb-6 inline-flex rounded-full border border-white/15 bg-[#050505]/70 px-4 py-2">
-            <AnimatedShinyText className="text-xs font-medium uppercase tracking-[.16em] text-white/80">
-              One platform, full growth loop
-            </AnimatedShinyText>
-          </span>
+          <Pill className="mb-6">One platform, full growth loop</Pill>
           <h2 className="text-[clamp(2.4rem,6vw,5.2rem)] font-medium leading-[.94] tracking-[-.07em]">
             From first idea
             <br />
@@ -666,7 +662,7 @@ export default function Process() {
 
       <div
         ref={trackRef}
-        className="relative z-10 mt-14 flex w-max gap-6 pl-5 sm:pl-10 lg:pl-[max(4rem,calc((100vw-1280px)/2))]"
+        className="relative z-10 mt-14 flex w-max gap-6 pl-5 sm:pl-8 lg:pl-[4.65vw]"
       >
         {steps.map(([number, title, copy], index) => (
           <article

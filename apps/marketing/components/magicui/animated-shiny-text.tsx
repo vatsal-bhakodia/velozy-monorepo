@@ -10,7 +10,7 @@ export interface AnimatedShinyTextProps
 export const AnimatedShinyText: FC<AnimatedShinyTextProps> = ({
   children,
   className,
-  shimmerWidth = 100,
+  shimmerWidth = 60,
   ...props
 }) => {
   return (
@@ -21,19 +21,18 @@ export const AnimatedShinyText: FC<AnimatedShinyTextProps> = ({
         } as CSSProperties
       }
       className={cn(
-        "mx-auto max-w-md text-neutral-600/70 dark:text-neutral-400/70",
-
-        // Shine effect
-        "animate-shiny-text bg-clip-text bg-no-repeat [background-position:0_0] [background-size:var(--shiny-width)_100%] [transition:background-position_1s_cubic-bezier(.6,.6,0,1)_infinite]",
-
-        // Shine gradient
-        "bg-gradient-to-r from-transparent via-black/80 via-50% to-transparent  dark:via-white/80",
-
+        "relative inline-block",
         className,
       )}
       {...props}
     >
       {children}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/90 to-transparent bg-no-repeat bg-clip-text text-transparent motion-safe:animate-shiny-text motion-reduce:animate-none motion-reduce:[background-position:50%_0] [background-size:var(--shiny-width)_100%]"
+      >
+        {children}
+      </span>
     </span>
   );
 };

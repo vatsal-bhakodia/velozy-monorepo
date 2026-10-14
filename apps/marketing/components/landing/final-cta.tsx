@@ -1,74 +1,64 @@
-"use client";
-
-import { useInView } from "framer-motion";
-import { ArrowRight } from "lucide-react";
-import { useRef } from "react";
+import { ArrowUpRight } from "lucide-react";
 import { adminUrl } from "@/lib/admin-url";
 import { PrimaryLink } from "./primary-link";
-
-const circles = [
-  "h-[220vw] w-[220vw]",
-  "h-[170vw] w-[170vw]",
-  "h-[120vw] w-[120vw]",
-  "h-[75vw] w-[75vw]",
-];
+import { Pill } from "@/components/magicui/pill";
 
 export default function FinalCTA() {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const isInView = useInView(sectionRef, { amount: 0.2 });
-
   return (
     <section
-      ref={sectionRef}
-      className="relative isolate min-h-[620px] overflow-hidden border-b border-gray-700/50 bg-gradient px-5 py-24 sm:px-8 lg:px-12 lg:py-32"
+      aria-labelledby="final-cta-heading"
+      className="relative isolate overflow-hidden border-t border-white/10 px-5 py-20 text-white sm:px-8 sm:py-28 lg:px-[4.65vw]"
     >
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <div className="absolute bottom-[-6rem] left-[6rem] h-0 w-0 sm:bottom-[-7rem] sm:left-[8rem] lg:bottom-[-8rem] lg:left-[10rem]">
-          {circles.map((circle) => (
-            <div
-              key={circle}
-              className={`absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2 ${circle}`}
-            >
-              <div
-                className={`absolute inset-0 rounded-full circle-grow ${
-                  isInView ? "circle-grow-active" : ""
-                }`}
-                style={{
-                  background: `
-                  radial-gradient(
-                    55.78% 55.78% at 50% 50%,
-                    rgba(255, 241, 209, 0) 58.17%,
-                    #ffffff99 100%
-                  )
-                `,
-                }}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-48"
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 140%, rgba(34, 211, 238, 0.10), transparent 60%), radial-gradient(ellipse at 50% 140%, rgba(59, 130, 246, 0.16), transparent 70%)",
+        }}
+      />
 
-      <div className="relative z-10 flex min-h-[460px] items-center justify-center">
-        <div className="w-full max-w-2xl rounded-3xl border border-gray-700/60 bg-[#050505] px-6 py-16 text-center sm:px-12 sm:py-20">
-          <h2 className="text-4xl font-medium leading-[0.95] tracking-[-0.06em] text-white sm:text-6xl">
-            So, what are we building?
+      <div className="relative grid items-end gap-12 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-16">
+        <div>
+          <Pill className="mb-6">Built around your next idea</Pill>
+          <h2
+            id="final-cta-heading"
+            className="text-[clamp(3rem,6.5vw,6rem)] font-medium leading-[.98] tracking-[-.06em]"
+          >
+            Your idea.
+            <span className="block w-fit bg-gradient-to-r from-white via-cyan-100 to-blue-400 bg-clip-text pr-[.08em] text-transparent">
+              Starts here.
+            </span>
           </h2>
-          <p className="mx-auto mt-6 max-w-lg text-base leading-7 text-gray-400">
-            Your next website can start with a sentence. Bring the idea and
-            let&apos;s give it a shape.
+        </div>
+
+        <div className="max-w-sm lg:justify-self-end lg:pb-2">
+          <p className="text-lg leading-8 tracking-[-0.02em] text-gray-400 sm:text-xl">
+            Tell us what you have in mind.
+            <span className="text-white"> Let’s turn it into a website.</span>
           </p>
           <PrimaryLink
             href={adminUrl("/onboard")}
             size="large"
-            className="mt-9"
+            variant="white"
+            className="mt-8 min-h-14 w-full justify-between gap-10 px-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300 sm:w-auto"
             icon={
-              <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+              <ArrowUpRight
+                aria-hidden="true"
+                className="h-5 w-5 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 motion-reduce:transform-none motion-reduce:transition-none"
+              />
             }
           >
-            Create your website
+            Start building
           </PrimaryLink>
+          <p className="mt-4 text-sm text-gray-400">No code. Start free.</p>
         </div>
       </div>
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-5 bottom-0 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent sm:inset-x-8 lg:inset-x-[4.65vw]"
+      />
     </section>
   );
 }
