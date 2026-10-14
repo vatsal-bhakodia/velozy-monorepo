@@ -20,7 +20,7 @@ export type Project = {
     isOwner: boolean;
   };
 };
-type ProjectsResponse = { projects?: Project[] };
+type ProjectsResponse = { projects?: Project[]; canCreateProject?: boolean };
 const emptyProjects: Project[] = [];
 
 /** Compatibility hook for current route consumers; it no longer owns server state. */
@@ -47,6 +47,7 @@ export function useAdmin() {
 
   return {
     projects,
+    canCreateProject: projectsQuery.data?.canCreateProject ?? true,
     projectsLoading: projectsQuery.isLoading,
     projectsReady: projectsQuery.isSuccess,
     selectedProjectId,

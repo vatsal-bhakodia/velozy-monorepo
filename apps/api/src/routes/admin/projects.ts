@@ -10,6 +10,7 @@ import { HttpError } from "../../middleware/errors.js";
 import { ensureDefaultProductColorsInTransaction } from "../../lib/product-attributes.js";
 import { publicSiteUrl } from "../../lib/public-site-url.js";
 import { adminAccess } from "../../lib/admin-auth.js";
+import { subscriptionIsActive } from "../../lib/platform-billing.js";
 
 type ProjectAccess = { type: "project" | "organization"; roleName: string; isOwner: boolean };
 
@@ -97,6 +98,17 @@ function parseBody<T>(schemaValidator: z.ZodType<T>, body: unknown): T {
       "validation_error",
     );
   return parsed.data;
+}
+
+async function projectCreationAllowed(db: any, userId: string) {
+  const ownedProjects = await db.select({ id: schema.projects.id }).from(schema.projects).where(eq(schema.projects.userId, userId));
+  if (!ownedProjects.length) return true;
+  const subscriptions = await db.query.projectSubscriptions.findMany({
+    where: inArray(schema.projectSubscriptions.projectId, ownedProjects.map((project: { id: string }) => project.id)),
+  });
+  return subscriptions.some((subscription: typeof schema.projectSubscriptions.$inferSelect) =>
+    subscription.plan !== "free" && subscriptionIsActive(subscription),
+  );
 }
 
 async function ensureUser(
@@ -191,6 +203,7 @@ export function adminProjectsRouter(environment: Environment): ExpressRouter {
     const customDomainByProject = new Map(customDomains.map((domain) => [domain.projectId, domain.hostname]));
     const directByProject = new Map(direct.map((row) => [row.projectId, row]));
     const orgById = new Map(orgs.map((row) => [row.organizationId, row]));
+    const canCreateProject = await projectCreationAllowed(db, user.id);
     return response.json({ projects: projects.map((project) => {
       const directAccess = directByProject.get(project.id);
       const orgAccess = project.organizationId ? orgById.get(project.organizationId) : undefined;
@@ -202,7 +215,7 @@ export function adminProjectsRouter(environment: Environment): ExpressRouter {
             ? { type: "organization" as const, roleName: orgAccess.roleName, isOwner: orgAccess.isOwner }
             : undefined;
       return withPublicUrl(project, access, customDomainByProject.get(project.id));
-    }) });
+    }), canCreateProject });
   });
 
   router.post("/projects", async (request, response) => {
@@ -234,6 +247,9 @@ export function adminProjectsRouter(environment: Environment): ExpressRouter {
     let project;
     try {
       project = await db.transaction(async (tx) => {
+      await tx.select({ id: schema.users.id }).from(schema.users).where(eq(schema.users.id, user.id)).for("update");
+      if (!(await projectCreationAllowed(tx, user.id)))
+        throw new HttpError(403, "Free accounts can create one project. Upgrade your plan to add another.", "project_limit_reached");
       const [created] = await tx
         .insert(schema.projects)
         .values({

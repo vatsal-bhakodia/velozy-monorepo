@@ -16,6 +16,7 @@ import {
 import { usePathname } from "@/src/lib/navigation";
 import { useLocation } from "react-router-dom";
 import { signOut } from "@/src/lib/auth";
+import { ProjectUpgradeDialog } from "@/components/admin/project-upgrade-dialog";
 
 type SidebarSubItem = {
   slug: string;
@@ -54,6 +55,7 @@ type SidebarProps = {
   }>;
   selectedProjectId?: string;
   onProjectChange?: (projectId: string) => void;
+  canCreateProject?: boolean;
 };
 
 export type { SidebarItem, SidebarSubItem };
@@ -71,9 +73,11 @@ export function Sidebar({
   projects = [],
   selectedProjectId,
   onProjectChange,
+  canCreateProject = true,
 }: SidebarProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [projectDropdownOpen, setProjectDropdownOpen] = useState(false);
+  const [showProjectUpgrade, setShowProjectUpgrade] = useState(false);
   const projectDropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const location = useLocation();
@@ -204,6 +208,12 @@ export function Sidebar({
               href="/onboard"
               aria-label="Add new project"
               title="Add new project"
+              onClick={(event) => {
+                if (!canCreateProject) {
+                  event.preventDefault();
+                  setShowProjectUpgrade(true);
+                }
+              }}
               className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
             >
               <Plus className="h-4 w-4" />
@@ -252,7 +262,13 @@ export function Sidebar({
               ))}
             <Link
               href="/onboard"
-              onClick={() => setProjectDropdownOpen(false)}
+              onClick={(event) => {
+                setProjectDropdownOpen(false);
+                if (!canCreateProject) {
+                  event.preventDefault();
+                  setShowProjectUpgrade(true);
+                }
+              }}
               className="flex items-center gap-3 border-b border-neutral-200 px-4 py-3 text-sm text-neutral-600 hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
             >
               <Plus className="h-4 w-4 shrink-0 text-neutral-500 dark:text-neutral-400" />
@@ -422,6 +438,7 @@ export function Sidebar({
           />
         </button>
       )}
+      <ProjectUpgradeDialog open={showProjectUpgrade} onOpenChange={setShowProjectUpgrade} />
     </div>
   );
 }

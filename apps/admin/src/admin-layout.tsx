@@ -129,6 +129,7 @@ function AdminLayoutContent() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const {
     projects,
+    canCreateProject,
     projectsReady,
     selectedProjectId,
     setSelectedProjectId,
@@ -357,6 +358,7 @@ function AdminLayoutContent() {
             activeSection={activeSection}
             setActiveSection={setActiveSection}
             projects={projects}
+            canCreateProject={canCreateProject}
             selectedProjectId={selectedProjectId}
             onProjectChange={setSelectedProjectId}
           />
@@ -384,6 +386,7 @@ function AdminLayoutContent() {
                 isMobile={true}
                 onMobileClose={() => setMobileSidebarOpen(false)}
                 projects={projects}
+                canCreateProject={canCreateProject}
                 selectedProjectId={selectedProjectId}
                 onProjectChange={setSelectedProjectId}
               />

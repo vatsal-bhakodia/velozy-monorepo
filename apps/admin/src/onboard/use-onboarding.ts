@@ -333,7 +333,7 @@ export const useOnboarding = (onAuthenticationRequired: () => void) => {
       if (!billingResponse.ok) {
         throw new Error(billing.error || "Could not check the project plan.");
       }
-      if (!billing.subscription) {
+      if (!billing.subscription || billing.subscription.plan === "free") {
         const planResponse = await apiFetch("/api/admin/billing/free", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -13,6 +13,7 @@ type Plan = {
   annualTotal: number;
   annualMonthlyEquivalent: number;
   includedCredits: number;
+  oneTimeTrialCredits: number;
   limits: Record<string, number | string>;
   features: string[];
   paidCreditsPurchaseAllowed: boolean;
@@ -160,7 +161,7 @@ export default function PlanUsage() {
               <article className={`${card} p-4`}>
                 <p className="flex items-center gap-2 text-xs text-neutral-500"><Zap className="h-4 w-4" /> AI credits used</p>
                 <p className="mt-3 text-3xl font-semibold tabular-nums">{result.usage.aiCredits.used}</p>
-                <p className="mt-1 text-xs text-neutral-500">{result.usage.aiCredits.monthlyAllowance} included each month</p>
+                <p className="mt-1 text-xs text-neutral-500">{subscription?.plan === "free" ? "Free trial credits are granted once; no monthly refill" : `${result.usage.aiCredits.monthlyAllowance} included each month`}</p>
               </article>
               <article className={`${card} p-4`}>
                 <p className="flex items-center gap-2 text-xs text-neutral-500"><FileText className="h-4 w-4" /> Published pages</p>
@@ -197,7 +198,7 @@ export default function PlanUsage() {
                     {interval === "year" && !isFree && annualSavings > 0 && <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-300">Save {annualSavings}%</span>}
                   </div>
                   {!isFree && <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{interval === "year" ? `Billed ${money(plan.annualTotal, result.currency)} yearly` : "Billed monthly"}</p>}
-                  <p className="mt-4 flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-emerald-600" /> {plan.includedCredits} AI credits each month</p>
+                  <p className="mt-4 flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-emerald-600" /> {isFree ? `${plan.oneTimeTrialCredits} one-time AI credits` : `${plan.includedCredits} AI credits each month`}</p>
                   <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">{plan.limits.published_pages} published pages · {plan.limits.custom_domains} custom domains</p>
                   <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">{plan.limits.team_editors_including_owner} team members</p>
                   <ul className="mt-4 space-y-2 border-t border-neutral-200 pt-4 text-sm text-neutral-600 dark:border-neutral-800 dark:text-neutral-300">
@@ -209,7 +210,7 @@ export default function PlanUsage() {
                       if (isFree) purchase.mutate({ path: "/api/admin/billing/free", body: { projectId: selectedProjectId! } });
                       else purchase.mutate({ path: "/api/admin/billing/checkout", body: { projectId: selectedProjectId!, planId: plan.id, interval }, idempotent: true });
                     }}>{current ? "Current plan" : isFree ? subscription ? "Free plan unavailable" : "Choose Free" : subscription ? `Switch to ${plan.name}` : `Choose ${plan.name}`}{!current && !isFree && <ArrowUpRight className="ml-2 h-4 w-4" />}</Button>
-                    {isFree && <p className="mt-2 text-center text-[11px] text-neutral-500">Includes a one-time 50-credit trial</p>}
+                    {isFree && <p className="mt-2 text-center text-[11px] text-neutral-500">One-time trial credits do not refill monthly</p>}
                   </div>
                 </article>;
               })}

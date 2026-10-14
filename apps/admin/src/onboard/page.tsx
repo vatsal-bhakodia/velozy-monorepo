@@ -19,13 +19,41 @@ import { useSession } from "@/src/lib/auth";
 import { ONBOARDING_AUTH_PENDING_KEY } from "./storage-keys";
 import { OnboardingAuthModal } from "@/components/onboard/onboarding-auth-modal";
 import { profileWithSiteTypeChange } from "./recommended-pages";
+import { apiFetch } from "@/src/lib/api";
+
+const marketingUrl = (import.meta.env.VITE_MARKETING_URL ?? "http://localhost:3000").replace(/\/$/, "");
 
 const OnBoard = () => {
   const { status } = useSession();
+  const [projectEligibilityChecked, setProjectEligibilityChecked] = React.useState(false);
   const onboardingState = useOnboarding(() => setIsAuthModalOpen(true));
   const { resolvedTheme, setTheme } = useTheme();
   const chatHandlers = useChatHandlers(onboardingState);
   const logoHandlers = useLogoHandlers(onboardingState);
+
+  React.useEffect(() => {
+    if (status === "loading") return;
+    if (status !== "authenticated") {
+      setProjectEligibilityChecked(true);
+      return;
+    }
+    let cancelled = false;
+    void apiFetch("/api/admin/projects", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Could not check project eligibility");
+        const result = await response.json();
+        if (cancelled) return;
+        if (result.canCreateProject === false) {
+          window.location.replace(`${marketingUrl}/pricing?reason=additional-project`);
+          return;
+        }
+        setProjectEligibilityChecked(true);
+      })
+      .catch(() => {
+        if (!cancelled) setProjectEligibilityChecked(true);
+      });
+    return () => { cancelled = true; };
+  }, [status]);
 
   const {
     currentStep,
@@ -264,6 +292,8 @@ const OnBoard = () => {
     }
     prevStep();
   };
+
+  if (status === "authenticated" && !projectEligibilityChecked) return null;
 
   return (
     <div className="relative h-screen max-h-screen overflow-hidden bg-[#fbfcfd] text-gray-900 transition-colors duration-300 dark:bg-[#171717] dark:text-neutral-100">

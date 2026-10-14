@@ -120,7 +120,7 @@ export function adminBillingRouter(environment: Environment): ExpressRouter {
     const currency = billingCurrency(region);
     const plans = pricing.foundation_plans.map((plan) => {
       const price = (plan.prices as any)[region];
-      return { id: plan.id, name: plan.name, monthly: price.monthly, annualTotal: price.annual_total, annualMonthlyEquivalent: price.annual_monthly_equivalent, includedCredits: plan.included_ai_credits_per_month, limits: plan.limits, features: plan.features, paidCreditsPurchaseAllowed: Boolean((plan as any).paid_credits_purchase_allowed ?? plan.id !== "free") };
+      return { id: plan.id, name: plan.name, monthly: price.monthly, annualTotal: price.annual_total, annualMonthlyEquivalent: price.annual_monthly_equivalent, includedCredits: plan.included_ai_credits_per_month, oneTimeTrialCredits: (plan as any).one_time_trial_ai_credits ?? 0, limits: plan.limits, features: plan.features, paidCreditsPurchaseAllowed: Boolean((plan as any).paid_credits_purchase_allowed ?? plan.id !== "free") };
     });
     const topups = pricing.credit_topups.map((pack) => ({ id: pack.id, credits: pack.credits, amount: (pack.prices as any)[region] }));
     const periodStart = shownSubscription?.currentPeriodStart ?? wallet?.subscriptionCycleStart ?? new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
@@ -165,7 +165,7 @@ export function adminBillingRouter(environment: Environment): ExpressRouter {
   router.post("/billing/free", async (request, response) => {
     const { currentUser, project } = await ownerProject(request, request.body?.projectId);
     const current = await db.query.projectSubscriptions.findFirst({ where: eq(schema.projectSubscriptions.projectId, project.id) });
-    if (isActive(current)) {
+    if (isActive(current) && current?.plan !== "free") {
       return response.json({ success: true, plan: current?.plan, alreadyActive: true });
     }
     const currency = billingCurrency(regionFor(request));
@@ -176,13 +176,24 @@ export function adminBillingRouter(environment: Environment): ExpressRouter {
       await tx.insert(schema.projectCreditWallets).values({ projectId: project.id }).onConflictDoNothing();
       const [wallet] = await tx.select().from(schema.projectCreditWallets).where(eq(schema.projectCreditWallets.projectId, project.id)).for("update");
       const existingTrial = await tx.query.projectCreditEvents.findFirst({ where: and(eq(schema.projectCreditEvents.projectId, project.id), eq(schema.projectCreditEvents.idempotencyKey, `free-trial:${project.id}`)) });
-      if (wallet.subscriptionBalance > 0) {
+      const alreadyOnFreePlan = isActive(current) && current?.plan === "free";
+      if (!alreadyOnFreePlan && wallet.subscriptionBalance > 0) {
         await tx.update(schema.projectCreditWallets).set({ subscriptionBalance: 0, subscriptionCycleStart: null, subscriptionCycleEnd: null, updatedAt: now }).where(eq(schema.projectCreditWallets.projectId, project.id));
         await tx.insert(schema.projectCreditEvents).values({ projectId: project.id, actorId: currentUser.id, kind: "expire", action: "expired_subscription_allowance_on_free_plan", subscriptionDelta: -wallet.subscriptionBalance, idempotencyKey: `free-reset:${project.id}:${now.toISOString()}`, metadata: { subscriptionId: subscription.id } });
       }
+      const existingFreeBalance = alreadyOnFreePlan ? wallet.subscriptionBalance : 0;
       if (!existingTrial && trialCredits > 0) {
-        await tx.update(schema.projectCreditWallets).set({ subscriptionBalance: trialCredits, subscriptionCycleStart: null, subscriptionCycleEnd: null, updatedAt: now }).where(eq(schema.projectCreditWallets.projectId, project.id));
+        await tx.update(schema.projectCreditWallets).set({ subscriptionBalance: existingFreeBalance + trialCredits, subscriptionCycleStart: null, subscriptionCycleEnd: null, updatedAt: now }).where(eq(schema.projectCreditWallets.projectId, project.id));
         await tx.insert(schema.projectCreditEvents).values({ projectId: project.id, actorId: currentUser.id, kind: "refill", action: "free_trial_credits", subscriptionDelta: trialCredits, idempotencyKey: `free-trial:${project.id}`, metadata: { subscriptionId: subscription.id, credits: trialCredits } });
+      } else if (existingTrial) {
+        const adjustmentKey = `free-trial-adjustment:${project.id}`;
+        const existingAdjustment = await tx.query.projectCreditEvents.findFirst({ where: and(eq(schema.projectCreditEvents.projectId, project.id), eq(schema.projectCreditEvents.idempotencyKey, adjustmentKey)) });
+        const trialMetadata = existingTrial.metadata as Record<string, unknown> | null;
+        const adjustment = Math.max(0, trialCredits - Number(trialMetadata?.credits ?? 0));
+        if (!existingAdjustment && adjustment > 0) {
+          await tx.update(schema.projectCreditWallets).set({ subscriptionBalance: existingFreeBalance + adjustment, subscriptionCycleStart: null, subscriptionCycleEnd: null, updatedAt: now }).where(eq(schema.projectCreditWallets.projectId, project.id));
+          await tx.insert(schema.projectCreditEvents).values({ projectId: project.id, actorId: currentUser.id, kind: "refill", action: "free_trial_credit_adjustment", subscriptionDelta: adjustment, idempotencyKey: adjustmentKey, metadata: { subscriptionId: subscription.id, credits: adjustment } });
+        }
       }
     });
     response.status(201).json({ success: true, plan: "free" });
