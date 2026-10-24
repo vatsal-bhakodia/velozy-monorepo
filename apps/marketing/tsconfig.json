@@ -17,9 +17,10 @@
       "@/src/lib/utils": ["./lib/utils.ts"],
       "@/app/*": ["./src/app/*"],
       "@/components/ui/*": ["./components/ui/*.tsx"],
-      "@/components/color-picker": ["./components/color-picker.tsx"],
       "@/components/*": ["./components/*"],
-      "@/constants/website-screenshots": ["./src/constants/website-screenshots"],
+      "@/constants/website-screenshots": [
+        "./src/constants/website-screenshots"
+      ],
       "@/constants/*": ["../builder/src/constants/*"],
       "@/lib/logo-palette": ["../builder/src/lib/logo-palette"],
       "@/lib/*": ["./lib/*"],

@@ -5,9 +5,21 @@
 .landing-home-canvas {
   background-color: #000;
   background-image:
-    radial-gradient(ellipse 60% 42% at 50% 28%, rgb(8 145 178 / 0.09), transparent 75%),
-    radial-gradient(ellipse 46% 38% at 12% 56%, rgb(37 99 235 / 0.075), transparent 75%),
-    radial-gradient(ellipse 48% 40% at 88% 78%, rgb(8 145 178 / 0.055), transparent 75%);
+    radial-gradient(
+      ellipse 60% 42% at 50% 28%,
+      rgb(8 145 178 / 0.09),
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 46% 38% at 12% 56%,
+      rgb(37 99 235 / 0.075),
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 48% 40% at 88% 78%,
+      rgb(8 145 178 / 0.055),
+      transparent 75%
+    );
   background-attachment: fixed;
 }
 
@@ -90,27 +102,6 @@
 
 body {
   font-family: "Montserrat", sans-serif;
-}
-
-/* AnimatedThemeToggler owns the root view-transition while active. Disable the
-   browser's default cross-fade and keep its snapshot alive for the full reveal. */
-html[data-magicui-theme-vt="active"]::view-transition-group(root) {
-  animation-duration: var(--magicui-theme-toggle-vt-duration);
-}
-
-html[data-magicui-theme-vt="active"]::view-transition-old(root),
-html[data-magicui-theme-vt="active"]::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
-}
-
-html[data-magicui-theme-vt="active"]::view-transition-old(root) {
-  z-index: 0;
-}
-
-html[data-magicui-theme-vt="active"]::view-transition-new(root) {
-  z-index: 1;
-  clip-path: var(--magicui-theme-vt-clip-from);
 }
 
 /* Keep dashboard pages centered within the space left by the fixed sidebar.
@@ -367,8 +358,16 @@ html.dark .ck.ck-color-grid__tile:focus {
 .bg-gradient,
 .brand-gradient {
   background-image:
-    radial-gradient(ellipse at center, transparent 64%, rgba(112, 250, 255, 0.28) 100%),
-    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.2), transparent 56%),
+    radial-gradient(
+      ellipse at center,
+      transparent 64%,
+      rgba(112, 250, 255, 0.28) 100%
+    ),
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(255, 255, 255, 0.2),
+      transparent 56%
+    ),
     linear-gradient(135deg, #12dedf 0%, #08a9ed 48%, #1557f5 100%);
   background-size: 100% 100%;
   background-position: center;
@@ -806,7 +805,8 @@ html.dark .ck.ck-color-grid__tile:focus {
   border-radius: 0;
   --bento-glow: rgb(34 211 238 / 0.1);
   --bento-glow-position: 100% 0%;
-  background-image: radial-gradient(
+  background-image:
+    radial-gradient(
       ellipse at var(--bento-glow-position),
       var(--bento-glow),
       transparent 42%
