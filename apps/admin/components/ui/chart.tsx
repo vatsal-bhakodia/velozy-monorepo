@@ -108,12 +108,12 @@ const ChartTooltipContent = React.forwardRef<
   Partial<
     Pick<
       TooltipContentProps,
-    | "active"
-    | "payload"
-    | "label"
-    | "labelFormatter"
-    | "labelClassName"
-    | "formatter"
+      | "active"
+      | "payload"
+      | "label"
+      | "labelFormatter"
+      | "labelClassName"
+      | "formatter"
     >
   > &
     React.ComponentProps<"div"> & {
@@ -225,9 +225,7 @@ const ChartTooltipContent = React.forwardRef<
                             indicator === "line" && "w-1",
                             indicator === "dashed" &&
                               "w-0 border-[1.5px] border-dashed bg-transparent",
-                            nestLabel &&
-                              indicator === "dashed" &&
-                              "my-0.5",
+                            nestLabel && indicator === "dashed" && "my-0.5",
                           )}
                           style={
                             {
