@@ -1,5 +1,24 @@
+import {
+  authStorage,
+  setStorageRememberSession,
+  getStorageRememberSession,
+} from "./auth-storage";
+import { safeStorage } from "@/src/onboard/safe-storage";
+import {
+  ONBOARDING_DRAFT_STORAGE_KEY,
+  useOnboardingStore,
+} from "@/src/onboard/onboarding-store";
+import { clearOnboardingSession } from "@/src/onboard/storage-keys";
+import { PENDING_LOGO_STORAGE_KEY } from "@/src/onboard/storage-keys";
 import { createClient, type User } from "@supabase/supabase-js";
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  type ReactNode,
+} from "react";
 import { queryClient } from "@/src/lib/query-client";
 import { useProjectStore } from "@/src/lib/project-store";
 
@@ -8,32 +27,18 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const rememberSessionKey = "velozy-auth-remember-session";
 
 function readRememberSession() {
-  return typeof window === "undefined" || window.sessionStorage.getItem(rememberSessionKey) !== "false";
+  try {
+    return (
+      typeof window === "undefined" ||
+      window.sessionStorage.getItem(rememberSessionKey) !== "false"
+    );
+  } catch {
+    return true;
+  }
 }
 
 let rememberSession = readRememberSession();
-
-const authStorage = {
-  getItem(key: string) {
-    const localValue = window.localStorage.getItem(key);
-    const sessionValue = window.sessionStorage.getItem(key);
-    if (key.endsWith("-auth-token") && (localValue !== null || sessionValue !== null)) {
-      rememberSession = localValue !== null;
-      window.sessionStorage.setItem(rememberSessionKey, String(rememberSession));
-    }
-    return localValue ?? sessionValue;
-  },
-  setItem(key: string, value: string) {
-    const target = rememberSession ? window.localStorage : window.sessionStorage;
-    const other = rememberSession ? window.sessionStorage : window.localStorage;
-    other.removeItem(key);
-    target.setItem(key, value);
-  },
-  removeItem(key: string) {
-    window.localStorage.removeItem(key);
-    window.sessionStorage.removeItem(key);
-  },
-};
+setStorageRememberSession(rememberSession);
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error("VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are required");
@@ -45,11 +50,14 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 
 export function setRememberSession(remember: boolean) {
   rememberSession = remember;
-  window.sessionStorage.setItem(rememberSessionKey, String(remember));
+  setStorageRememberSession(remember);
+  try {
+    window.sessionStorage.setItem(rememberSessionKey, String(remember));
+  } catch {}
 }
 
 export function getRememberSession() {
-  return rememberSession;
+  return getStorageRememberSession();
 }
 
 type SessionUser = { name?: string | null; email?: string | null };
@@ -58,20 +66,42 @@ type AuthState = { user: User | null; loading: boolean };
 const AuthContext = createContext<AuthState>({ user: null, loading: true });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const previousIdentity = useRef<string | null>(null);
   const [state, setState] = useState<AuthState>({ user: null, loading: true });
 
   useEffect(() => {
-    void supabase.auth.getUser().then(({ data }) =>
-      setState({ user: data.user, loading: false }),
-    );
+    let authEventSeen = false;
+    let active = true;
+    void supabase.auth.getUser().then(({ data }) => {
+      if (!active || authEventSeen) return;
+      previousIdentity.current = data.user?.id ?? null;
+      setState({ user: data.user, loading: false });
+    });
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      authEventSeen = true;
+      const nextIdentity = session?.user?.id ?? null;
+      if (
+        previousIdentity.current &&
+        previousIdentity.current !== nextIdentity
+      ) {
+        clearOnboardingSession();
+        useOnboardingStore.getState().resetWorkflow();
+        safeStorage.removeItem(PENDING_LOGO_STORAGE_KEY);
+        safeStorage.removeItem(ONBOARDING_DRAFT_STORAGE_KEY);
+        queryClient.clear();
+        useProjectStore.getState().resetRuntimeSelection();
+      }
+      previousIdentity.current = nextIdentity;
       if (!session?.user) {
         queryClient.clear();
         useProjectStore.getState().resetRuntimeSelection();
       }
       setState({ user: session?.user ?? null, loading: false });
     });
-    return () => data.subscription.unsubscribe();
+    return () => {
+      active = false;
+      data.subscription.unsubscribe();
+    };
   }, []);
 
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
@@ -80,9 +110,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useSession() {
   const { user, loading } = useContext(AuthContext);
   const session: Session | null = user
-    ? { user: { name: user.user_metadata.full_name ?? user.email, email: user.email } }
+    ? {
+        user: {
+          name: user.user_metadata.full_name ?? user.email,
+          email: user.email,
+        },
+      }
     : null;
-  return { data: session, user, status: loading ? "loading" : user ? "authenticated" : "unauthenticated" };
+  return {
+    data: session,
+    user,
+    status: loading ? "loading" : user ? "authenticated" : "unauthenticated",
+  };
 }
 
 export async function getAccessToken() {
@@ -90,7 +129,9 @@ export async function getAccessToken() {
   return data.session?.access_token ?? null;
 }
 
-export async function signOut({ callbackUrl = "/signin" }: { callbackUrl?: string } = {}) {
+export async function signOut({
+  callbackUrl = "/signin",
+}: { callbackUrl?: string } = {}) {
   await supabase.auth.signOut();
   queryClient.clear();
   useProjectStore.getState().resetRuntimeSelection();

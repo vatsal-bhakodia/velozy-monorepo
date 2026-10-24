@@ -1,7 +1,12 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
-import { getRememberSession, setRememberSession, supabase, useSession } from "@/src/lib/auth";
+import {
+  getRememberSession,
+  setRememberSession,
+  supabase,
+  useSession,
+} from "@/src/lib/auth";
 import { apiFetch } from "@/src/lib/api";
 import { AuthLayout } from "@/src/auth-layout";
 import { Button } from "@/components/ui/button";
@@ -79,7 +84,17 @@ export default function SignIn() {
     <AuthLayout
       title="Welcome back"
       subtitle="Sign in to your account to continue"
-      footer={<p>Don&apos;t have an account? <Link to="/signup" className="font-medium text-cyan-300 hover:text-cyan-100">Sign up</Link></p>}
+      footer={
+        <p>
+          Don&apos;t have an account?{" "}
+          <Link
+            to="/signup"
+            className="font-medium text-cyan-300 hover:text-cyan-100"
+          >
+            Sign up
+          </Link>
+        </p>
+      }
     >
       {error && (
         <p
@@ -142,11 +157,25 @@ export default function SignIn() {
           </div>
         </div>
         <div className="flex items-center justify-between gap-4 text-sm">
-          <label htmlFor="signin-remember" className="inline-flex cursor-pointer items-center gap-2 text-white/65">
-            <input id="signin-remember" type="checkbox" checked={rememberMe} onChange={(event) => setRememberMe(event.target.checked)} className="h-4 w-4 rounded border-white/25 bg-white/10 accent-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/50" />
+          <label
+            htmlFor="signin-remember"
+            className="inline-flex cursor-pointer items-center gap-2 text-white/65"
+          >
+            <input
+              id="signin-remember"
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(event) => setRememberMe(event.target.checked)}
+              className="h-4 w-4 rounded border-white/25 bg-white/10 accent-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/50"
+            />
             Remember me
           </label>
-          <Link to="/forgot-password" className="text-white/60 hover:text-cyan-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/40">Forgot password?</Link>
+          <Link
+            to="/forgot-password"
+            className="text-white/60 hover:text-cyan-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/40"
+          >
+            Forgot password?
+          </Link>
         </div>
         <Button
           type="submit"
