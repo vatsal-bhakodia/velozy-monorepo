@@ -1,0 +1,275 @@
+{
+  "slug": "fitness-website-builder",
+  "name": "Fitness",
+  "metadata": {
+    "title": "Fitness & Coaching Website Builder | Velozy",
+    "description": "Create a fitness website with trainer profiles, training services, class schedules, locations, and membership details."
+  },
+  "palette": {
+    "accent": "#587021",
+    "pale": "#e3f1be",
+    "surface": "#1b2511",
+    "ink": "#2c3e13"
+  },
+  "hero": {
+    "eyebrow": "Fitness website builder",
+    "headline": "Share class times with a",
+    "highlight": "Fitness Website Builder",
+    "description": "Present training services, coach profiles and class times, then invite visitors to enquire about sessions or memberships.",
+    "primaryAction": "Get started",
+    "image": "/industries/fitness/hero.webp",
+    "imageAlt": "Fitness website hero for Dexafit, featuring a strength training athlete",
+    "offerCard": {
+      "title": "Strength circuit",
+      "detail": "Small-group class",
+      "meta": "45 min · all levels",
+      "action": "Book class",
+      "image": "/industries/fitness/weightlifting-training.webp",
+      "imageAlt": "Athlete training with free weights in a gym",
+      "price": "$18",
+      "priceDetail": "Illustrative · per class"
+    },
+    "secondaryCard": {
+      "kind": "timetable",
+      "title": "Weekly class schedule",
+      "dayLabel": "Tuesday · November 10",
+      "classes": [
+        {
+          "time": "6:00 PM",
+          "name": "Strength circuit"
+        },
+        {
+          "time": "7:00 PM",
+          "name": "Mobility & recovery"
+        }
+      ],
+      "action": "Book a class",
+      "notice": "Illustrative class times · confirm your place with the studio."
+    }
+  },
+  "inspiration": {
+    "eyebrow": "For every kind of fitness business",
+    "headline": "A website that fits your fitness business.",
+    "description": "Find your kind of stronger. — Show classes, coach profiles, and what new members should bring.",
+    "items": [
+      {
+        "title": "Fitness studios",
+        "description": "Show classes, coach profiles, and what new members should bring.",
+        "image": "/industries/fitness/weightlifting-training.webp",
+        "imageAlt": "Athlete training with free weights in a gym",
+        "action": "Create your website"
+      },
+      {
+        "title": "Personal trainers",
+        "description": "Explain your training approach and what to expect from an introductory session.",
+        "image": "/industries/fitness/personal-trainer.webp",
+        "imageAlt": "Trainer and client discussing a workout plan in a gym",
+        "action": "Create your website"
+      },
+      {
+        "title": "Wellness coaches",
+        "description": "Present programs and qualifications without promising outcomes.",
+        "image": "/industries/fitness/yoga-class.webp",
+        "imageAlt": "Small yoga class practicing in a bright studio",
+        "action": "Create your website"
+      }
+    ]
+  },
+  "capabilities": {
+    "eyebrow": "For the details fitness visitors need",
+    "headline": "Everything your fitness site needs to explain.",
+    "description": "Explain format, duration, level, and who each option suits. Publish current class times, venue details, and what to bring.",
+    "note": "Illustrative website sections. A class request needs confirmation; this is not live capacity. Search tip: Use real class names and levels rather than broad fitness claims.",
+    "items": [
+      {
+        "title": "Classes and training",
+        "description": "Explain format, duration, level, and who each option suits.",
+        "visual": "services"
+      },
+      {
+        "title": "Class timetable",
+        "description": "Publish class times, venue details, and what to bring, with a clear way to ask about a place.",
+        "visual": "schedule"
+      },
+      {
+        "title": "Intro enquiries",
+        "description": "Let prospective members ask about a first session before you confirm a place.",
+        "visual": "portfolio"
+      },
+      {
+        "title": "Your location",
+        "description": "Help visitors find your fitness business with accurate address, hours, or service-area information.",
+        "visual": "location"
+      },
+      {
+        "title": "A way to reach you",
+        "description": "Collect a clear fitness enquiry and follow up directly.",
+        "visual": "enquiry"
+      },
+      {
+        "title": "A good fit on mobile",
+        "description": "Give visitors a responsive layout that reads well on phones and larger screens.",
+        "visual": "mobile"
+      }
+    ],
+    "visuals": {
+      "services": {
+        "image": "/industries/fitness/weightlifting-training.webp",
+        "eyebrow": "Classes & training",
+        "headline": ["Find your kind of stronger."],
+        "rows": ["Strength classes", "1:1 training", "First session"],
+        "link": "See classes"
+      },
+      "subscription": {
+        "image": "/industries/fitness/weightlifting-training.webp",
+        "eyebrow": "Timetable and location",
+        "title": "Group and personal training",
+        "description": "Publish current class times, venue details, and what to bring.",
+        "plans": [
+          {
+            "title": "Group training",
+            "price": "View the timetable",
+            "action": "Details"
+          },
+          {
+            "title": "Personal training",
+            "price": "Ask about a session",
+            "action": "Details"
+          }
+        ]
+      },
+      "portfolio": {
+        "images": [
+          "/industries/fitness/weightlifting-training.webp",
+          "/industries/fitness/yoga-class.webp"
+        ],
+        "label": "Intro enquiries"
+      },
+      "location": {
+        "eyebrow": "Find us",
+        "lines": ["Motion Studio", "First session"]
+      },
+      "enquiry": {
+        "image": "/industries/fitness/weightlifting-training.webp",
+        "eyebrow": "Get in touch",
+        "headline": ["Start with", "a conversation."],
+        "fields": ["Your name", "Training goal or question?"],
+        "action": "Send an enquiry"
+      },
+      "mobile": {
+        "image": "/industries/fitness/weightlifting-training.webp",
+        "display": ["Fitness.", "On the go."],
+        "eyebrow": "Made for visitors",
+        "headline": ["Find your kind of stronger."],
+        "action": "See classes"
+      },
+      "schedule": {
+        "eyebrow": "Weekly timetable",
+        "title": "Strength circuit",
+        "date": "Tuesday · 20 Oct",
+        "time": "6:00 PM",
+        "detail": "45 min · All levels",
+        "action": "Ask about a place",
+        "note": "Times and places need confirmation from the studio."
+      }
+    }
+  },
+  "steps": {
+    "eyebrow": "From fitness details to a first draft",
+    "headline": "How to Create Your Fitness Website",
+    "description": "Tell Velozy about your fitness business, review the suggested page plan, and edit the generated homepage. Use the sections above to answer visitors’ practical questions. Publish only information you can keep accurate; extra pages depend on your plan.",
+    "preview": {
+      "briefLabel": "Let’s plan your website",
+      "conversation": [
+        {
+          "question": "What’s your fitness business called?",
+          "answer": "Motion Studio"
+        }
+      ],
+      "focusLabel": "What should visitors find first?",
+      "focusOptions": [
+        {
+          "label": "Strength classes",
+          "selected": true
+        },
+        {
+          "label": "1:1 training",
+          "selected": false
+        }
+      ],
+      "planLabel": "Your website plan",
+      "pages": ["Home", "Classes and training", "Intro enquiries", "Contact"],
+      "editorLabel": "Website preview",
+      "brand": "MOTION STUDIO",
+      "headline": "Find your kind of stronger.",
+      "image": "/industries/fitness/weightlifting-training.webp",
+      "imageAlt": "Athlete training with free weights in a gym",
+      "publishLabel": "Ready for the world"
+    },
+    "items": [
+      {
+        "title": "Tell us about your fitness business",
+        "description": "Share your business details and what visitors need. Current class schedule and training descriptions."
+      },
+      {
+        "title": "Shape the page plan",
+        "description": "Review suggested pages and homepage sections. Coach bios, qualifications, and permitted photos."
+      },
+      {
+        "title": "Choose a style. Make it yours.",
+        "description": "Confirm design choices, generate a homepage, then refine the words and images before publishing."
+      }
+    ]
+  },
+  "management": {
+    "businessName": "Motion Studio"
+  },
+  "faq": {
+    "eyebrow": "Fitness website questions",
+    "headline": "Fitness Website FAQs",
+    "description": "Clear answers to help you plan and publish your fitness website.",
+    "items": [
+      {
+        "question": "Can members book classes online?",
+        "answer": "A contact form can collect class requests. Live class capacity and bookings require a working bookings module."
+      },
+      {
+        "question": "Can I sell memberships?",
+        "answer": "You can explain membership options. Recurring customer payments need a supported, enabled subscription and payment flow."
+      },
+      {
+        "question": "Can I show a timetable?",
+        "answer": "Yes. Publish class times and update them as your schedule changes."
+      },
+      {
+        "question": "What should I include in a class timetable?",
+        "answer": "List class names, times, duration, level, location, and what to bring. Keep the schedule current and explain how visitors can ask about a place."
+      },
+      {
+        "question": "Can beginners find a suitable class?",
+        "answer": "Describe the experience level and format of each class, and explain how a new member can contact the coach with questions before attending."
+      },
+      {
+        "question": "Can I show trainer qualifications?",
+        "answer": "Yes. Add accurate qualifications and training experience, and use staff photos only with permission. Avoid promising specific health or fitness outcomes."
+      }
+    ]
+  },
+  "finalCta": {
+    "eyebrow": "Your fitness business, in its own words",
+    "headline": "Give new members a confident first step.",
+    "midHeadline": "Ready to start your fitness website?",
+    "description": "Start with one homepage, then build out the pages your visitors need.",
+    "action": "Start your fitness website"
+  },
+  "related": [
+    {
+      "slug": "healthcare-website-builder",
+      "label": "Healthcare"
+    },
+    {
+      "slug": "education-website-builder",
+      "label": "Education"
+    }
+  ]
+}

@@ -1,0 +1,265 @@
+{
+  "slug": "healthcare-website-builder",
+  "name": "Healthcare",
+  "metadata": {
+    "title": "Healthcare Website Builder | Velozy",
+    "description": "Create a healthcare website with clinician profiles, care service descriptions, clinic hours, locations, and clear contact options."
+  },
+  "palette": {
+    "accent": "#277483",
+    "pale": "#d9f2f3",
+    "surface": "#10252a",
+    "ink": "#163941"
+  },
+  "hero": {
+    "eyebrow": "Healthcare website builder",
+    "headline": "Reach patients with a",
+    "highlight": "Healthcare Website Builder",
+    "description": "List care services, introduce clinicians, publish office hours and locations, and guide patients to your practice’s contact channels.",
+    "primaryAction": "Get started",
+    "image": "/industries/healthcare/hero.png",
+    "imageAlt": "Healthcare Hero section mockup",
+    "offerCard": {
+      "title": "General consultation",
+      "detail": "First appointment",
+      "meta": "30 min · care team",
+      "action": "Book appointment",
+      "image": "/industries/healthcare/dental-consultation.webp",
+      "imageAlt": "Patient discussing care with a clinician during a consultation",
+      "price": "$95",
+      "priceDetail": "Illustrative · per consultation"
+    },
+    "secondaryCard": {
+      "kind": "calendar",
+      "title": "Appointments",
+      "month": "2026-11-01",
+      "selectedDay": 19,
+      "appointmentTitle": "General consultation",
+      "appointmentTime": "10:30 AM",
+      "appointmentDetail": "30 min · Care team",
+      "action": "Book appointment",
+      "notice": "Example appointment time · confirm availability with the practice."
+    }
+  },
+  "inspiration": {
+    "eyebrow": "For every kind of healthcare business",
+    "headline": "A website that fits your healthcare.",
+    "description": "Know where to begin. — Publish care areas, hours, directions, and reception contact.",
+    "items": [
+      {
+        "title": "Local clinics",
+        "description": "Publish care areas, hours, directions, and reception contact.",
+        "image": "/industries/healthcare/doctor-using-phone.webp",
+        "imageAlt": "Healthcare professional checking a phone in a clinic",
+        "action": "Create your website"
+      },
+      {
+        "title": "Allied health practices",
+        "description": "Explain services and verified clinician qualifications in plain language.",
+        "image": "/industries/healthcare/physiotherapy-session.webp",
+        "imageAlt": "Physiotherapist guiding a patient through a shoulder mobility exercise",
+        "action": "Create your website"
+      },
+      {
+        "title": "Dental practices",
+        "description": "Help patients find treatments, access details, and how to contact reception.",
+        "image": "/industries/healthcare/dental-consultation.webp",
+        "imageAlt": "Dentist speaking with a patient in a modern dental office",
+        "action": "Create your website"
+      }
+    ]
+  },
+  "capabilities": {
+    "eyebrow": "For the details healthcare visitors need",
+    "headline": "Everything your healthcare site needs to explain.",
+    "description": "Describe services in plain language without giving personalised medical advice. Show verified clinician details, opening hours, and directions.",
+    "note": "Illustrative website sections. For urgent care, use the appropriate emergency service. Search tip: Use reviewed, factual care descriptions and clinician information.",
+    "items": [
+      {
+        "title": "Care areas",
+        "description": "Describe services in plain language without giving personalised medical advice.",
+        "visual": "services"
+      },
+      {
+        "title": "Team and locations",
+        "description": "Show verified clinician details, opening hours, and directions.",
+        "visual": "subscription"
+      },
+      {
+        "title": "Appointment requests",
+        "description": "Let patients request a preferred visit time, then confirm availability directly with the practice.",
+        "visual": "schedule"
+      },
+      {
+        "title": "Your location",
+        "description": "Help visitors find your healthcare with accurate address, hours, or service-area information.",
+        "visual": "location"
+      },
+      {
+        "title": "A way to reach you",
+        "description": "Collect a clear healthcare enquiry and follow up directly.",
+        "visual": "enquiry"
+      },
+      {
+        "title": "A good fit on mobile",
+        "description": "Give visitors a responsive layout that reads well on phones and larger screens.",
+        "visual": "mobile"
+      }
+    ],
+    "visuals": {
+      "services": {
+        "image": "/industries/healthcare/doctor-using-phone.webp",
+        "eyebrow": "Clinicians & care",
+        "headline": ["Know where to begin."],
+        "rows": ["Clinic hours", "Care team", "Getting here"],
+        "link": "Explore care"
+      },
+      "subscription": {
+        "image": "/industries/healthcare/doctor-using-phone.webp",
+        "eyebrow": "Team and locations",
+        "title": "Care areas & Clinic team",
+        "description": "Show verified clinician details, opening hours, and directions.",
+        "plans": [
+          {
+            "title": "Care areas",
+            "price": "Review services",
+            "action": "Details"
+          },
+          {
+            "title": "Clinic team",
+            "price": "Meet clinicians",
+            "action": "Details"
+          }
+        ]
+      },
+      "portfolio": {
+        "images": [
+          "/industries/healthcare/dental-consultation.webp",
+          "/industries/healthcare/physiotherapy-session.webp"
+        ],
+        "label": "Safe contact route"
+      },
+      "location": {
+        "eyebrow": "Find us",
+        "lines": ["Harbor Clinic", "Getting here"]
+      },
+      "enquiry": {
+        "image": "/industries/healthcare/doctor-using-phone.webp",
+        "eyebrow": "Get in touch",
+        "headline": ["Start with", "a conversation."],
+        "fields": ["Your name", "General enquiry only"],
+        "action": "Send an enquiry"
+      },
+      "mobile": {
+        "image": "/industries/healthcare/doctor-using-phone.webp",
+        "display": ["Healthcare.", "On the go."],
+        "eyebrow": "Made for visitors",
+        "headline": ["Know where to begin."],
+        "action": "Explore care"
+      },
+      "schedule": {
+        "eyebrow": "Appointment request",
+        "title": "Choose a preferred visit",
+        "date": "Tue, 20 Oct",
+        "time": "10:30 AM",
+        "detail": "General consultation",
+        "action": "Request this time",
+        "note": "The practice confirms availability. Do not use this for urgent care."
+      }
+    }
+  },
+  "steps": {
+    "eyebrow": "From healthcare details to a first draft",
+    "headline": "How to Create Your Healthcare Website",
+    "description": "Tell Velozy about your healthcare, review the suggested page plan, and edit the generated homepage. Use the sections above to answer visitors’ practical questions. Publish only information you can keep accurate; extra pages depend on your plan.",
+    "preview": {
+      "briefLabel": "Let’s plan your website",
+      "conversation": [
+        {
+          "question": "What’s your healthcare called?",
+          "answer": "Harbor Clinic"
+        }
+      ],
+      "focusLabel": "What should visitors find first?",
+      "focusOptions": [
+        {
+          "label": "Clinic hours",
+          "selected": true
+        },
+        {
+          "label": "Care team",
+          "selected": false
+        }
+      ],
+      "planLabel": "Your website plan",
+      "pages": ["Home", "Care areas", "Safe contact route", "Contact"],
+      "editorLabel": "Website preview",
+      "brand": "HARBOR CLINIC",
+      "headline": "Know where to begin.",
+      "image": "/industries/healthcare/doctor-using-phone.webp",
+      "imageAlt": "Healthcare professional checking a phone in a clinic",
+      "publishLabel": "Ready for the world"
+    },
+    "items": [
+      {
+        "title": "Tell us about your healthcare",
+        "description": "Share your business details and what visitors need. Approved service descriptions and verified professional credentials."
+      },
+      {
+        "title": "Shape the page plan",
+        "description": "Review suggested pages and homepage sections. Current hours, address, accessibility and phone details."
+      },
+      {
+        "title": "Choose a style. Make it yours.",
+        "description": "Confirm design choices, generate a homepage, then refine the words and images before publishing."
+      }
+    ]
+  },
+  "management": {
+    "businessName": "Harbor Clinic"
+  },
+  "faq": {
+    "eyebrow": "Healthcare website questions",
+    "headline": "Healthcare Website FAQs",
+    "description": "Clear answers to help you plan and publish your healthcare site.",
+    "items": [
+      {
+        "question": "Can patients book an appointment online?",
+        "answer": "A general form can collect a preferred visit time. The practice must confirm availability; a live booking system is not included."
+      },
+      {
+        "question": "Is there a patient portal or medical record system?",
+        "answer": "No patient portal or health-record system is included in this website example."
+      },
+      {
+        "question": "Can patients send symptoms through the form?",
+        "answer": "Use a privacy-reviewed process for patient information. A general website form should not be presented as an emergency or clinical advice channel."
+      },
+      {
+        "question": "What information helps patients choose a clinic?",
+        "answer": "Clearly list the care areas offered, clinician qualifications, locations, opening hours, accessibility details, and how to contact reception."
+      },
+      {
+        "question": "Can patients send medical records or symptoms through the form?",
+        "answer": "A general website enquiry is not a secure patient portal. Do not request sensitive health information through it; direct patients to a privacy-reviewed channel provided by the practice."
+      },
+      {
+        "question": "Can the website give medical advice or handle emergencies?",
+        "answer": "No. Use reviewed, factual service information and direct urgent or emergency needs to the appropriate local care service."
+      }
+    ]
+  },
+  "finalCta": {
+    "eyebrow": "Your healthcare, in its own words",
+    "headline": "Make practical care information easier to find.",
+    "midHeadline": "Ready to start your healthcare website?",
+    "description": "Start with one homepage, then build out the pages your visitors need.",
+    "action": "Start your healthcare website"
+  },
+  "related": [
+    {
+      "slug": "fitness-website-builder",
+      "label": "Fitness"
+    }
+  ]
+}

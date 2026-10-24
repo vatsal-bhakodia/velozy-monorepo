@@ -1,0 +1,265 @@
+{
+  "slug": "salon-website-builder",
+  "metadata": {
+    "title": "Salon Website Builder | Create a Salon Website with Velozy",
+    "description": "Create a salon website with service menus, stylist profiles, a photo gallery, business hours, location details, and appointment request forms."
+  },
+  "hero": {
+    "eyebrow": "Salon website builder",
+    "headline": "Share your work with a",
+    "highlight": "Salon Website Builder",
+    "description": "Publish salon services, stylist profiles and a work gallery, then share hours, location and an easy way for new clients to request an appointment.",
+    "primaryAction": "Get started",
+    "image": "/industries/beauty-salon/hero.png",
+    "imageAlt": "Salon website homepage with beauty and self-care messaging beside a model portrait",
+    "offerCard": {
+      "title": "Signature cut",
+      "detail": "Cut & finish",
+      "meta": "45 min · with a stylist",
+      "action": "Book now",
+      "image": "/industries/beauty-salon/services.png",
+      "imageAlt": "Illustrative layered haircut in a salon",
+      "price": "$68",
+      "priceDetail": "Illustrative · per cut"
+    },
+    "secondaryCard": {
+      "kind": "calendar",
+      "title": "Appointments",
+      "month": "2026-11-01",
+      "selectedDay": 12,
+      "appointmentTitle": "Cut & finish",
+      "appointmentTime": "10:30 AM",
+      "appointmentDetail": "45 min · With Alex",
+      "action": "Book appointment",
+      "notice": "Illustrative time · choose a real slot with the salon."
+    }
+  },
+  "inspiration": {
+    "eyebrow": "For every kind of beauty business",
+    "headline": "A website that feels like your salon.",
+    "description": "A home for your services, your style, and your next client.",
+    "items": [
+      {
+        "title": "Hair salons",
+        "description": "Showcase your cuts, colour services, and stylists with a website that feels like your salon.",
+        "image": "/industries/beauty-salon/services.png",
+        "imageAlt": "Layered brunette hairstyle showcasing a salon’s cutting and styling work",
+        "imagePosition": "65% 35%",
+        "action": "Create your website"
+      },
+      {
+        "title": "Spas & treatments",
+        "description": "Help clients explore facials, massage, and beauty treatments at their own pace.",
+        "image": "/industries/beauty-salon/bg.png",
+        "imageAlt": "Warm beauty salon interior with natural light and plants",
+        "imagePosition": "center",
+        "action": "Create your website"
+      },
+      {
+        "title": "Independent beauty professionals",
+        "description": "Put your makeup, lash, or bridal portfolio first and make enquiries easy.",
+        "image": "/industries/beauty-salon/enquiry.png",
+        "imageAlt": "Beauty professional discussing appointment details with a client",
+        "imagePosition": "center",
+        "action": "Create your website"
+      }
+    ]
+  },
+  "capabilities": {
+    "eyebrow": "Made for the details clients look for",
+    "headline": "Everything your salon site needs to say hello.",
+    "description": "Show the services, appointments, products, and memberships people may come looking for, with a clear next step for each.",
+    "items": [
+      {
+        "title": "Your services",
+        "description": "Lay out treatments, descriptions, and starting prices so clients know what you offer.",
+        "visual": "services"
+      },
+      {
+        "title": "Salon subscriptions",
+        "description": "Present recurring care options and what each includes, with a clear way to choose a plan.",
+        "visual": "subscription"
+      },
+      {
+        "title": "Your work",
+        "description": "Use clear, well-cropped images to show the looks and styles you create.",
+        "visual": "portfolio"
+      },
+      {
+        "title": "Your place",
+        "description": "Share your hours, address, and the details people need before visiting.",
+        "visual": "location"
+      },
+      {
+        "title": "A way to reach you",
+        "description": "Add a contact or enquiry form for questions and appointment requests.",
+        "visual": "enquiry"
+      },
+      {
+        "title": "A good fit on mobile",
+        "description": "Give visitors a responsive layout that reads well on phones and larger screens.",
+        "visual": "mobile"
+      }
+    ],
+    "visuals": {
+      "services": {
+        "image": "/industries/beauty-salon/services.png",
+        "imagePosition": "85% 35%",
+        "eyebrow": "The service edit",
+        "headline": ["A little time.", "All for you."],
+        "rows": ["Cut & finish", "Colour & care", "Treatment rituals"],
+        "link": "Explore our services"
+      },
+      "subscription": {
+        "image": "/industries/beauty-salon/bg.png",
+        "imagePosition": "53% center",
+        "eyebrow": "Salon subscription",
+        "title": "The Ritual Club",
+        "description": "A regular moment to reset and feel your best.",
+        "plans": [
+          {
+            "title": "Monthly membership",
+            "price": "$49 / month",
+            "action": "Select"
+          },
+          {
+            "title": "Annual membership",
+            "price": "$39 / month · billed yearly",
+            "action": "Select"
+          }
+        ]
+      },
+      "portfolio": {
+        "images": [
+          "/industries/beauty-salon/services.png",
+          "/industries/beauty-salon/enquiry.png"
+        ],
+        "label": "The latest looks"
+      },
+      "location": {
+        "eyebrow": "Come on in",
+        "lines": ["Your neighbourhood.", "Your new favourite salon."]
+      },
+      "enquiry": {
+        "image": "/industries/beauty-salon/enquiry.png",
+        "eyebrow": "Let’s talk hair",
+        "headline": ["Your next look", "starts here."],
+        "fields": ["Your name", "What do you have in mind?"],
+        "action": "Send an enquiry"
+      },
+      "mobile": {
+        "image": "/industries/beauty-salon/services.png",
+        "display": ["Style.", "On the go."],
+        "eyebrow": "Made for you",
+        "headline": ["Good hair.", "Great feeling."],
+        "action": "Discover our salon"
+      }
+    },
+    "note": "The images and prices are illustrative. Appointment requests can be collected as enquiries; online scheduling and recurring payments depend on supported, enabled modules."
+  },
+  "steps": {
+    "eyebrow": "From salon details to a first draft",
+    "headline": "How to Create Your Beauty Salon Website",
+    "description": "Share your salon details, review your site plan, and choose a design. Velozy turns your choices into a homepage you can make your own.",
+    "preview": {
+      "briefLabel": "Let’s plan your website",
+      "conversation": [
+        {
+          "question": "What’s your salon called?",
+          "answer": "The Sage Studio"
+        }
+      ],
+      "focusLabel": "What do you specialise in?",
+      "focusOptions": [
+        {
+          "label": "Hair styling",
+          "selected": true
+        },
+        {
+          "label": "Skin care",
+          "selected": false
+        }
+      ],
+      "planLabel": "Your website plan",
+      "pages": ["Home", "Services & treatments", "Our salon", "Contact"],
+      "editorLabel": "Website preview",
+      "brand": "THE SAGE STUDIO",
+      "headline": "Your time. Your kind of beautiful.",
+      "image": "/industries/beauty-salon/services.png",
+      "imageAlt": "Layered brunette haircut in a salon website preview",
+      "publishLabel": "Ready for the world"
+    },
+    "items": [
+      {
+        "title": "Tell us about your salon",
+        "description": "Share your salon name, what you specialise in, and what your website needs. A few simple answers give us a place to start."
+      },
+      {
+        "title": "Shape the page plan",
+        "description": "Review the suggested pages and homepage sections. Adjust the structure around what your salon needs."
+      },
+      {
+        "title": "Choose a style. Make it yours.",
+        "description": "Confirm your design choices and generate your homepage. Refine the words and images, then publish when you’re ready."
+      }
+    ]
+  },
+  "management": {
+    "businessName": "The Sage Studio"
+  },
+  "faq": {
+    "eyebrow": "Salon website questions",
+    "headline": "Beauty Salon Website FAQs",
+    "description": "Clear answers to help you plan and publish your salon site.",
+    "items": [
+      {
+        "question": "How do I make a website for my salon?",
+        "answer": "Start with the details clients need: services, salon hours, location, team, examples of your work, and a way to contact you. Velozy uses your business profile and page plan to generate a starting point you can review and edit."
+      },
+      {
+        "question": "Can I show salon services and prices?",
+        "answer": "Yes. You can create service sections with descriptions and prices that you provide, then review and update them in the site editor."
+      },
+      {
+        "question": "Can clients book appointments on the website?",
+        "answer": "A contact or enquiry form can collect appointment requests. Online appointment scheduling depends on the bookings module being available for your account and site."
+      },
+      {
+        "question": "Can I add photos of my salon and work?",
+        "answer": "Yes. Add images of your space, team, and work to help visitors understand the style of your salon. Use images you have permission to publish."
+      },
+      {
+        "question": "Can I publish a salon website for free?",
+        "answer": "The Free plan includes one published homepage on a Velozy subdomain. Additional pages and custom domains require a paid plan. Check the current pricing page for plan details."
+      },
+      {
+        "question": "Will my salon website work on phones?",
+        "answer": "Velozy generates responsive websites designed to adapt to phone, tablet, and desktop screens. Review the preview at each size before publishing."
+      }
+    ]
+  },
+  "finalCta": {
+    "eyebrow": "Your salon, in its own words",
+    "headline": "Make space for your salon online.",
+    "midHeadline": "Ready to start your salon website?",
+    "description": "Start with one homepage, then build out the pages your clients need.",
+    "action": "Start your salon website"
+  },
+  "name": "Salon",
+  "palette": {
+    "accent": "#536d49",
+    "pale": "#b7c8a8",
+    "surface": "#111610",
+    "ink": "#29382d"
+  },
+  "related": [
+    {
+      "slug": "fitness-website-builder",
+      "label": "Fitness"
+    },
+    {
+      "slug": "healthcare-website-builder",
+      "label": "Healthcare"
+    }
+  ]
+}

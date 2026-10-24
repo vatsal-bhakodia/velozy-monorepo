@@ -1,0 +1,259 @@
+{
+  "slug": "restaurant-website-builder",
+  "name": "Restaurant",
+  "metadata": {
+    "title": "Restaurant Website Builder | Velozy",
+    "description": "Create a restaurant website with online menus, opening hours, location, table enquiry forms, and links to your ordering service."
+  },
+  "palette": {
+    "accent": "#933e36",
+    "pale": "#f6ddd3",
+    "surface": "#281614",
+    "ink": "#411d1a"
+  },
+  "hero": {
+    "eyebrow": "Restaurant website builder",
+    "headline": "Publish menus with a",
+    "highlight": "Restaurant Website Builder",
+    "description": "Keep your menu, opening hours and directions easy to find. Let diners send table enquiries or follow your online ordering link.",
+    "primaryAction": "Get started",
+    "image": "/industries/restaurant/hero.webp",
+    "imageAlt": "Example restaurant website featuring a dining room and reservation prompt",
+    "offerCard": {
+      "title": "Roasted salmon",
+      "detail": "Lemon herb butter",
+      "meta": "Dinner · seasonal plate",
+      "action": "Buy now",
+      "image": "/industries/restaurant/roasted-salmon.webp",
+      "imageAlt": "Roasted salmon entrée with vegetables on a ceramic plate",
+      "price": "$24",
+      "priceDetail": "Illustrative · per entrée",
+      "quantity": 1
+    },
+    "secondaryCard": {
+      "kind": "reservation",
+      "title": "Reserve a table",
+      "date": "November 22",
+      "partySize": "2 guests",
+      "timeSlots": ["6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM"],
+      "action": "Find a table",
+      "notice": "Illustrative times · the restaurant confirms reservations."
+    }
+  },
+  "inspiration": {
+    "eyebrow": "For every kind of restaurant business",
+    "headline": "A website that fits your restaurant.",
+    "description": "A table worth making time for. — Give regulars and newcomers a current menu and clear hours.",
+    "items": [
+      {
+        "title": "Neighbourhood restaurants",
+        "description": "Give regulars and newcomers a current menu and clear hours.",
+        "image": "/industries/restaurant/restaurant-dining-room.webp",
+        "imageAlt": "Warmly lit neighbourhood restaurant dining room",
+        "action": "Create your website"
+      },
+      {
+        "title": "Fine dining venues",
+        "description": "Show your approach, menu, and reservation contact with care.",
+        "image": "/industries/restaurant/roasted-salmon.webp",
+        "imageAlt": "Roasted salmon entrée with vegetables on a ceramic plate",
+        "action": "Create your website"
+      },
+      {
+        "title": "Private dining spaces",
+        "description": "Explain group options and collect event enquiries.",
+        "image": "/industries/restaurant/private-dining.webp",
+        "imageAlt": "Long table set for a private dining gathering",
+        "action": "Create your website"
+      }
+    ]
+  },
+  "capabilities": {
+    "eyebrow": "For the details restaurant visitors need",
+    "headline": "Everything your restaurant site needs to explain.",
+    "description": "Show dishes, prices, and dietary information you can keep current. Share hours, address, accessibility, and contact information.",
+    "note": "Illustrative website sections. A table request is not a confirmed reservation. Search tip: Make cuisine, menu, location, and hours easy to find.",
+    "items": [
+      {
+        "title": "Readable menu",
+        "description": "Show dishes, prices, and dietary information you can keep current.",
+        "visual": "services"
+      },
+      {
+        "title": "Visit details",
+        "description": "Share hours, address, accessibility, and contact information.",
+        "visual": "subscription"
+      },
+      {
+        "title": "Table enquiries",
+        "description": "Collect reservation requests or link to an existing reservation provider; confirm tables separately.",
+        "visual": "portfolio"
+      },
+      {
+        "title": "Your location",
+        "description": "Help visitors find your restaurant with accurate address, hours, or service-area information.",
+        "visual": "location"
+      },
+      {
+        "title": "A way to reach you",
+        "description": "Collect a clear restaurant enquiry and follow up directly.",
+        "visual": "enquiry"
+      },
+      {
+        "title": "A good fit on mobile",
+        "description": "Give visitors a responsive layout that reads well on phones and larger screens.",
+        "visual": "mobile"
+      }
+    ],
+    "visuals": {
+      "services": {
+        "image": "/industries/restaurant/roasted-salmon.webp",
+        "eyebrow": "Food & dining",
+        "headline": ["A table worth making time for."],
+        "rows": ["Dinner menu", "Open Tue–Sun", "Private dining"],
+        "link": "View the menu"
+      },
+      "subscription": {
+        "image": "/industries/restaurant/private-dining.webp",
+        "eyebrow": "Visit details",
+        "title": "Dinner menu & Private dining",
+        "description": "Share hours, address, accessibility, and contact information.",
+        "plans": [
+          {
+            "title": "Dinner menu",
+            "price": "Browse dishes",
+            "action": "Details"
+          },
+          {
+            "title": "Private dining",
+            "price": "Ask the team",
+            "action": "Details"
+          }
+        ]
+      },
+      "portfolio": {
+        "images": [
+          "/industries/restaurant/private-dining.webp",
+          "/industries/restaurant/roasted-salmon.webp"
+        ],
+        "label": "Table enquiries"
+      },
+      "location": {
+        "eyebrow": "Find us",
+        "lines": ["Ember Table", "Private dining"]
+      },
+      "enquiry": {
+        "image": "/industries/restaurant/roasted-salmon.webp",
+        "eyebrow": "Get in touch",
+        "headline": ["Start with", "a conversation."],
+        "fields": ["Your name", "Table or event question?"],
+        "action": "Send an enquiry"
+      },
+      "mobile": {
+        "image": "/industries/restaurant/roasted-salmon.webp",
+        "display": ["Restaurant.", "On the go."],
+        "eyebrow": "Made for visitors",
+        "headline": ["A table worth making time for."],
+        "action": "View the menu"
+      }
+    }
+  },
+  "steps": {
+    "eyebrow": "From restaurant details to a first draft",
+    "headline": "How to Create Your Restaurant Website",
+    "description": "Tell Velozy about your restaurant, review the suggested page plan, and edit the generated homepage. Use the sections above to answer visitors’ practical questions. Publish only information you can keep accurate; extra pages depend on your plan.",
+    "preview": {
+      "briefLabel": "Let’s plan your website",
+      "conversation": [
+        {
+          "question": "What’s your restaurant called?",
+          "answer": "Ember Table"
+        }
+      ],
+      "focusLabel": "What should visitors find first?",
+      "focusOptions": [
+        {
+          "label": "Dinner menu",
+          "selected": true
+        },
+        {
+          "label": "Open Tue–Sun",
+          "selected": false
+        }
+      ],
+      "planLabel": "Your website plan",
+      "pages": ["Home", "Readable menu", "Table enquiries", "Contact"],
+      "editorLabel": "Website preview",
+      "brand": "EMBER TABLE",
+      "headline": "A table worth making time for.",
+      "image": "/industries/restaurant/roasted-salmon.webp",
+      "imageAlt": "Roasted salmon entrée with vegetables on a ceramic plate",
+      "publishLabel": "Ready for the world"
+    },
+    "items": [
+      {
+        "title": "Tell us about your restaurant",
+        "description": "Share your business details and what visitors need. Current menus, prices, and dietary information."
+      },
+      {
+        "title": "Shape the page plan",
+        "description": "Review suggested pages and homepage sections. Professional or permissioned food and venue photos."
+      },
+      {
+        "title": "Choose a style. Make it yours.",
+        "description": "Confirm design choices, generate a homepage, then refine the words and images before publishing."
+      }
+    ]
+  },
+  "management": {
+    "businessName": "Ember Table"
+  },
+  "faq": {
+    "eyebrow": "Restaurant website questions",
+    "headline": "Restaurant Website FAQs",
+    "description": "Clear answers to help you plan and publish your restaurant site.",
+    "items": [
+      {
+        "question": "Can guests reserve a table online?",
+        "answer": "You can collect reservation enquiries or link to an existing booking service. A live table inventory and confirmation system is not included here."
+      },
+      {
+        "question": "Can customers order delivery?",
+        "answer": "Online ordering and fulfilment require a separate working commerce flow; this page does not promise them."
+      },
+      {
+        "question": "Can I show different lunch and dinner menus?",
+        "answer": "Yes. Organise menu sections around the meals you serve and update them as they change."
+      },
+      {
+        "question": "Can I show separate menus for meals or dietary needs?",
+        "answer": "Yes. Organise the menu into sections such as lunch, dinner, or drinks, and publish dietary or allergen details only when your restaurant has verified them."
+      },
+      {
+        "question": "Can guests make a confirmed table reservation?",
+        "answer": "The site can collect a reservation enquiry or link to an existing booking provider. A live table inventory and reservation confirmation flow are not included here."
+      },
+      {
+        "question": "Can customers order takeaway or delivery?",
+        "answer": "Online ordering requires a working checkout and fulfilment flow. This page can present the menu and contact details but does not include that ordering system."
+      }
+    ]
+  },
+  "finalCta": {
+    "eyebrow": "Your restaurant, in its own words",
+    "headline": "Give diners a reason to plan their visit.",
+    "midHeadline": "Ready to start your restaurant website?",
+    "description": "Start with one homepage, then build out the pages your visitors need.",
+    "action": "Start your restaurant website"
+  },
+  "related": [
+    {
+      "slug": "cafe-website-builder",
+      "label": "Café"
+    },
+    {
+      "slug": "event-website-builder",
+      "label": "Event"
+    }
+  ]
+}

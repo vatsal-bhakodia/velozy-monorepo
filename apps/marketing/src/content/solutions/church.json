@@ -1,0 +1,256 @@
+{
+  "slug": "church-website-builder",
+  "name": "Church",
+  "metadata": {
+    "title": "Church Website Builder | Velozy",
+    "description": "Create a church website with service times, ministries, events, directions, and links to a donation provider."
+  },
+  "palette": {
+    "accent": "#86512a",
+    "pale": "#f1d8b6",
+    "surface": "#221710",
+    "ink": "#3a2416"
+  },
+  "hero": {
+    "eyebrow": "Church website builder",
+    "headline": "Share your faith with a",
+    "highlight": "Church Website Builder",
+    "description": "Publish service times, ministry details and event information, share directions, and link visitors to your donation provider.",
+    "primaryAction": "Get started",
+    "image": "/industries/church/hero.webp",
+    "imageAlt": "Example church website over a chapel interior with a welcome message",
+    "offerCard": {
+      "title": "Sunday gathering",
+      "detail": "Sunday service · 10:00 AM",
+      "meta": "Family welcome",
+      "action": "Plan a visit",
+      "image": "/industries/church/stained-glass-sanctuary.webp",
+      "imageAlt": "Light filtering through the stained glass inside a church"
+    },
+    "secondaryCard": {
+      "kind": "donation",
+      "title": "Support the mission",
+      "description": "Help fund community care and church programs.",
+      "frequencies": ["Give once", "Monthly"],
+      "amounts": ["$25", "$50", "$100"],
+      "action": "Donate",
+      "notice": "Illustrative amounts · set them for your campaign."
+    }
+  },
+  "inspiration": {
+    "eyebrow": "For every kind of church business",
+    "headline": "A website that fits your church.",
+    "description": "Find your place this Sunday. — Welcome first-time visitors with service times, directions, and what to expect.",
+    "items": [
+      {
+        "title": "Local congregations",
+        "description": "Welcome first-time visitors with service times, directions, and what to expect.",
+        "image": "/industries/church/stained-glass-sanctuary.webp",
+        "imageAlt": "Light filtering through the stained glass inside a church",
+        "action": "Create your website"
+      },
+      {
+        "title": "Youth ministries",
+        "description": "Explain age groups, meeting times, and who families can contact.",
+        "image": "/industries/church/youth-group.webp",
+        "imageAlt": "Young adults gathered for a church youth ministry",
+        "action": "Create your website"
+      },
+      {
+        "title": "Community outreach",
+        "description": "Show current programs and how neighbours can volunteer or ask for help.",
+        "image": "/industries/church/community-meal-photo.webp",
+        "imageAlt": "Church volunteers serving a community meal in a church hall",
+        "action": "Create your website"
+      }
+    ]
+  },
+  "capabilities": {
+    "eyebrow": "For the details church visitors need",
+    "headline": "Everything your church site needs to explain.",
+    "description": "Show weekly times, accessibility details, and what a newcomer can expect. Explain ministries, community gatherings, and who each activity welcomes.",
+    "note": "Illustrative website sections. Times are an illustrative example; confirm locally. Search tip: Use your actual church name and location; do not create generic city pages.",
+    "items": [
+      {
+        "title": "Service times",
+        "description": "Show weekly times, accessibility details, and what a newcomer can expect.",
+        "visual": "services"
+      },
+      {
+        "title": "Groups and events",
+        "description": "Explain ministries, community gatherings, and who each activity welcomes.",
+        "visual": "subscription"
+      },
+      {
+        "title": "A contact path",
+        "description": "Give visitors a form for questions and a clear address and directions.",
+        "visual": "portfolio"
+      },
+      {
+        "title": "Your location",
+        "description": "Help visitors find your church with accurate address, hours, or service-area information.",
+        "visual": "location"
+      },
+      {
+        "title": "A way to reach you",
+        "description": "Collect a clear church enquiry and follow up directly.",
+        "visual": "enquiry"
+      },
+      {
+        "title": "A good fit on mobile",
+        "description": "Give visitors a responsive layout that reads well on phones and larger screens.",
+        "visual": "mobile"
+      }
+    ],
+    "visuals": {
+      "services": {
+        "image": "/industries/church/stained-glass-sanctuary.webp",
+        "eyebrow": "Service times",
+        "headline": ["Find your place this Sunday."],
+        "rows": ["Sunday · 10:00 AM", "Family welcome", "Find us"],
+        "link": "Plan a visit"
+      },
+      "subscription": {
+        "image": "/industries/church/youth-group.webp",
+        "eyebrow": "Groups and events",
+        "title": "Worship services & Community groups",
+        "description": "Explain ministries, community gatherings, and who each activity welcomes.",
+        "plans": [
+          {
+            "title": "Worship services",
+            "price": "See service times",
+            "action": "Details"
+          },
+          {
+            "title": "Community groups",
+            "price": "Explore ministries",
+            "action": "Details"
+          }
+        ]
+      },
+      "portfolio": {
+        "images": [
+          "/industries/church/community-meal-photo.webp",
+          "/industries/church/youth-group.webp"
+        ],
+        "label": "A contact path"
+      },
+      "location": {
+        "eyebrow": "Find us",
+        "lines": ["Open Door Community", "Find us"]
+      },
+      "enquiry": {
+        "image": "/industries/church/community-meal-photo.webp",
+        "eyebrow": "Get in touch",
+        "headline": ["Start with", "a conversation."],
+        "fields": ["Your name", "How can we help?"],
+        "action": "Send an enquiry"
+      },
+      "mobile": {
+        "image": "/industries/church/stained-glass-sanctuary.webp",
+        "display": ["Church.", "On the go."],
+        "eyebrow": "Made for visitors",
+        "headline": ["Find your place this Sunday."],
+        "action": "Plan a visit"
+      }
+    }
+  },
+  "steps": {
+    "eyebrow": "From church details to a first draft",
+    "headline": "How to Create Your Church Website",
+    "description": "Tell Velozy about your church, review the suggested page plan, and edit the generated homepage. Use the sections above to answer visitors’ practical questions. Publish only information you can keep accurate; extra pages depend on your plan.",
+    "preview": {
+      "briefLabel": "Let’s plan your website",
+      "conversation": [
+        {
+          "question": "What’s your church called?",
+          "answer": "Open Door Community"
+        }
+      ],
+      "focusLabel": "What should visitors find first?",
+      "focusOptions": [
+        {
+          "label": "Sunday · 10:00 AM",
+          "selected": true
+        },
+        {
+          "label": "Family welcome",
+          "selected": false
+        }
+      ],
+      "planLabel": "Your website plan",
+      "pages": ["Home", "Service times", "A contact path", "Contact"],
+      "editorLabel": "Website preview",
+      "brand": "OPEN DOOR COMMUNITY",
+      "headline": "Find your place this Sunday.",
+      "image": "/industries/church/stained-glass-sanctuary.webp",
+      "imageAlt": "Stained glass inside a local church",
+      "publishLabel": "Ready for the world"
+    },
+    "items": [
+      {
+        "title": "Tell us about your church",
+        "description": "Share your business details and what visitors need. Current service schedule and holiday changes."
+      },
+      {
+        "title": "Shape the page plan",
+        "description": "Review suggested pages and homepage sections. Approved descriptions and photos of gatherings."
+      },
+      {
+        "title": "Choose a style. Make it yours.",
+        "description": "Confirm design choices, generate a homepage, then refine the words and images before publishing."
+      }
+    ]
+  },
+  "management": {
+    "businessName": "Open Door Community"
+  },
+  "faq": {
+    "eyebrow": "Church website questions",
+    "headline": "Church Website FAQs",
+    "description": "Clear answers to help you plan and publish your church site.",
+    "items": [
+      {
+        "question": "Can we publish a calendar of events?",
+        "answer": "You can list event details on website pages and update them as plans change. This is not an event registration system."
+      },
+      {
+        "question": "Can we collect donations?",
+        "answer": "A donation payment flow requires a supported and configured provider. Do not present a donate button as active before that is in place."
+      },
+      {
+        "question": "Can newcomers contact us privately?",
+        "answer": "A contact form can collect a message for your team; define who receives and responds to it."
+      },
+      {
+        "question": "Can I share service times and directions for new visitors?",
+        "answer": "Yes. Add service times, your address, accessibility details, and what visitors can expect. Keep local schedules current."
+      },
+      {
+        "question": "Can we share sermons or livestreams?",
+        "answer": "You can add links to media hosted through a service your church uses. A livestreaming or media-hosting system is not included in this website example."
+      },
+      {
+        "question": "Can people register for a church event?",
+        "answer": "You can publish event details and provide a contact path or link to an external registration provider. The page does not include event registration management."
+      }
+    ]
+  },
+  "finalCta": {
+    "eyebrow": "Your church, in its own words",
+    "headline": "Give your community a clearer welcome online.",
+    "midHeadline": "Ready to start your church website?",
+    "description": "Start with one homepage, then build out the pages your visitors need.",
+    "action": "Start your church website"
+  },
+  "related": [
+    {
+      "slug": "nonprofit-website-builder",
+      "label": "Nonprofit"
+    },
+    {
+      "slug": "event-website-builder",
+      "label": "Event"
+    }
+  ]
+}

@@ -1,0 +1,265 @@
+{
+  "slug": "law-firm-website-builder",
+  "name": "Law Firm",
+  "metadata": {
+    "title": "Law Firm Website Builder | Velozy",
+    "description": "Create a law firm website with practice area pages, attorney profiles, office locations, and consultation enquiry forms."
+  },
+  "palette": {
+    "accent": "#8f6b3a",
+    "pale": "#e9e0d1",
+    "surface": "#17283a",
+    "ink": "#1b2d42"
+  },
+  "hero": {
+    "eyebrow": "Law firm website builder",
+    "headline": "Grow your firm with a",
+    "highlight": "Law Firm Website Builder",
+    "description": "Explain practice areas, introduce attorneys and list office locations. Give prospective clients a direct path to request a consultation.",
+    "primaryAction": "Get started",
+    "image": "/industries/law-firm/hero.png",
+    "imageAlt": "Example law firm website featuring an attorney and consultation information",
+    "offerCard": {
+      "title": "Business law consultation",
+      "detail": "Initial meeting · 60 min",
+      "meta": "Speak with an attorney",
+      "action": "Book consultation",
+      "image": "/industries/law-firm/attorney-consultation.webp",
+      "imageAlt": "Attorney consulting with a client in a law office",
+      "price": "$175",
+      "priceDetail": "Illustrative consultation fee"
+    },
+    "secondaryCard": {
+      "kind": "details",
+      "title": "Consultation details",
+      "rows": [
+        {
+          "label": "Practice area",
+          "value": "Business law"
+        },
+        {
+          "label": "Meeting",
+          "value": "60-minute initial consultation"
+        },
+        {
+          "label": "Fee",
+          "value": "Example consultation rate"
+        }
+      ],
+      "footer": "Illustrative fee. Scope and terms are agreed with your attorney.",
+      "action": "Request a consultation"
+    }
+  },
+  "inspiration": {
+    "eyebrow": "For every kind of law firm business",
+    "headline": "A website that fits your law firm.",
+    "description": "Start with a clear conversation. — Explain your practice focus, jurisdiction, and consultation process.",
+    "items": [
+      {
+        "title": "Solo attorneys",
+        "description": "Explain your practice focus, jurisdiction, and consultation process.",
+        "image": "/industries/law-firm/attorney-consultation.webp",
+        "imageAlt": "Attorney consulting with a client in a law office",
+        "action": "Create your website"
+      },
+      {
+        "title": "Boutique practices",
+        "description": "Introduce the attorneys and the kinds of matters you handle.",
+        "image": "/industries/law-firm/lady-justice-statue.webp",
+        "imageAlt": "Lady Justice statue representing a boutique legal practice",
+        "action": "Create your website"
+      },
+      {
+        "title": "Multi-office firms",
+        "description": "Help clients find the right office and practice team.",
+        "image": "/industries/law-firm/lady-justice-statue.webp",
+        "imageAlt": "Lady Justice statue representing a law firm",
+        "action": "Create your website"
+      }
+    ]
+  },
+  "capabilities": {
+    "eyebrow": "For the details law firm visitors need",
+    "headline": "Everything your law firm site needs to explain.",
+    "description": "Explain which matters the firm handles and who the service is for. Publish verified credentials, admissions, and experience with permission.",
+    "note": "Illustrative website sections. An enquiry is not legal advice or an attorney-client relationship. Search tip: Describe services and jurisdictions precisely without promising outcomes.",
+    "items": [
+      {
+        "title": "Practice areas",
+        "description": "Explain which matters the firm handles and who the service is for.",
+        "visual": "services"
+      },
+      {
+        "title": "Attorney profiles",
+        "description": "Publish verified credentials, admissions, and experience with permission.",
+        "visual": "subscription"
+      },
+      {
+        "title": "Consultation enquiries",
+        "description": "Collect basic contact details and follow up before requesting confidential case material.",
+        "visual": "portfolio"
+      },
+      {
+        "title": "Your location",
+        "description": "Help visitors find your law firm with accurate address, hours, or service-area information.",
+        "visual": "location"
+      },
+      {
+        "title": "A way to reach you",
+        "description": "Collect a clear law firm enquiry and follow up directly.",
+        "visual": "enquiry"
+      },
+      {
+        "title": "A good fit on mobile",
+        "description": "Give visitors a responsive layout that reads well on phones and larger screens.",
+        "visual": "mobile"
+      }
+    ],
+    "visuals": {
+      "services": {
+        "image": "/industries/law-firm/lady-justice-statue.webp",
+        "eyebrow": "Practice areas",
+        "headline": ["Start with a clear conversation."],
+        "rows": ["Business law", "Attorney profiles", "Office hours"],
+        "link": "Explore services"
+      },
+      "subscription": {
+        "image": "/industries/law-firm/attorney-consultation.webp",
+        "eyebrow": "Attorney profiles",
+        "title": "Business matters & Consultations",
+        "description": "Publish verified credentials, admissions, and experience with permission.",
+        "plans": [
+          {
+            "title": "Business matters",
+            "price": "Read practice scope",
+            "action": "Details"
+          },
+          {
+            "title": "Consultations",
+            "price": "Request a conversation",
+            "action": "Details"
+          }
+        ]
+      },
+      "portfolio": {
+        "images": [
+          "/industries/law-firm/attorney-consultation.webp",
+          "/industries/law-firm/lady-justice-statue.webp"
+        ],
+        "label": "Consultation enquiries"
+      },
+      "location": {
+        "eyebrow": "Find us",
+        "lines": ["Meridian Law", "Office hours"]
+      },
+      "enquiry": {
+        "image": "/industries/law-firm/attorney-consultation.webp",
+        "eyebrow": "Get in touch",
+        "headline": ["Start with", "a conversation."],
+        "fields": ["Your name", "General matter type"],
+        "action": "Send an enquiry"
+      },
+      "mobile": {
+        "image": "/industries/law-firm/lady-justice-statue.webp",
+        "display": ["Law firm.", "On the go."],
+        "eyebrow": "Made for visitors",
+        "headline": ["Start with a clear conversation."],
+        "action": "Explore services"
+      }
+    }
+  },
+  "steps": {
+    "eyebrow": "From law firm details to a first draft",
+    "headline": "How to Create Your Law Firm Website",
+    "description": "Tell Velozy about your law firm, review the suggested page plan, and edit the generated homepage. Use the sections above to answer visitors’ practical questions. Publish only information you can keep accurate; extra pages depend on your plan.",
+    "preview": {
+      "briefLabel": "Let’s plan your website",
+      "conversation": [
+        {
+          "question": "What’s your law firm called?",
+          "answer": "Meridian Law"
+        }
+      ],
+      "focusLabel": "What should visitors find first?",
+      "focusOptions": [
+        {
+          "label": "Business law",
+          "selected": true
+        },
+        {
+          "label": "Attorney profiles",
+          "selected": false
+        }
+      ],
+      "planLabel": "Your website plan",
+      "pages": ["Home", "Practice areas", "Consultation enquiries", "Contact"],
+      "editorLabel": "Website preview",
+      "brand": "MERIDIAN LAW",
+      "headline": "Start with a clear conversation.",
+      "image": "/industries/law-firm/lady-justice-statue.webp",
+      "imageAlt": "Lady Justice statue representing legal practice",
+      "publishLabel": "Ready for the world"
+    },
+    "items": [
+      {
+        "title": "Tell us about your law firm",
+        "description": "Share your business details and what visitors need. Accurate practice area descriptions and jurisdiction details."
+      },
+      {
+        "title": "Shape the page plan",
+        "description": "Review suggested pages and homepage sections. Approved attorney bios, credentials, and portraits."
+      },
+      {
+        "title": "Choose a style. Make it yours.",
+        "description": "Confirm design choices, generate a homepage, then refine the words and images before publishing."
+      }
+    ]
+  },
+  "management": {
+    "businessName": "Meridian Law"
+  },
+  "faq": {
+    "eyebrow": "Law firm website questions",
+    "headline": "Law Firm Website FAQs",
+    "description": "Clear answers to help you plan and publish your law firm site.",
+    "items": [
+      {
+        "question": "Does a contact form create an attorney-client relationship?",
+        "answer": "No. Explain your intake process and add a legal notice reviewed by your firm."
+      },
+      {
+        "question": "Can I post past case results?",
+        "answer": "Only publish results you are allowed to disclose, with context required by applicable advertising rules."
+      },
+      {
+        "question": "Can visitors request a consultation?",
+        "answer": "Yes. Collect an enquiry and let your team confirm availability and next steps."
+      },
+      {
+        "question": "Can prospective clients send confidential case details?",
+        "answer": "A general website form should collect only basic contact and matter-type information. Tell visitors not to send confidential documents or sensitive details before your firm establishes a secure process."
+      },
+      {
+        "question": "What should an attorney profile include?",
+        "answer": "Use verified credentials, jurisdictions, practice areas, and experience approved by the attorney. Follow the professional advertising rules that apply to your firm."
+      },
+      {
+        "question": "Can I explain what happens after a consultation request?",
+        "answer": "Yes. Describe your intake steps and how your team will respond. A request does not confirm an appointment or create an attorney-client relationship."
+      }
+    ]
+  },
+  "finalCta": {
+    "eyebrow": "Your law firm, in its own words",
+    "headline": "Make the first legal enquiry clearer.",
+    "midHeadline": "Ready to start your law firm website?",
+    "description": "Start with one homepage, then build out the pages your visitors need.",
+    "action": "Start your law firm website"
+  },
+  "related": [
+    {
+      "slug": "real-estate-website-builder",
+      "label": "Real Estate"
+    }
+  ]
+}

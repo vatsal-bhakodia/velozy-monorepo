@@ -1,0 +1,272 @@
+{
+  "slug": "insurance-agency-website-builder",
+  "name": "Insurance Agency",
+  "metadata": {
+    "title": "Insurance Agency Website Builder | Velozy",
+    "description": "Build an insurance agency website to explain home, auto, life, and business coverage, introduce your agents, and collect quote requests."
+  },
+  "palette": {
+    "accent": "#39758a",
+    "pale": "#b8dde6",
+    "surface": "#142832",
+    "ink": "#1e3b48"
+  },
+  "hero": {
+    "eyebrow": "Insurance agency website builder",
+    "headline": "Grow your agency with an",
+    "highlight": "Insurance Agency Website Builder",
+    "description": "Explain coverage options, introduce your agents, and help clients request home, auto, life, or business insurance quotes.",
+    "primaryAction": "Get started",
+    "image": "/industries/insurance/agency-consultation.webp",
+    "imageAlt": "Independent insurance advisor reviewing coverage options with a couple",
+    "offerCard": {
+      "title": "Coverage review",
+      "detail": "Home, auto & business",
+      "meta": "Talk through your coverage needs",
+      "action": "Request a quote",
+      "image": "/industries/insurance/agency-consultation.webp",
+      "imageAlt": "Insurance advisor discussing coverage with clients at an office table"
+    },
+    "secondaryCard": {
+      "kind": "details",
+      "title": "Quote request",
+      "rows": [
+        {
+          "label": "Coverage",
+          "value": "Choose a policy type"
+        },
+        {
+          "label": "Location",
+          "value": "Share your service area"
+        },
+        {
+          "label": "Next step",
+          "value": "Review options with an agent"
+        }
+      ],
+      "footer": "An enquiry is not a bound policy. An agent confirms available options and terms.",
+      "action": "Get a quote"
+    }
+  },
+  "inspiration": {
+    "eyebrow": "For every kind of insurance agency",
+    "headline": "Make coverage easier to understand.",
+    "description": "Give people a clear place to explore policies, learn about your agency, and ask an agent what fits their needs.",
+    "items": [
+      {
+        "title": "Home and auto insurance",
+        "description": "Explain common personal coverage options and give homeowners and drivers a direct way to request a quote.",
+        "image": "/industries/insurance/home-coverage.webp",
+        "imageAlt": "Homeowner reviewing coverage information with an insurance advisor",
+        "action": "Create your website"
+      },
+      {
+        "title": "Independent insurance agents",
+        "description": "Introduce your agents, the carriers you represent, and the communities you serve.",
+        "image": "/industries/insurance/agency-consultation.webp",
+        "imageAlt": "Independent insurance advisor meeting clients in a local office",
+        "action": "Create your website"
+      },
+      {
+        "title": "Small business insurance",
+        "description": "Describe business coverage areas and help owners start a conversation about their insurance needs.",
+        "image": "/industries/insurance/business-coverage.webp",
+        "imageAlt": "Insurance advisor discussing coverage with a small business owner in a neighborhood shop",
+        "action": "Create your website"
+      }
+    ]
+  },
+  "capabilities": {
+    "eyebrow": "For the questions clients bring",
+    "headline": "Everything your insurance agency site needs to explain.",
+    "description": "Organize coverage information, introduce your team, and make it simple for visitors to contact an agent about their next step.",
+    "note": "Coverage, eligibility, and rates depend on the insurer, location, and applicant. Keep policy details current and have your agency review published information.",
+    "items": [
+      {
+        "title": "Coverage options",
+        "description": "Describe home, auto, life, and business insurance in clear language.",
+        "visual": "services"
+      },
+      {
+        "title": "Quote requests",
+        "description": "Collect the basic details an agent needs to follow up about a policy.",
+        "visual": "subscription"
+      },
+      {
+        "title": "Your team",
+        "description": "Introduce licensed agents and the locations or communities they serve.",
+        "visual": "portfolio"
+      },
+      {
+        "title": "Local service",
+        "description": "Share your office details, service area, and ways to get in touch.",
+        "visual": "location"
+      },
+      {
+        "title": "Claims and support",
+        "description": "Help policyholders find your support contacts and carrier claims resources.",
+        "visual": "enquiry"
+      },
+      {
+        "title": "A good fit on mobile",
+        "description": "Make coverage information and contact details easy to find on any screen.",
+        "visual": "mobile"
+      }
+    ],
+    "visuals": {
+      "services": {
+        "image": "/industries/insurance/home-coverage.webp",
+        "eyebrow": "Coverage options",
+        "headline": ["Protection for", "what matters."],
+        "rows": ["Home & auto", "Life insurance", "Small business"],
+        "link": "Explore coverage"
+      },
+      "subscription": {
+        "image": "/industries/insurance/business-coverage.webp",
+        "eyebrow": "Request a quote",
+        "title": "Talk with an agent",
+        "description": "Share what you need covered and let your agency guide the next step.",
+        "plans": [
+          {
+            "title": "Personal coverage",
+            "price": "Home, auto & life",
+            "action": "Ask"
+          },
+          {
+            "title": "Business coverage",
+            "price": "Options for your business",
+            "action": "Ask"
+          }
+        ]
+      },
+      "portfolio": {
+        "images": [
+          "/industries/insurance/agency-consultation.webp",
+          "/industries/insurance/business-coverage.webp"
+        ],
+        "label": "Meet your insurance team"
+      },
+      "location": {
+        "eyebrow": "Here when you need us",
+        "lines": ["Local advice.", "Clear next steps."]
+      },
+      "enquiry": {
+        "image": "/industries/insurance/agency-consultation.webp",
+        "eyebrow": "Request a quote",
+        "headline": ["Tell us what", "you need covered."],
+        "fields": ["Your name", "What would you like to insure?"],
+        "action": "Send a request"
+      },
+      "mobile": {
+        "image": "/industries/insurance/home-coverage.webp",
+        "display": ["Coverage.", "Made clearer."],
+        "eyebrow": "Made for clients",
+        "headline": ["Find an agent.", "Ask about coverage."],
+        "action": "Contact the agency"
+      }
+    }
+  },
+  "steps": {
+    "eyebrow": "From agency details to a first draft",
+    "headline": "How to Create Your Insurance Agency Website",
+    "description": "Share your agency details, review the suggested page plan, and shape a homepage that helps clients understand your services and contact an agent.",
+    "preview": {
+      "briefLabel": "Let’s plan your website",
+      "conversation": [
+        {
+          "question": "What’s your agency called?",
+          "answer": "Northstar Insurance"
+        }
+      ],
+      "focusLabel": "What should clients find first?",
+      "focusOptions": [
+        {
+          "label": "Coverage options",
+          "selected": true
+        },
+        {
+          "label": "Request a quote",
+          "selected": false
+        }
+      ],
+      "planLabel": "Your website plan",
+      "pages": [
+        "Home",
+        "Insurance coverage",
+        "Meet the agents",
+        "Request a quote"
+      ],
+      "editorLabel": "Website preview",
+      "brand": "NORTHSTAR INSURANCE",
+      "headline": "Coverage for what matters.",
+      "image": "/industries/insurance/agency-consultation.webp",
+      "imageAlt": "Insurance advisor reviewing coverage options with clients",
+      "publishLabel": "Ready for the world"
+    },
+    "items": [
+      {
+        "title": "Tell us about your agency",
+        "description": "Share your agency name, service area, coverage lines, and how clients can reach your team."
+      },
+      {
+        "title": "Shape the page plan",
+        "description": "Review the suggested pages and organize policy information around the questions clients ask."
+      },
+      {
+        "title": "Choose a style. Make it yours.",
+        "description": "Review your generated homepage, refine the copy and images, and publish when the details are ready."
+      }
+    ]
+  },
+  "management": {
+    "businessName": "Northstar Insurance"
+  },
+  "faq": {
+    "eyebrow": "Insurance agency website questions",
+    "headline": "Insurance Agency Website FAQs",
+    "description": "Answers to help you plan a useful website for your agency and its clients.",
+    "items": [
+      {
+        "question": "How do I create a website for an insurance agency?",
+        "answer": "Start with your agency details, service area, agent profiles, coverage lines, and a clear way for visitors to contact your team. Organize information around the questions clients ask before speaking with an agent."
+      },
+      {
+        "question": "Can I explain different types of insurance on my website?",
+        "answer": "Yes. Create pages for the coverage your agency offers, such as home, auto, life, or business insurance. Have your team review the wording so it matches current products and carrier requirements."
+      },
+      {
+        "question": "Can visitors request an insurance quote online?",
+        "answer": "Yes. A quote request form can collect basic contact and coverage details so an agent can follow up. A request does not confirm eligibility, a rate, or active coverage."
+      },
+      {
+        "question": "Can I publish insurance rates on my website?",
+        "answer": "Only publish rates or examples approved for your products, locations, and agency. Premiums and eligibility can depend on individual details, carrier rules, and applicable regulations."
+      },
+      {
+        "question": "Can clients report a claim through my agency website?",
+        "answer": "You can explain how to reach your agency and link to the appropriate insurer claims resources. Make clear which steps are handled by your agency and which are handled by the carrier."
+      },
+      {
+        "question": "Can independent insurance agents use this website builder?",
+        "answer": "Yes. Use your site to introduce your agency, explain the coverage you offer, show your service area, and help people start a conversation with an agent."
+      }
+    ]
+  },
+  "finalCta": {
+    "eyebrow": "Your agency, in its own words",
+    "headline": "Help clients take the next step with confidence.",
+    "midHeadline": "Ready to start your insurance agency website?",
+    "description": "Create a clear home for your coverage information, agents, and quote requests.",
+    "action": "Start your insurance agency website"
+  },
+  "related": [
+    {
+      "slug": "real-estate-website-builder",
+      "label": "Real Estate"
+    },
+    {
+      "slug": "law-firm-website-builder",
+      "label": "Law Firm"
+    }
+  ]
+}

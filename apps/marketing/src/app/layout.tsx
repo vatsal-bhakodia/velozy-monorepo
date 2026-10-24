@@ -13,13 +13,24 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_MARKETING_URL ?? "https://velozy.com",
+  ),
   title: "Velozy",
   description: "Build stunning websites with the power of AI",
   icons: {
     icon: [
       { url: "/brand/favicon/favicon.ico", sizes: "any" },
-      { url: "/brand/favicon/favicon-32x32.png", type: "image/png", sizes: "32x32" },
-      { url: "/brand/favicon/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+      {
+        url: "/brand/favicon/favicon-32x32.png",
+        type: "image/png",
+        sizes: "32x32",
+      },
+      {
+        url: "/brand/favicon/favicon-16x16.png",
+        type: "image/png",
+        sizes: "16x16",
+      },
     ],
     apple: "/brand/favicon/apple-touch-icon.png",
   },

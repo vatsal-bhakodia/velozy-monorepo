@@ -1,0 +1,269 @@
+{
+  "slug": "hotel-website-builder",
+  "name": "Hotel",
+  "metadata": {
+    "title": "Hotel Website Builder | Velozy",
+    "description": "Create a hotel website with room details, amenities, rates, location, and links to a booking provider or availability enquiry form."
+  },
+  "palette": {
+    "accent": "#485d8c",
+    "pale": "#e1e7f9",
+    "surface": "#161e32",
+    "ink": "#243358"
+  },
+  "hero": {
+    "eyebrow": "Hotel website builder",
+    "headline": "Welcome guests with a",
+    "highlight": "Hotel Website Builder",
+    "description": "Show rooms, amenities, policies and location, then direct guests to your reservation provider or an availability enquiry.",
+    "primaryAction": "Get started",
+    "image": "/industries/hotel/hero.webp",
+    "imageAlt": "Example hotel website featuring a seaside villa and oceanfront pool",
+    "offerCard": {
+      "title": "Harbour king room",
+      "detail": "King bed · breakfast included",
+      "meta": "Harbour district",
+      "action": "Book now",
+      "image": "/industries/hotel/guest-bedroom.webp",
+      "imageAlt": "Bright guest room prepared for a hotel stay",
+      "price": "$189",
+      "priceDetail": "Illustrative · per night"
+    },
+    "secondaryCard": {
+      "kind": "details",
+      "title": "Your stay",
+      "rows": [
+        {
+          "label": "Check-in",
+          "value": "November 12"
+        },
+        {
+          "label": "Check-out",
+          "value": "November 14"
+        },
+        {
+          "label": "Guests",
+          "value": "2 adults"
+        }
+      ],
+      "footer": "Example stay details. Confirm live availability before booking.",
+      "action": "Check availability"
+    }
+  },
+  "inspiration": {
+    "eyebrow": "For every kind of hotel business",
+    "headline": "A website that fits your hotel.",
+    "description": "Stay a little longer. — Let guests compare rooms, amenities, location, and policies.",
+    "items": [
+      {
+        "title": "Boutique hotels",
+        "description": "Let guests compare rooms, amenities, location, and policies.",
+        "image": "/industries/hotel/guest-bedroom.webp",
+        "imageAlt": "Bright guest room prepared for a hotel stay",
+        "action": "Create your website"
+      },
+      {
+        "title": "Guesthouses",
+        "description": "Show the character of your stay and give guests a direct enquiry route.",
+        "image": "/industries/hotel/guesthouse.webp",
+        "imageAlt": "Guest room at an eco lodge with a canopy bed and balcony",
+        "action": "Create your website"
+      },
+      {
+        "title": "Small resorts",
+        "description": "Explain room types, facilities, and how to check availability.",
+        "image": "/industries/hotel/lobby.webp",
+        "imageAlt": "Spacious hotel lobby with plants and a reception area",
+        "action": "Create your website"
+      }
+    ]
+  },
+  "capabilities": {
+    "eyebrow": "For the details hotel visitors need",
+    "headline": "Everything your hotel site needs to explain.",
+    "description": "Show room types, capacity, amenities, and indicative rates that you keep current. Link to your existing booking engine or collect dates and guest count as a request; confirm bookings there.",
+    "note": "Illustrative website sections. Send a request or use an external booking engine; availability must be confirmed. Search tip: Use specific room and location details in headings and descriptions.",
+    "items": [
+      {
+        "title": "Rooms and rates",
+        "description": "Show room types, capacity, amenities, and indicative rates that you keep current.",
+        "visual": "services"
+      },
+      {
+        "title": "Availability path",
+        "description": "Link to your existing booking engine or collect dates and guest count as a request; confirm bookings there.",
+        "visual": "subscription"
+      },
+      {
+        "title": "Stay details",
+        "description": "Explain check-in, parking, accessibility, cancellation terms, and nearby places.",
+        "visual": "portfolio"
+      },
+      {
+        "title": "Your location",
+        "description": "Help visitors find your hotel with accurate address, hours, or service-area information.",
+        "visual": "location"
+      },
+      {
+        "title": "A way to reach you",
+        "description": "Collect a clear hotel enquiry and follow up directly.",
+        "visual": "enquiry"
+      },
+      {
+        "title": "A good fit on mobile",
+        "description": "Give visitors a responsive layout that reads well on phones and larger screens.",
+        "visual": "mobile"
+      }
+    ],
+    "visuals": {
+      "services": {
+        "image": "/industries/hotel/guest-bedroom.webp",
+        "eyebrow": "Rooms & suites",
+        "headline": ["Stay a little longer."],
+        "rows": ["Rooms & suites", "Breakfast included", "Harbour location"],
+        "link": "Explore rooms"
+      },
+      "subscription": {
+        "image": "/industries/hotel/guest-bedroom.webp",
+        "eyebrow": "Availability path",
+        "title": "Rooms & Suites",
+        "description": "Link to your existing booking engine or collect dates and guest count as a request; confirm bookings there.",
+        "plans": [
+          {
+            "title": "Rooms",
+            "price": "View room details",
+            "action": "Details"
+          },
+          {
+            "title": "Suites",
+            "price": "Ask about a stay",
+            "action": "Details"
+          }
+        ]
+      },
+      "portfolio": {
+        "images": [
+          "/industries/hotel/guest-bedroom.webp",
+          "/industries/hotel/lobby.webp"
+        ],
+        "label": "Stay details"
+      },
+      "location": {
+        "eyebrow": "Find us",
+        "lines": ["Tideline House", "Harbour location"]
+      },
+      "enquiry": {
+        "image": "/industries/hotel/lobby.webp",
+        "eyebrow": "Get in touch",
+        "headline": ["Start with", "a conversation."],
+        "fields": ["Your name", "Preferred dates & guests"],
+        "action": "Send an enquiry"
+      },
+      "mobile": {
+        "image": "/industries/hotel/guest-bedroom.webp",
+        "display": ["Hotel.", "On the go."],
+        "eyebrow": "Made for visitors",
+        "headline": ["Stay a little longer."],
+        "action": "Explore rooms"
+      }
+    }
+  },
+  "steps": {
+    "eyebrow": "From hotel details to a first draft",
+    "headline": "How to Create Your Hotel Website",
+    "description": "Tell Velozy about your hotel, review the suggested page plan, and edit the generated homepage. Use the sections above to answer visitors’ practical questions. Publish only information you can keep accurate; extra pages depend on your plan.",
+    "preview": {
+      "briefLabel": "Let’s plan your website",
+      "conversation": [
+        {
+          "question": "What’s your hotel called?",
+          "answer": "Tideline House"
+        }
+      ],
+      "focusLabel": "What should visitors find first?",
+      "focusOptions": [
+        {
+          "label": "Rooms & suites",
+          "selected": true
+        },
+        {
+          "label": "Breakfast included",
+          "selected": false
+        }
+      ],
+      "planLabel": "Your website plan",
+      "pages": ["Home", "Rooms and rates", "Stay details", "Contact"],
+      "editorLabel": "Website preview",
+      "brand": "TIDELINE HOUSE",
+      "headline": "Stay a little longer.",
+      "image": "/industries/hotel/guest-bedroom.webp",
+      "imageAlt": "Bright guest room prepared for a hotel stay",
+      "publishLabel": "Ready for the world"
+    },
+    "items": [
+      {
+        "title": "Tell us about your hotel",
+        "description": "Share your business details and what visitors need. Room photos, capacities, amenities, and rate conditions."
+      },
+      {
+        "title": "Shape the page plan",
+        "description": "Review suggested pages and homepage sections. A working external booking URL or staff process for requests."
+      },
+      {
+        "title": "Choose a style. Make it yours.",
+        "description": "Confirm design choices, generate a homepage, then refine the words and images before publishing."
+      }
+    ]
+  },
+  "management": {
+    "businessName": "Tideline House"
+  },
+  "faq": {
+    "eyebrow": "Hotel website questions",
+    "headline": "Hotel Website FAQs",
+    "description": "Clear answers to help you plan and publish your hotel site.",
+    "items": [
+      {
+        "question": "Can guests book a room and pay on this site?",
+        "answer": "The website can link to your existing booking engine or collect a request. Live room inventory, confirmation, and payment require a separate supported booking flow."
+      },
+      {
+        "question": "Can I show multiple room types?",
+        "answer": "Yes. Present rooms with photos, capacity, amenities, and any rates you can maintain accurately."
+      },
+      {
+        "question": "Can I collect preferred dates?",
+        "answer": "A form can collect dates and guest count as an enquiry; your team must confirm availability before a reservation exists."
+      },
+      {
+        "question": "What room details can I publish?",
+        "answer": "Show room types, capacity, amenities, accessible features, photos, and rates only when you can keep those details accurate."
+      },
+      {
+        "question": "Can guests see live room availability?",
+        "answer": "Not in this website example. You can link to an existing booking engine or collect preferred dates as an enquiry; your team or booking provider confirms availability."
+      },
+      {
+        "question": "Can I explain check-in, parking, and cancellation rules?",
+        "answer": "Yes. Add current arrival and departure times, parking information, accessibility details, and the policies guests should review before booking."
+      }
+    ]
+  },
+  "finalCta": {
+    "eyebrow": "Your hotel, in its own words",
+    "headline": "Help guests picture their next stay.",
+    "midHeadline": "Ready to start your hotel website?",
+    "description": "Start with one homepage, then build out the pages your visitors need.",
+    "action": "Start your hotel website"
+  },
+  "related": [
+    {
+      "slug": "restaurant-website-builder",
+      "label": "Restaurant"
+    },
+    {
+      "slug": "event-website-builder",
+      "label": "Event"
+    }
+  ]
+}

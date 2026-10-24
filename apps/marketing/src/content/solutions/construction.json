@@ -1,0 +1,265 @@
+{
+  "slug": "construction-website-builder",
+  "name": "Construction",
+  "metadata": {
+    "title": "Construction Website Builder | Velozy",
+    "description": "Create a construction company website with project galleries, service pages, trade areas, and quote request forms for local building work."
+  },
+  "palette": {
+    "accent": "#b84a1b",
+    "pale": "#f4cdb2",
+    "surface": "#251810",
+    "ink": "#482615"
+  },
+  "hero": {
+    "eyebrow": "Construction website builder",
+    "headline": "Show projects with a",
+    "highlight": "Construction Website Builder",
+    "description": "Show completed projects and services by trade, explain your service area, and collect quote enquiries from potential clients.",
+    "primaryAction": "Get started",
+    "image": "/industries/construction/hero.png",
+    "imageAlt": "Example construction website featuring a worker at a building site",
+    "offerCard": {
+      "title": "Kitchen renovation",
+      "detail": "Design and build",
+      "meta": "Local project team",
+      "action": "Get a quote",
+      "image": "/industries/construction/renovated-kitchen.webp",
+      "imageAlt": "A completed kitchen renovation with warm oak cabinets and stone counters",
+      "price": "$8,500+",
+      "priceDetail": "Illustrative starting price"
+    },
+    "secondaryCard": {
+      "kind": "details",
+      "title": "Project quote",
+      "rows": [
+        {
+          "label": "Project type",
+          "value": "Kitchen renovation"
+        },
+        {
+          "label": "Service area",
+          "value": "Your location"
+        },
+        {
+          "label": "Next step",
+          "value": "Share project details"
+        }
+      ],
+      "footer": "Example project only. Final pricing follows a site assessment.",
+      "action": "Start your quote"
+    }
+  },
+  "inspiration": {
+    "eyebrow": "For every kind of construction business",
+    "headline": "A website that fits your construction.",
+    "description": "Work that stands up to a closer look. — Show completed builds, your process, and the areas you cover.",
+    "items": [
+      {
+        "title": "Home builders",
+        "description": "Show completed builds, your process, and the areas you cover.",
+        "image": "/industries/construction/rebar-construction-site.webp",
+        "imageAlt": "A construction site with work underway",
+        "action": "Create your website"
+      },
+      {
+        "title": "Renovation contractors",
+        "description": "Use before-and-after projects to explain the work you take on.",
+        "image": "/industries/construction/renovated-kitchen.webp",
+        "imageAlt": "A completed kitchen renovation with warm oak cabinets and stone counters",
+        "action": "Create your website"
+      },
+      {
+        "title": "Trade specialists",
+        "description": "List specific trades and collect the details needed for a site visit.",
+        "image": "/industries/construction/trade-specialist.webp",
+        "imageAlt": "A construction professional wearing safety gear at a worksite",
+        "action": "Create your website"
+      }
+    ]
+  },
+  "capabilities": {
+    "eyebrow": "For the details construction visitors need",
+    "headline": "Everything your construction site needs to explain.",
+    "description": "Explain the jobs you take, what is included, and where you work. Show permitted before-and-after photos with project scope and location context.",
+    "note": "Illustrative website sections. A quote request starts a conversation, not an instant estimate. Search tip: Write distinct descriptions of real services instead of repeating city names.",
+    "items": [
+      {
+        "title": "Services by trade",
+        "description": "Explain the jobs you take, what is included, and where you work.",
+        "visual": "services"
+      },
+      {
+        "title": "Project proof",
+        "description": "Show permitted before-and-after photos with project scope and location context.",
+        "visual": "subscription"
+      },
+      {
+        "title": "Quote enquiries",
+        "description": "Ask for project type, location, timeline, and contact details; estimate offline.",
+        "visual": "portfolio"
+      },
+      {
+        "title": "Your location",
+        "description": "Help visitors find your construction with accurate address, hours, or service-area information.",
+        "visual": "location"
+      },
+      {
+        "title": "A way to reach you",
+        "description": "Collect a clear construction enquiry and follow up directly.",
+        "visual": "enquiry"
+      },
+      {
+        "title": "A good fit on mobile",
+        "description": "Give visitors a responsive layout that reads well on phones and larger screens.",
+        "visual": "mobile"
+      }
+    ],
+    "visuals": {
+      "services": {
+        "image": "/industries/construction/rebar-construction-site.webp",
+        "eyebrow": "Projects & trades",
+        "headline": ["Work that stands up to a closer look."],
+        "rows": ["Renovations", "Project gallery", "Service area"],
+        "link": "View the work"
+      },
+      "subscription": {
+        "image": "/industries/construction/trade-specialist.webp",
+        "eyebrow": "Project proof",
+        "title": "Renovations & New builds",
+        "description": "Show permitted before-and-after photos with project scope and location context.",
+        "plans": [
+          {
+            "title": "Renovations",
+            "price": "View service details",
+            "action": "Details"
+          },
+          {
+            "title": "New builds",
+            "price": "Discuss a project",
+            "action": "Details"
+          }
+        ]
+      },
+      "portfolio": {
+        "images": [
+          "/industries/construction/rebar-construction-site.webp",
+          "/industries/construction/trade-specialist.webp"
+        ],
+        "label": "Quote enquiries"
+      },
+      "location": {
+        "eyebrow": "Find us",
+        "lines": ["Northline Builders", "Service area"]
+      },
+      "enquiry": {
+        "image": "/industries/construction/rebar-construction-site.webp",
+        "eyebrow": "Get in touch",
+        "headline": ["Start with", "a conversation."],
+        "fields": ["Your name", "Tell us about the project"],
+        "action": "Send an enquiry"
+      },
+      "mobile": {
+        "image": "/industries/construction/trade-specialist.webp",
+        "display": ["Construction.", "On the go."],
+        "eyebrow": "Made for visitors",
+        "headline": ["Work that stands up to a closer look."],
+        "action": "View the work"
+      }
+    }
+  },
+  "steps": {
+    "eyebrow": "From construction details to a first draft",
+    "headline": "How to Create Your Construction Website",
+    "description": "Tell Velozy about your construction, review the suggested page plan, and edit the generated homepage. Use the sections above to answer visitors’ practical questions. Publish only information you can keep accurate; extra pages depend on your plan.",
+    "preview": {
+      "briefLabel": "Let’s plan your website",
+      "conversation": [
+        {
+          "question": "What’s your construction called?",
+          "answer": "Northline Builders"
+        }
+      ],
+      "focusLabel": "What should visitors find first?",
+      "focusOptions": [
+        {
+          "label": "Renovations",
+          "selected": true
+        },
+        {
+          "label": "Project gallery",
+          "selected": false
+        }
+      ],
+      "planLabel": "Your website plan",
+      "pages": ["Home", "Services by trade", "Quote enquiries", "Contact"],
+      "editorLabel": "Website preview",
+      "brand": "NORTHLINE BUILDERS",
+      "headline": "Work that stands up to a closer look.",
+      "image": "/industries/construction/rebar-construction-site.webp",
+      "imageAlt": "A construction site with work underway",
+      "publishLabel": "Ready for the world"
+    },
+    "items": [
+      {
+        "title": "Tell us about your construction",
+        "description": "Share your business details and what visitors need. A service list and the areas you actually cover."
+      },
+      {
+        "title": "Shape the page plan",
+        "description": "Review suggested pages and homepage sections. Project photos and client permission to publish them."
+      },
+      {
+        "title": "Choose a style. Make it yours.",
+        "description": "Confirm design choices, generate a homepage, then refine the words and images before publishing."
+      }
+    ]
+  },
+  "management": {
+    "businessName": "Northline Builders"
+  },
+  "faq": {
+    "eyebrow": "Construction website questions",
+    "headline": "Construction Website FAQs",
+    "description": "Clear answers to help you plan and publish your construction site.",
+    "items": [
+      {
+        "question": "Can visitors get an instant estimate?",
+        "answer": "A form can collect project details for your team to review. Velozy does not calculate construction estimates."
+      },
+      {
+        "question": "Can I show projects without naming clients?",
+        "answer": "Yes. Use photos and descriptions you are allowed to publish, and omit private details."
+      },
+      {
+        "question": "Can I list several service areas?",
+        "answer": "Yes. Add the areas you actually serve in clear page copy."
+      },
+      {
+        "question": "What should I include in a quote request?",
+        "answer": "Ask for the project type, location, expected timeline, and contact details. Your team can review the scope and follow up; the form does not calculate an estimate."
+      },
+      {
+        "question": "Can I show before-and-after project photos?",
+        "answer": "Yes. Use photos you have permission to publish and include useful context such as the work completed and general location without exposing private client details."
+      },
+      {
+        "question": "Can I list the trades and areas I serve?",
+        "answer": "Yes. Describe the work you take on and name only the service areas where your business operates."
+      }
+    ]
+  },
+  "finalCta": {
+    "eyebrow": "Your construction, in its own words",
+    "headline": "Let your next project start with the right details.",
+    "midHeadline": "Ready to start your construction website?",
+    "description": "Start with one homepage, then build out the pages your visitors need.",
+    "action": "Start your construction website"
+  },
+  "related": [
+    {
+      "slug": "real-estate-website-builder",
+      "label": "Real Estate"
+    }
+  ]
+}

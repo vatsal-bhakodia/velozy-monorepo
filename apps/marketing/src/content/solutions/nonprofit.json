@@ -1,0 +1,261 @@
+{
+  "slug": "nonprofit-website-builder",
+  "name": "Nonprofit",
+  "metadata": {
+    "title": "Nonprofit Website Builder | Velozy",
+    "description": "Create a nonprofit website to share programs and impact, recruit volunteers, promote events, and link to an online donation page."
+  },
+  "palette": {
+    "accent": "#a33f67",
+    "pale": "#f2dce5",
+    "surface": "#29151f",
+    "ink": "#40202f"
+  },
+  "hero": {
+    "eyebrow": "Nonprofit website builder",
+    "headline": "Grow your cause with a",
+    "highlight": "Nonprofit Website Builder",
+    "description": "Showcase programs and evidence of impact, invite volunteers, share event details, and link supporters to your online donation page.",
+    "primaryAction": "Get started",
+    "image": "/industries/nonprofit/hero.png",
+    "imageAlt": "Example nonprofit website showing a volunteer supporting a child",
+    "offerCard": {
+      "title": "Community meals",
+      "detail": "Food access program",
+      "meta": "Programs & impact",
+      "action": "Explore programs",
+      "image": "/industries/nonprofit/food-pantry-volunteers.webp",
+      "imageAlt": "Volunteers packing grocery boxes at a community food pantry"
+    },
+    "secondaryCard": {
+      "kind": "donation",
+      "title": "Give to the mission",
+      "description": "Help provide meals and support for local families.",
+      "frequencies": ["Give once", "Monthly"],
+      "amounts": ["$25", "$50", "$100"],
+      "action": "Donate",
+      "notice": "Illustrative amounts · set them for your campaign."
+    }
+  },
+  "inspiration": {
+    "eyebrow": "For every kind of nonprofit business",
+    "headline": "A website that fits your nonprofit.",
+    "description": "Good work grows together. — Show the programs neighbours can join or support.",
+    "items": [
+      {
+        "title": "Community organisations",
+        "description": "Show the programs neighbours can join or support.",
+        "image": "/industries/nonprofit/food-pantry-volunteers.webp",
+        "imageAlt": "Volunteers packing grocery boxes at a community food pantry",
+        "action": "Create your website"
+      },
+      {
+        "title": "Education charities",
+        "description": "Explain the learning work and evidence behind your impact.",
+        "image": "/industries/education/tutoring.webp",
+        "imageAlt": "A tutor helping a student work through maths problems",
+        "action": "Create your website"
+      },
+      {
+        "title": "Volunteer programs",
+        "description": "Describe roles, dates, and who handles volunteer enquiries.",
+        "image": "/industries/nonprofit/food-pantry-volunteers.webp",
+        "imageAlt": "Volunteers packing grocery boxes at a community food pantry",
+        "action": "Create your website"
+      }
+    ]
+  },
+  "capabilities": {
+    "eyebrow": "For the details nonprofit visitors need",
+    "headline": "Everything your nonprofit site needs to explain.",
+    "description": "Explain whom you serve, what you do, and how each program works. Share sourced outcomes, reports, and photos with consent rather than invented numbers.",
+    "note": "Illustrative website sections. Volunteer placement and donations need separate confirmation. Search tip: Name your actual programs and community in descriptive headings.",
+    "items": [
+      {
+        "title": "Mission and programs",
+        "description": "Explain whom you serve, what you do, and how each program works.",
+        "visual": "services"
+      },
+      {
+        "title": "Evidence of impact",
+        "description": "Share sourced outcomes, reports, and photos with consent rather than invented numbers.",
+        "visual": "subscription"
+      },
+      {
+        "title": "Volunteer enquiries",
+        "description": "Describe roles and collect initial interest through a contact form.",
+        "visual": "portfolio"
+      },
+      {
+        "title": "Your location",
+        "description": "Help visitors find your nonprofit with accurate address, hours, or service-area information.",
+        "visual": "location"
+      },
+      {
+        "title": "A way to reach you",
+        "description": "Collect a clear nonprofit enquiry and follow up directly.",
+        "visual": "enquiry"
+      },
+      {
+        "title": "A good fit on mobile",
+        "description": "Give visitors a responsive layout that reads well on phones and larger screens.",
+        "visual": "mobile"
+      }
+    ],
+    "visuals": {
+      "services": {
+        "image": "/industries/nonprofit/food-pantry-volunteers.webp",
+        "eyebrow": "Programs & impact",
+        "headline": ["Good work grows together."],
+        "rows": ["Community meals", "Volunteer days", "Impact report"],
+        "link": "Explore programs"
+      },
+      "subscription": {
+        "image": "/industries/nonprofit/food-pantry-volunteers.webp",
+        "eyebrow": "Evidence of impact",
+        "title": "Programs & Volunteering",
+        "description": "Share sourced outcomes, reports, and photos with consent rather than invented numbers.",
+        "plans": [
+          {
+            "title": "Programs",
+            "price": "See the work",
+            "action": "Details"
+          },
+          {
+            "title": "Volunteering",
+            "price": "Ask to help",
+            "action": "Details"
+          }
+        ]
+      },
+      "portfolio": {
+        "images": [
+          "/industries/nonprofit/food-pantry-volunteers.webp",
+          "/industries/education/tutoring.webp"
+        ],
+        "label": "Volunteer enquiries"
+      },
+      "location": {
+        "eyebrow": "Find us",
+        "lines": ["Common Ground", "Impact report"]
+      },
+      "enquiry": {
+        "image": "/industries/nonprofit/food-pantry-volunteers.webp",
+        "eyebrow": "Get in touch",
+        "headline": ["Start with", "a conversation."],
+        "fields": ["Your name", "How would you like to help?"],
+        "action": "Send an enquiry"
+      },
+      "mobile": {
+        "image": "/industries/nonprofit/food-pantry-volunteers.webp",
+        "display": ["Nonprofit.", "On the go."],
+        "eyebrow": "Made for visitors",
+        "headline": ["Good work grows together."],
+        "action": "Explore programs"
+      }
+    }
+  },
+  "steps": {
+    "eyebrow": "From nonprofit details to a first draft",
+    "headline": "How to Create Your Nonprofit Website",
+    "description": "Tell Velozy about your nonprofit, review the suggested page plan, and edit the generated homepage. Use the sections above to answer visitors’ practical questions. Publish only information you can keep accurate; extra pages depend on your plan.",
+    "preview": {
+      "briefLabel": "Let’s plan your website",
+      "conversation": [
+        {
+          "question": "What’s your nonprofit called?",
+          "answer": "Common Ground"
+        }
+      ],
+      "focusLabel": "What should visitors find first?",
+      "focusOptions": [
+        {
+          "label": "Community meals",
+          "selected": true
+        },
+        {
+          "label": "Volunteer days",
+          "selected": false
+        }
+      ],
+      "planLabel": "Your website plan",
+      "pages": [
+        "Home",
+        "Mission and programs",
+        "Volunteer enquiries",
+        "Contact"
+      ],
+      "editorLabel": "Website preview",
+      "brand": "COMMON GROUND",
+      "headline": "Good work grows together.",
+      "image": "/industries/nonprofit/food-pantry-volunteers.webp",
+      "imageAlt": "Volunteers packing grocery boxes at a community food pantry",
+      "publishLabel": "Ready for the world"
+    },
+    "items": [
+      {
+        "title": "Tell us about your nonprofit",
+        "description": "Share your business details and what visitors need. A concise mission statement and current program details."
+      },
+      {
+        "title": "Shape the page plan",
+        "description": "Review suggested pages and homepage sections. Approved impact evidence, images, and consent records."
+      },
+      {
+        "title": "Choose a style. Make it yours.",
+        "description": "Confirm design choices, generate a homepage, then refine the words and images before publishing."
+      }
+    ]
+  },
+  "management": {
+    "businessName": "Common Ground"
+  },
+  "faq": {
+    "eyebrow": "Nonprofit website questions",
+    "headline": "Nonprofit Website FAQs",
+    "description": "Clear answers to help you plan and publish your nonprofit site.",
+    "items": [
+      {
+        "question": "Can we collect donations through the site?",
+        "answer": "Describe how to support your organisation, but only enable on-site donations after a suitable payment provider and flow are configured."
+      },
+      {
+        "question": "Can people volunteer through a form?",
+        "answer": "A form can collect initial interest; your team can handle screening and placement."
+      },
+      {
+        "question": "Can we show impact figures?",
+        "answer": "Yes, when figures are accurate, dated, and backed by your records."
+      },
+      {
+        "question": "How can I explain our programs and mission?",
+        "answer": "Describe whom each program serves, what it does, and how people can get involved. Keep claims specific and supported by your organisation’s records."
+      },
+      {
+        "question": "Can supporters donate directly through the website?",
+        "answer": "Only when a suitable payment provider and donation flow are configured. Otherwise, explain how to support your work and link to an established donation channel."
+      },
+      {
+        "question": "Can volunteers apply through a form?",
+        "answer": "A form can collect initial interest and preferred volunteer roles. Your team should manage screening, placement, and any sensitive information through its own process."
+      }
+    ]
+  },
+  "finalCta": {
+    "eyebrow": "Your nonprofit, in its own words",
+    "headline": "Give your mission a useful home online.",
+    "midHeadline": "Ready to start your nonprofit website?",
+    "description": "Start with one homepage, then build out the pages your visitors need.",
+    "action": "Start your nonprofit website"
+  },
+  "related": [
+    {
+      "slug": "church-website-builder",
+      "label": "Church"
+    },
+    {
+      "slug": "event-website-builder",
+      "label": "Event"
+    }
+  ]
+}

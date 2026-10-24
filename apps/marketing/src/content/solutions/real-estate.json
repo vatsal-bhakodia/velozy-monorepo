@@ -1,0 +1,265 @@
+{
+  "slug": "real-estate-website-builder",
+  "name": "Real Estate",
+  "metadata": {
+    "title": "Real Estate Website Builder | Velozy",
+    "description": "Build a real estate website with selected property listings, agent profiles, neighbourhood guides, service areas, and viewing enquiries."
+  },
+  "palette": {
+    "accent": "#587021",
+    "pale": "#e3f1be",
+    "surface": "#1b2511",
+    "ink": "#2c3e13"
+  },
+  "hero": {
+    "eyebrow": "Real estate website builder",
+    "headline": "Show homes with a",
+    "highlight": "Real Estate Website Builder",
+    "description": "Present selected property listings, introduce local agents and share neighbourhood guides. Collect property enquiries and viewing requests.",
+    "primaryAction": "Get started",
+    "image": "/industries/real-estate/hero.png",
+    "imageAlt": "Example real estate website featuring a modern home at sunset",
+    "offerCard": {
+      "title": "Oakview family home",
+      "detail": "3 beds · 2 baths",
+      "meta": "Example listing · 1,840 sq ft",
+      "action": "Schedule a viewing",
+      "image": "/industries/real-estate/modern-home-exterior.webp",
+      "imageAlt": "Contemporary home exterior featured by a real estate brokerage",
+      "price": "$685,000",
+      "priceDetail": "Illustrative asking price"
+    },
+    "secondaryCard": {
+      "kind": "details",
+      "title": "Property details",
+      "rows": [
+        {
+          "label": "Bedrooms",
+          "value": "3"
+        },
+        {
+          "label": "Bathrooms",
+          "value": "2"
+        },
+        {
+          "label": "Viewing",
+          "value": "Saturday · 11 AM"
+        }
+      ],
+      "footer": "Example listing. The agent confirms price, status, and viewing availability.",
+      "action": "Request a viewing"
+    }
+  },
+  "inspiration": {
+    "eyebrow": "For every kind of real estate business",
+    "headline": "A website that fits your real estate.",
+    "description": "Find a place that feels right. — Present your profile, featured homes, and local knowledge.",
+    "items": [
+      {
+        "title": "Independent agents",
+        "description": "Present your profile, featured homes, and local knowledge.",
+        "image": "/industries/real-estate/interior.webp",
+        "imageAlt": "Sunlit living room inside a home",
+        "action": "Create your website"
+      },
+      {
+        "title": "Brokerages",
+        "description": "Help visitors reach the right agent and neighbourhood team.",
+        "image": "/industries/real-estate/modern-home-exterior.webp",
+        "imageAlt": "Contemporary home exterior featured by a real estate brokerage",
+        "action": "Create your website"
+      },
+      {
+        "title": "Property managers",
+        "description": "Explain managed property types and the enquiry process.",
+        "image": "/industries/real-estate/apartment.webp",
+        "imageAlt": "Modern apartment building with balconies and palm trees",
+        "action": "Create your website"
+      }
+    ]
+  },
+  "capabilities": {
+    "eyebrow": "For the details real estate visitors need",
+    "headline": "Everything your real estate site needs to explain.",
+    "description": "Show manually maintained property photos, facts, status, and viewing information. Explain agent experience and the neighbourhoods you actually serve.",
+    "note": "Illustrative website sections. An agent confirms property status and viewing availability. Search tip: Use specific property details and location context rather than repeated keywords.",
+    "items": [
+      {
+        "title": "Featured properties",
+        "description": "Show manually maintained property photos, facts, status, and viewing information.",
+        "visual": "services"
+      },
+      {
+        "title": "Agent and area pages",
+        "description": "Explain agent experience and the neighbourhoods you actually serve.",
+        "visual": "subscription"
+      },
+      {
+        "title": "Property enquiries",
+        "description": "Collect which listing a visitor means and follow up to arrange a viewing.",
+        "visual": "portfolio"
+      },
+      {
+        "title": "Your location",
+        "description": "Help visitors find your real estate with accurate address, hours, or service-area information.",
+        "visual": "location"
+      },
+      {
+        "title": "A way to reach you",
+        "description": "Collect a clear real estate enquiry and follow up directly.",
+        "visual": "enquiry"
+      },
+      {
+        "title": "A good fit on mobile",
+        "description": "Give visitors a responsive layout that reads well on phones and larger screens.",
+        "visual": "mobile"
+      }
+    ],
+    "visuals": {
+      "services": {
+        "image": "/industries/real-estate/interior.webp",
+        "eyebrow": "Properties & areas",
+        "headline": ["Find a place that feels right."],
+        "rows": ["Featured homes", "Local guides", "Arrange a viewing"],
+        "link": "Explore homes"
+      },
+      "subscription": {
+        "image": "/industries/real-estate/apartment.webp",
+        "eyebrow": "Agent and area pages",
+        "title": "Featured homes & Local areas",
+        "description": "Explain agent experience and the neighbourhoods you actually serve.",
+        "plans": [
+          {
+            "title": "Featured homes",
+            "price": "Browse details",
+            "action": "Details"
+          },
+          {
+            "title": "Local areas",
+            "price": "Explore neighbourhoods",
+            "action": "Details"
+          }
+        ]
+      },
+      "portfolio": {
+        "images": [
+          "/industries/real-estate/interior.webp",
+          "/industries/real-estate/apartment.webp"
+        ],
+        "label": "Property enquiries"
+      },
+      "location": {
+        "eyebrow": "Find us",
+        "lines": ["Westward Homes", "Arrange a viewing"]
+      },
+      "enquiry": {
+        "image": "/industries/real-estate/interior.webp",
+        "eyebrow": "Get in touch",
+        "headline": ["Start with", "a conversation."],
+        "fields": ["Your name", "Which property interests you?"],
+        "action": "Send an enquiry"
+      },
+      "mobile": {
+        "image": "/industries/real-estate/interior.webp",
+        "display": ["Real estate.", "On the go."],
+        "eyebrow": "Made for visitors",
+        "headline": ["Find a place that feels right."],
+        "action": "Explore homes"
+      }
+    }
+  },
+  "steps": {
+    "eyebrow": "From real estate details to a first draft",
+    "headline": "How to Create Your Real Estate Website",
+    "description": "Tell Velozy about your real estate, review the suggested page plan, and edit the generated homepage. Use the sections above to answer visitors’ practical questions. Publish only information you can keep accurate; extra pages depend on your plan.",
+    "preview": {
+      "briefLabel": "Let’s plan your website",
+      "conversation": [
+        {
+          "question": "What’s your real estate called?",
+          "answer": "Westward Homes"
+        }
+      ],
+      "focusLabel": "What should visitors find first?",
+      "focusOptions": [
+        {
+          "label": "Featured homes",
+          "selected": true
+        },
+        {
+          "label": "Local guides",
+          "selected": false
+        }
+      ],
+      "planLabel": "Your website plan",
+      "pages": ["Home", "Featured properties", "Property enquiries", "Contact"],
+      "editorLabel": "Website preview",
+      "brand": "WESTWARD HOMES",
+      "headline": "Find a place that feels right.",
+      "image": "/industries/real-estate/interior.webp",
+      "imageAlt": "Sunlit living room inside a home",
+      "publishLabel": "Ready for the world"
+    },
+    "items": [
+      {
+        "title": "Tell us about your real estate",
+        "description": "Share your business details and what visitors need. Permissioned property photos and accurate listing details."
+      },
+      {
+        "title": "Shape the page plan",
+        "description": "Review suggested pages and homepage sections. Agent bios and the areas each person covers."
+      },
+      {
+        "title": "Choose a style. Make it yours.",
+        "description": "Confirm design choices, generate a homepage, then refine the words and images before publishing."
+      }
+    ]
+  },
+  "management": {
+    "businessName": "Westward Homes"
+  },
+  "faq": {
+    "eyebrow": "Real estate website questions",
+    "headline": "Real Estate Website FAQs",
+    "description": "Clear answers to help you plan and publish your real estate site.",
+    "items": [
+      {
+        "question": "Do listings sync automatically from an MLS?",
+        "answer": "No MLS or property-feed integration is included in this example. Maintain featured properties in your site content."
+      },
+      {
+        "question": "Can buyers request a viewing?",
+        "answer": "A form can collect a request; your agent confirms the viewing directly."
+      },
+      {
+        "question": "Can I feature several neighbourhoods?",
+        "answer": "Yes. Add useful local information for the areas you serve."
+      },
+      {
+        "question": "What details should a property listing show?",
+        "answer": "Include accurate photos, key property facts, location context, current status, and a clear way to ask the agent about the listing."
+      },
+      {
+        "question": "Will listings update automatically from an MLS or property feed?",
+        "answer": "No property-feed integration is included in this example. You maintain the featured listing information on the site and should update it when details change."
+      },
+      {
+        "question": "Can visitors book a property viewing?",
+        "answer": "A form can collect the property and preferred viewing time. The agent confirms the property status and appointment directly."
+      }
+    ]
+  },
+  "finalCta": {
+    "eyebrow": "Your real estate, in its own words",
+    "headline": "Connect the right people with the right place.",
+    "midHeadline": "Ready to start your real estate website?",
+    "description": "Start with one homepage, then build out the pages your visitors need.",
+    "action": "Start your real estate website"
+  },
+  "related": [
+    {
+      "slug": "construction-website-builder",
+      "label": "Construction"
+    }
+  ]
+}

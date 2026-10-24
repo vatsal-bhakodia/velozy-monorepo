@@ -1,0 +1,266 @@
+{
+  "slug": "cafe-website-builder",
+  "name": "Café",
+  "metadata": {
+    "title": "Café Website Builder | Velozy",
+    "description": "Build a café website with online menus, opening hours, location, catering enquiries, and links to your ordering service."
+  },
+  "palette": {
+    "accent": "#86512a",
+    "pale": "#f1d8b6",
+    "surface": "#221710",
+    "ink": "#3a2416"
+  },
+  "hero": {
+    "eyebrow": "Café website builder",
+    "headline": "Share your menu with a",
+    "highlight": "Café Website Builder",
+    "description": "Put your menu, opening hours and location online, and give customers clear links for catering enquiries or online orders.",
+    "primaryAction": "Get started",
+    "image": "/industries/cafe/hero.png",
+    "imageAlt": "Café website hero for The Roastery Club, featuring coffee drinks and a menu",
+    "offerCard": {
+      "title": "Almond croissant",
+      "detail": "Baked fresh each morning",
+      "meta": "The Daily Crumb",
+      "action": "Add to order",
+      "image": "/industries/cafe/bakery.webp",
+      "imageAlt": "Fresh pastries and bread displayed in a bakery case",
+      "price": "$5.50",
+      "priceDetail": "Illustrative · each",
+      "quantity": 1
+    },
+    "secondaryCard": {
+      "kind": "pickup",
+      "title": "Pickup order",
+      "item": "Almond croissant",
+      "itemDetail": "1 item · example price",
+      "price": "$5.50",
+      "pickupTime": "Today · 8:30 AM",
+      "location": "42 Market Street",
+      "action": "Choose pickup time",
+      "notice": "Illustrative order details · confirm pickup with the café."
+    }
+  },
+  "inspiration": {
+    "eyebrow": "For every kind of café business",
+    "headline": "A website that fits your café.",
+    "description": "See what is fresh today. — Put your drinks, opening hours, and neighbourhood address within easy reach.",
+    "items": [
+      {
+        "title": "Coffee shops",
+        "description": "Put your drinks, opening hours, and neighbourhood address within easy reach.",
+        "image": "/industries/cafe/cafe-sign-and-menu.webp",
+        "imageAlt": "Illuminated café sign above a menu board inside the café",
+        "action": "Create your website"
+      },
+      {
+        "title": "Bakeries",
+        "description": "Show what is fresh, how to find you, and when special orders are possible.",
+        "image": "/industries/cafe/bakery.webp",
+        "imageAlt": "Fresh pastries and bread displayed in a bakery case",
+        "action": "Create your website"
+      },
+      {
+        "title": "Cafés with catering",
+        "description": "Explain group options and let organisers ask about dates and quantities.",
+        "image": "/industries/cafe/catering-spread.webp",
+        "imageAlt": "Café catering spread with sandwiches, pastries and fruit",
+        "action": "Create your website"
+      }
+    ]
+  },
+  "capabilities": {
+    "eyebrow": "For the details café visitors need",
+    "headline": "Everything your café site needs to explain.",
+    "description": "Group drinks, food, and seasonal items with descriptions and prices you control. Put current hours, address, and directions where a first-time visitor can find them.",
+    "note": "Illustrative website sections. Check today’s menu and hours before visiting. Search tip: Use your café name, neighbourhood, and real menu details in page titles and copy.",
+    "items": [
+      {
+        "title": "Menu that stays readable",
+        "description": "Group drinks, food, and seasonal items with descriptions and prices you control.",
+        "visual": "services"
+      },
+      {
+        "title": "Hours and directions",
+        "description": "Put current hours, address, and directions where a first-time visitor can find them.",
+        "visual": "subscription"
+      },
+      {
+        "title": "Catering enquiries",
+        "description": "Collect event size, date, and contact details with a form; confirm availability yourself.",
+        "visual": "portfolio"
+      },
+      {
+        "title": "Your location",
+        "description": "Help visitors find your café with accurate address, hours, or service-area information.",
+        "visual": "location"
+      },
+      {
+        "title": "A way to reach you",
+        "description": "Collect a clear café enquiry and follow up directly.",
+        "visual": "enquiry"
+      },
+      {
+        "title": "A good fit on mobile",
+        "description": "Give visitors a responsive layout that reads well on phones and larger screens.",
+        "visual": "mobile"
+      }
+    ],
+    "visuals": {
+      "services": {
+        "image": "/industries/cafe/bakery.webp",
+        "eyebrow": "Food & drinks",
+        "headline": ["See what is fresh today."],
+        "rows": ["Today’s specials", "Open 8–5", "42 Market Street"],
+        "link": "Explore the menu"
+      },
+      "subscription": {
+        "image": "/industries/cafe/cafe-sign-and-menu.webp",
+        "eyebrow": "Hours and directions",
+        "title": "Food menu & Catering",
+        "description": "Put current hours, address, and directions where a first-time visitor can find them.",
+        "plans": [
+          {
+            "title": "Food menu",
+            "price": "Browse current dishes",
+            "action": "Details"
+          },
+          {
+            "title": "Catering",
+            "price": "Send an enquiry",
+            "action": "Details"
+          }
+        ]
+      },
+      "portfolio": {
+        "images": [
+          "/industries/cafe/catering-spread.webp",
+          "/industries/cafe/cafe-sign-and-menu.webp"
+        ],
+        "label": "Catering enquiries"
+      },
+      "location": {
+        "eyebrow": "Find us",
+        "lines": ["The Daily Crumb", "42 Market Street"]
+      },
+      "enquiry": {
+        "image": "/industries/cafe/catering-spread.webp",
+        "eyebrow": "Get in touch",
+        "headline": ["Start with", "a conversation."],
+        "fields": ["Your name", "Catering or menu question?"],
+        "action": "Send an enquiry"
+      },
+      "mobile": {
+        "image": "/industries/cafe/cafe-sign-and-menu.webp",
+        "display": ["Café.", "On the go."],
+        "eyebrow": "Made for visitors",
+        "headline": ["See what is fresh today."],
+        "action": "Explore the menu"
+      }
+    }
+  },
+  "steps": {
+    "eyebrow": "From café details to a first draft",
+    "headline": "How to Create Your Café Website",
+    "description": "Tell Velozy about your café, review the suggested page plan, and edit the generated homepage. Use the sections above to answer visitors’ practical questions. Publish only information you can keep accurate; extra pages depend on your plan.",
+    "preview": {
+      "briefLabel": "Let’s plan your website",
+      "conversation": [
+        {
+          "question": "What’s your café called?",
+          "answer": "The Daily Crumb"
+        }
+      ],
+      "focusLabel": "What should visitors find first?",
+      "focusOptions": [
+        {
+          "label": "Today’s specials",
+          "selected": true
+        },
+        {
+          "label": "Open 8–5",
+          "selected": false
+        }
+      ],
+      "planLabel": "Your website plan",
+      "pages": [
+        "Home",
+        "Menu that stays readable",
+        "Catering enquiries",
+        "Contact"
+      ],
+      "editorLabel": "Website preview",
+      "brand": "THE DAILY CRUMB",
+      "headline": "See what is fresh today.",
+      "image": "/industries/cafe/bakery.webp",
+      "imageAlt": "Fresh pastries and bread displayed in a bakery case",
+      "publishLabel": "Ready for the world"
+    },
+    "items": [
+      {
+        "title": "Tell us about your café",
+        "description": "Share your business details and what visitors need. A current menu with prices and dietary notes you can verify."
+      },
+      {
+        "title": "Shape the page plan",
+        "description": "Review suggested pages and homepage sections. Opening hours, address, and good photos of food and space."
+      },
+      {
+        "title": "Choose a style. Make it yours.",
+        "description": "Confirm design choices, generate a homepage, then refine the words and images before publishing."
+      }
+    ]
+  },
+  "management": {
+    "businessName": "The Daily Crumb"
+  },
+  "faq": {
+    "eyebrow": "Café website questions",
+    "headline": "Café Website FAQs",
+    "description": "Clear answers to help you plan and publish your café site.",
+    "items": [
+      {
+        "question": "Can I change the menu as items sell out?",
+        "answer": "Yes. Edit your menu copy and prices when they change. A live inventory or point-of-sale sync is not included."
+      },
+      {
+        "question": "Can people order and pay online?",
+        "answer": "This page focuses on showing your menu and taking enquiries. Do not promise online ordering until a supported checkout and fulfilment flow is active."
+      },
+      {
+        "question": "Can I add a catering request form?",
+        "answer": "You can collect catering enquiries through a contact form and follow up directly."
+      },
+      {
+        "question": "Can I add opening hours and directions?",
+        "answer": "Yes. Add the current hours, address, and directions so customers can plan a visit. Update them when your schedule changes."
+      },
+      {
+        "question": "Can I include dietary or allergen information?",
+        "answer": "You can add the information your café has verified. Keep it current and ask customers to confirm details with staff when they have an allergy or dietary concern."
+      },
+      {
+        "question": "Can customers ask about catering for an event?",
+        "answer": "Yes. A contact form can collect the event date, guest count, and contact details. Your team confirms the menu, availability, and price directly."
+      }
+    ]
+  },
+  "finalCta": {
+    "eyebrow": "Your café, in its own words",
+    "headline": "Make your café easy to find and visit.",
+    "midHeadline": "Ready to start your café website?",
+    "description": "Start with one homepage, then build out the pages your visitors need.",
+    "action": "Start your café website"
+  },
+  "related": [
+    {
+      "slug": "restaurant-website-builder",
+      "label": "Restaurant"
+    },
+    {
+      "slug": "event-website-builder",
+      "label": "Event"
+    }
+  ]
+}

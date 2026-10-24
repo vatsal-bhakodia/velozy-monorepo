@@ -37,20 +37,20 @@ mobile sequences. Reduced motion shows the complete static workflow. GSAP
 matchMedia reverts animations on breakpoint changes and unmount. Product claims
 preserve owner publishing control.
 
-`solutions/solution-page.tsx` owns the reusable industry page shell, hero
-composition, capability cards, creation steps, CTAs, showcase, page-content
-cards, SEO guidance, and FAQ pattern. Route copy lives in
-`src/content/solutions/*.json`; each entry's `slug` selects the dynamic
-`/industries/[slug]` route. `src/content/solutions/index.ts` currently registers
-the local JSON entries and can later be replaced by an API-backed lookup. The
-salon page is the first complete example and uses a mineral-sage accent on the
-shared dark canvas. `solutions/hero-previews.tsx`
-owns the reusable service and appointment cards used in the hero. Supply each
-industry's card text and `hero.previewTheme` colors in its route content to keep
-the same card structure while matching its palette. The calendar is an
-illustrative preview, not a live booking flow. Keep later industry pages
-specific in their authored content while reusing these section patterns and the
-`rounded-md` surface style.
+`solutions/solution-page.tsx` owns the shared layout for all 14 industry pages:
+hero and utility previews, six capability cards, creation steps, niche cards,
+business management preview, FAQ section headings, and CTAs. Route copy,
+palette, and preview details live in separate `src/content/solutions/*.json`
+files. `solutions/industry-faq-items.tsx` owns the accessible, animated FAQ
+disclosures; route JSON supplies their questions and answers. The registry in
+`src/content/solutions/index.ts` validates authored slugs and supplies the
+dynamic route, directory, and sitemap; unknown slugs return 404. Industry
+routes provide hero and section imagery in their JSON content.
+`solutions/industry-image.tsx` renders those assets and safely leaves optional
+missing visuals blank without requesting missing files.
+`solutions/industry-theme.ts` derives section colors from each JSON palette.
+`solutions/hero-previews.tsx` owns offering, calendar, and detail previews.
+These are illustrative and do not provide a live booking flow.
 
 `solutions/industry-use-cases.tsx` replaces the industry gallery with
 illustrated niche cards. Route `inspiration` content supplies the heading,
@@ -72,11 +72,24 @@ and remain static when reduced motion is requested. Preview controls are
 decorative.
 
 `solutions/capabilities-bento.tsx` owns the reusable industry capabilities bento
-structure: service menu, subscription preview, portfolio, illustrative location
+structure: offering list, option preview, portfolio, illustrative location
 map, enquiry form, and mobile preview. Route data supplies the six card labels
-and descriptions, every preview image and label, and the section palette. Each
+and descriptions, every preview image and label, and the shared page palette. Each
 capability item selects one matching visual spec by key, so new industries can
 change the examples and wording while keeping the same six visual treatments.
 Tailwind owns the layout and visual treatment; preview controls are decorative.
-The subscription card demonstrates membership choices with a selection action;
-it does not claim a native recurring-payment flow.
+The second card illustrates route-specific options, including salon memberships
+and hotel room choices, without claiming a native purchase or booking flow.
+
+`solutions/business-management.tsx` owns the shared industry management
+accordion and dashboard stage. Route `management.businessName` supplies the
+sample brand; `solutions/management-content.ts` owns the common copy and
+illustrative dashboard data. The industry palette supplies its colors. Each item
+selects a dedicated component in `solutions/business-previews.tsx`: clients,
+analytics, team, agentic SEO, or payments. One item stays expanded. Desktop
+previews sit beside the accordion; mobile previews follow their expanded item.
+Buttons expose their expanded state and associated preview region. Illustrations
+are labeled as samples, with decorative controls and no live data. Analytics
+shows a disconnected state; AI SEO is marked as planned and payments show an
+empty provider-dependent state. This section
+replaces the former essentials and SEO foundations sections.

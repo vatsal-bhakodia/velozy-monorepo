@@ -1,0 +1,265 @@
+{
+  "slug": "education-website-builder",
+  "name": "Education",
+  "metadata": {
+    "title": "Education Website Builder | Velozy",
+    "description": "Build an education website with course listings, instructor profiles, schedules, fees, and enrolment enquiry forms."
+  },
+  "palette": {
+    "accent": "#315f98",
+    "pale": "#dfe9fb",
+    "surface": "#131e30",
+    "ink": "#1a3151"
+  },
+  "hero": {
+    "eyebrow": "Education website builder",
+    "headline": "Teach online with an",
+    "highlight": "Education Website Builder",
+    "description": "List courses, teachers, class schedules and fees, then give prospective learners a clear path to ask about enrolment.",
+    "primaryAction": "Get started",
+    "image": "/industries/education/hero.png",
+    "imageAlt": "Example education website featuring a student learning at a laptop",
+    "offerCard": {
+      "title": "SAT prep course",
+      "detail": "Small-group tutoring",
+      "meta": "4-week course",
+      "action": "Enroll now",
+      "image": "/industries/education/tutoring.webp",
+      "imageAlt": "A tutor helping a student work through maths problems",
+      "price": "$240",
+      "priceDetail": "Illustrative · per course"
+    },
+    "secondaryCard": {
+      "kind": "details",
+      "title": "Next course",
+      "rows": [
+        {
+          "label": "Starts",
+          "value": "November 9"
+        },
+        {
+          "label": "Format",
+          "value": "Small group · online"
+        },
+        {
+          "label": "Schedule",
+          "value": "Tue & Thu · 4 PM"
+        }
+      ],
+      "footer": "Example dates and fees. Confirm course availability with the provider.",
+      "action": "View course details"
+    }
+  },
+  "inspiration": {
+    "eyebrow": "For every kind of education business",
+    "headline": "A website that fits your education.",
+    "description": "A good question starts here. — Explain subjects, learner levels, schedules, and teacher experience.",
+    "items": [
+      {
+        "title": "Tutoring centres",
+        "description": "Explain subjects, learner levels, schedules, and teacher experience.",
+        "image": "/industries/education/tutoring.webp",
+        "imageAlt": "A tutor helping a student work through maths problems",
+        "action": "Create your website"
+      },
+      {
+        "title": "Independent teachers",
+        "description": "Introduce your approach and give families a clear enquiry path.",
+        "image": "/industries/education/books-and-school-supplies.webp",
+        "imageAlt": "Study materials arranged on a classroom desk",
+        "action": "Create your website"
+      },
+      {
+        "title": "Training providers",
+        "description": "Outline course topics, prerequisites, and upcoming start dates.",
+        "image": "/industries/education/classroom.webp",
+        "imageAlt": "A teacher leading a lesson with students in a classroom",
+        "action": "Create your website"
+      }
+    ]
+  },
+  "capabilities": {
+    "eyebrow": "For the details education visitors need",
+    "headline": "Everything your education site needs to explain.",
+    "description": "Describe levels, formats, prerequisites, and what learners will cover. Introduce teachers with real qualifications and an approved photo.",
+    "note": "Illustrative website sections. Places and enrollment are confirmed by the provider. Search tip: Use the course subject and learner level in headings when relevant.",
+    "items": [
+      {
+        "title": "Program details",
+        "description": "Describe levels, formats, prerequisites, and what learners will cover.",
+        "visual": "services"
+      },
+      {
+        "title": "People and trust",
+        "description": "Introduce teachers with real qualifications and an approved photo.",
+        "visual": "subscription"
+      },
+      {
+        "title": "Enrollment enquiries",
+        "description": "Collect interest and follow up with availability and enrollment instructions.",
+        "visual": "portfolio"
+      },
+      {
+        "title": "Your location",
+        "description": "Help visitors find your education with accurate address, hours, or service-area information.",
+        "visual": "location"
+      },
+      {
+        "title": "A way to reach you",
+        "description": "Collect a clear education enquiry and follow up directly.",
+        "visual": "enquiry"
+      },
+      {
+        "title": "A good fit on mobile",
+        "description": "Give visitors a responsive layout that reads well on phones and larger screens.",
+        "visual": "mobile"
+      }
+    ],
+    "visuals": {
+      "services": {
+        "image": "/industries/education/tutoring.webp",
+        "eyebrow": "Courses & tutors",
+        "headline": ["A good question starts here."],
+        "rows": ["Ages 11–16", "Small groups", "New term dates"],
+        "link": "Explore programs"
+      },
+      "subscription": {
+        "image": "/industries/education/classroom.webp",
+        "eyebrow": "People and trust",
+        "title": "Small-group sessions & One-to-one tutoring",
+        "description": "Introduce teachers with real qualifications and an approved photo.",
+        "plans": [
+          {
+            "title": "Small-group sessions",
+            "price": "See program details",
+            "action": "Details"
+          },
+          {
+            "title": "One-to-one tutoring",
+            "price": "Ask about a place",
+            "action": "Details"
+          }
+        ]
+      },
+      "portfolio": {
+        "images": [
+          "/industries/education/tutoring.webp",
+          "/industries/education/classroom.webp"
+        ],
+        "label": "Enrollment enquiries"
+      },
+      "location": {
+        "eyebrow": "Find us",
+        "lines": ["Bright Path Learning", "New term dates"]
+      },
+      "enquiry": {
+        "image": "/industries/education/tutoring.webp",
+        "eyebrow": "Get in touch",
+        "headline": ["Start with", "a conversation."],
+        "fields": ["Your name", "Which program interests you?"],
+        "action": "Send an enquiry"
+      },
+      "mobile": {
+        "image": "/industries/education/tutoring.webp",
+        "display": ["Education.", "On the go."],
+        "eyebrow": "Made for visitors",
+        "headline": ["A good question starts here."],
+        "action": "Explore programs"
+      }
+    }
+  },
+  "steps": {
+    "eyebrow": "From education details to a first draft",
+    "headline": "How to Create Your Education Website",
+    "description": "Tell Velozy about your education, review the suggested page plan, and edit the generated homepage. Use the sections above to answer visitors’ practical questions. Publish only information you can keep accurate; extra pages depend on your plan.",
+    "preview": {
+      "briefLabel": "Let’s plan your website",
+      "conversation": [
+        {
+          "question": "What’s your education called?",
+          "answer": "Bright Path Learning"
+        }
+      ],
+      "focusLabel": "What should visitors find first?",
+      "focusOptions": [
+        {
+          "label": "Ages 11–16",
+          "selected": true
+        },
+        {
+          "label": "Small groups",
+          "selected": false
+        }
+      ],
+      "planLabel": "Your website plan",
+      "pages": ["Home", "Program details", "Enrollment enquiries", "Contact"],
+      "editorLabel": "Website preview",
+      "brand": "BRIGHT PATH LEARNING",
+      "headline": "A good question starts here.",
+      "image": "/industries/education/tutoring.webp",
+      "imageAlt": "A tutor helping a student work through maths problems",
+      "publishLabel": "Ready for the world"
+    },
+    "items": [
+      {
+        "title": "Tell us about your education",
+        "description": "Share your business details and what visitors need. Program outlines, age groups, schedule, and fees you can publish."
+      },
+      {
+        "title": "Shape the page plan",
+        "description": "Review suggested pages and homepage sections. Teacher biographies and approved images."
+      },
+      {
+        "title": "Choose a style. Make it yours.",
+        "description": "Confirm design choices, generate a homepage, then refine the words and images before publishing."
+      }
+    ]
+  },
+  "management": {
+    "businessName": "Bright Path Learning"
+  },
+  "faq": {
+    "eyebrow": "Education website questions",
+    "headline": "Education Website FAQs",
+    "description": "Clear answers to help you plan and publish your education site.",
+    "items": [
+      {
+        "question": "Can students take a course on the website?",
+        "answer": "You can present courses and collect enquiries. A learning management system, lessons, and student portal are not included."
+      },
+      {
+        "question": "Can I list course dates and fees?",
+        "answer": "Yes. Add the details you provide and update them when terms change."
+      },
+      {
+        "question": "Can I accept applications?",
+        "answer": "A form can gather initial interest; manage admissions and sensitive records through an appropriate system."
+      },
+      {
+        "question": "Can I explain course levels and learning formats?",
+        "answer": "Yes. Describe the subjects, levels, prerequisites, schedule, format, and fees you can keep accurate."
+      },
+      {
+        "question": "Can students enroll or pay for a course on the site?",
+        "answer": "The page can present courses and collect enquiries. It does not include a learning platform, student account, or built-in course payment flow."
+      },
+      {
+        "question": "Can I collect student or parent information?",
+        "answer": "A general enquiry can collect initial contact details. Use an appropriate, privacy-reviewed process for children’s information, applications, and education records."
+      }
+    ]
+  },
+  "finalCta": {
+    "eyebrow": "Your education, in its own words",
+    "headline": "Help learners find the right place to begin.",
+    "midHeadline": "Ready to start your education website?",
+    "description": "Start with one homepage, then build out the pages your visitors need.",
+    "action": "Start your education website"
+  },
+  "related": [
+    {
+      "slug": "fitness-website-builder",
+      "label": "Fitness"
+    }
+  ]
+}

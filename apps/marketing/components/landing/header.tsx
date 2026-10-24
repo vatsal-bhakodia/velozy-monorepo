@@ -11,42 +11,35 @@ import logo from "../../public/logo.svg";
 const useCases = [
   {
     label: "Founders",
-    href: "/use-cases/founders",
     description: "Turn an idea into a product people can try.",
   },
   {
     label: "Website resellers",
-    href: "/use-cases/website-resellers",
     description: "Build and deliver client websites at higher margins.",
   },
   {
     label: "Startups",
-    href: "/use-cases/startups",
     description: "Validate, build, and launch without a large team.",
   },
   {
     label: "Agencies",
-    href: "/use-cases/agencies",
     description: "Deliver more client sites without slowing down.",
   },
   {
     label: "Freelancers",
-    href: "/use-cases/freelancers",
     description: "Turn briefs into polished client work faster.",
   },
   {
     label: "Students",
-    href: "/use-cases/students",
     description: "Build real projects while learning by doing.",
   },
   {
     label: "Enterprise",
-    href: "/use-cases/enterprise",
     description: "Give every team speed with the control IT needs.",
   },
 ];
 
-const industries = [
+const featuredIndustries = [
   {
     label: "Beauty & salons",
     href: "/industries/salon-website-builder",
@@ -68,15 +61,9 @@ const industries = [
     description: "Introduce your courses, teachers and enrollment information.",
   },
   {
-    label: "Events",
-    href: "/industries/event-website-builder",
-    description:
-      "Make the program, practical details and registration path easy to find.",
-  },
-  {
-    label: "Fitness & coaching",
-    href: "/industries/fitness-coaching-website-builder",
-    description: "Present classes, coaching and the next step for new members.",
+    label: "Fitness",
+    href: "/industries/fitness-website-builder",
+    description: "Present classes, training and the next step for new members.",
   },
   {
     label: "Healthcare",
@@ -85,25 +72,9 @@ const industries = [
       "Help visitors find your care services, team and contact details.",
   },
   {
-    label: "Law firms",
-    href: "/industries/law-firm-website-builder",
-    description: "Explain your practice areas and how to contact your firm.",
-  },
-  {
-    label: "Nonprofits",
-    href: "/industries/nonprofit-website-builder",
-    description: "Tell your story and explain how people can get involved.",
-  },
-  {
-    label: "Professional services",
-    href: "/industries/professional-services-website-builder",
-    description: "Present your expertise, service offers and contact options.",
-  },
-  {
-    label: "Real estate",
-    href: "/industries/real-estate-website-builder",
-    description:
-      "Organize property information, local expertise and inquiries.",
+    label: "Hotels",
+    href: "/industries/hotel-website-builder",
+    description: "Show rooms, amenities and ways to enquire about a stay.",
   },
   {
     label: "Restaurants",
@@ -115,42 +86,64 @@ const industries = [
 
 type SolutionItem = {
   label: string;
-  href: string;
   description: string;
+  href?: string;
 };
 
 function SolutionGroup({
   title,
   items,
   onNavigate,
+  allHref,
 }: {
   title: string;
   items: SolutionItem[];
   onNavigate: () => void;
+  allHref?: string;
 }) {
   return (
-    <section>
+    <section className="min-w-0">
       <h3 className="mb-5 border-b border-white/10 px-2 pb-3 text-sm font-medium uppercase tracking-[0.08em] text-white/50">
-        {title}
-      </h3>
-      <div
-        className={`grid gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-flow-col lg:grid-rows-4 ${items.length > 9 ? "lg:grid-cols-3" : "lg:grid-cols-2"}`}
-      >
-        {items.map((item) => (
+        {allHref ? (
           <Link
-            key={item.href}
-            href={item.href}
+            href={allHref}
+            aria-label={`View all ${title.toLowerCase()}`}
             onClick={onNavigate}
-            className="group block rounded-lg px-2 py-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
+            className="inline-flex items-center gap-1.5 hover:text-cyan-300 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
           >
-            <span className="block text-base font-semibold leading-6 text-white transition-colors group-hover:text-cyan-300 lg:text-lg">
-              {item.label}
-            </span>
-            <span className="mt-1 block text-sm leading-6 text-white/60 lg:text-base">
-              {item.description}
-            </span>
+            {title} <span aria-hidden="true">↗</span>
           </Link>
-        ))}
+        ) : (
+          title
+        )}
+      </h3>
+      <div className="grid gap-x-5 gap-y-2 sm:grid-cols-2 lg:grid-flow-col lg:grid-rows-4">
+        {items.map((item) => {
+          const body = (
+            <>
+              <span className="block text-base font-semibold leading-6 text-white transition-colors group-hover:text-cyan-300 lg:text-lg">
+                {item.label}
+              </span>
+              <span className="mt-1 block text-sm leading-6 text-white/60 lg:text-base">
+                {item.description}
+              </span>
+            </>
+          );
+          return item.href ? (
+            <Link
+              key={item.label}
+              href={item.href}
+              onClick={onNavigate}
+              className="group block rounded-lg px-2 py-2.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
+            >
+              {body}
+            </Link>
+          ) : (
+            <div key={item.label} className="rounded-lg px-2 py-2.5">
+              {body}
+            </div>
+          );
+        })}
       </div>
     </section>
   );
@@ -158,21 +151,18 @@ function SolutionGroup({
 
 function SolutionsDirectory({ onNavigate }: { onNavigate: () => void }) {
   return (
-    <div className="grid gap-8 xl:grid-cols-[minmax(0,3fr)_minmax(0,5fr)] xl:gap-8">
-      <div>
-        <SolutionGroup
-          title="Use cases"
-          items={useCases}
-          onNavigate={onNavigate}
-        />
-      </div>
-      <div>
-        <SolutionGroup
-          title="Industries"
-          items={industries}
-          onNavigate={onNavigate}
-        />
-      </div>
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,5fr)]">
+      <SolutionGroup
+        title="Use cases"
+        items={useCases}
+        onNavigate={onNavigate}
+      />
+      <SolutionGroup
+        title="Industries"
+        items={featuredIndustries}
+        allHref="/industries"
+        onNavigate={onNavigate}
+      />
     </div>
   );
 }
@@ -236,7 +226,8 @@ export default function Header() {
           <Link
             href="/"
             aria-label="Velozy home"
-            className="flex items-center gap-2 text-xl font-bold shrink-0"
+            onClick={closeMenus}
+            className="flex shrink-0 items-center gap-2 text-xl font-bold"
           >
             <Image
               src={logo}
@@ -247,7 +238,6 @@ export default function Header() {
               className="h-9 w-auto brightness-0 invert"
             />
           </Link>
-
           <nav
             aria-label="Main navigation"
             className="hidden items-center gap-9 text-base lg:flex"
@@ -265,20 +255,14 @@ export default function Header() {
               />
             </button>
             <Link
-              href="/tools"
-              className="font-medium text-white hover:[text-shadow:0_0_0.45px_currentColor] focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
-            >
-              Tools
-            </Link>
-            <Link
               href="/pricing"
+              onClick={closeMenus}
               className="font-medium text-white hover:[text-shadow:0_0_0.45px_currentColor] focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
             >
               Pricing
             </Link>
           </nav>
         </div>
-
         <div className="hidden items-center gap-6 text-sm lg:flex">
           <Link
             href={adminUrl("/signin")}
@@ -293,7 +277,6 @@ export default function Header() {
             Start Building
           </Link>
         </div>
-
         <button
           type="button"
           className="inline-flex h-11 w-11 items-center justify-center rounded-full text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 lg:hidden"
@@ -308,17 +291,15 @@ export default function Header() {
           {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
-
       {solutionsOpen && (
         <div
           id="solutions-mega-menu"
           aria-label="Solutions"
           className="absolute inset-x-0 top-full z-50 hidden max-h-[calc(100svh-72px)] overflow-y-auto overscroll-contain border-y border-white/10 bg-black px-6 py-7 shadow-[0_24px_70px_rgba(0,0,0,.45)] lg:block lg:px-[4vw] lg:py-8"
         >
-          <SolutionsDirectory onNavigate={() => setSolutionsOpen(false)} />
+          <SolutionsDirectory onNavigate={closeMenus} />
         </div>
       )}
-
       <nav
         id="dark-theme-mobile-menu"
         aria-label="Mobile navigation"
@@ -346,13 +327,6 @@ export default function Header() {
               <SolutionsDirectory onNavigate={closeMenus} />
             </div>
           )}
-          <Link
-            href="/tools"
-            onClick={closeMenus}
-            className="rounded-lg px-3 py-3 text-base text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
-          >
-            Tools
-          </Link>
           <Link
             href="/pricing"
             onClick={closeMenus}

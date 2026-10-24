@@ -1,0 +1,270 @@
+{
+  "slug": "event-website-builder",
+  "name": "Event",
+  "metadata": {
+    "title": "Event Website Builder | Velozy",
+    "description": "Create an event website with dates, schedules, venue details, accessibility information, registration guidance, and organiser contacts."
+  },
+  "palette": {
+    "accent": "#793c89",
+    "pale": "#f0dcf5",
+    "surface": "#25152b",
+    "ink": "#391d45"
+  },
+  "hero": {
+    "eyebrow": "Event website builder",
+    "headline": "Promote events with an",
+    "highlight": "Event Website Builder",
+    "description": "Share event dates, schedules, venue and accessibility details, with registration information and a direct organiser contact path.",
+    "primaryAction": "Get started",
+    "image": "/industries/event/hero.png",
+    "imageAlt": "Example event website featuring a live audience at a concert",
+    "offerCard": {
+      "title": "Opening day pass",
+      "detail": "Conference entry",
+      "meta": "22 Nov · Riverside Hall",
+      "action": "Get tickets",
+      "image": "/industries/event/conference.webp",
+      "imageAlt": "Audience listening to a speaker at a conference",
+      "price": "$89",
+      "priceDetail": "Illustrative · per ticket",
+      "quantity": 1
+    },
+    "secondaryCard": {
+      "kind": "details",
+      "title": "Event details",
+      "rows": [
+        {
+          "label": "Date",
+          "value": "November 22"
+        },
+        {
+          "label": "Doors open",
+          "value": "9:00 AM"
+        },
+        {
+          "label": "Venue",
+          "value": "Riverside Hall"
+        }
+      ],
+      "footer": "Illustrative event information · confirm ticket availability with the host.",
+      "action": "View event details"
+    }
+  },
+  "inspiration": {
+    "eyebrow": "For every kind of event business",
+    "headline": "A website that fits your event.",
+    "description": "One day. Many new perspectives. — Give attendees a clear program, speaker list, and venue details.",
+    "items": [
+      {
+        "title": "Conferences",
+        "description": "Give attendees a clear program, speaker list, and venue details.",
+        "image": "/industries/event/conference.webp",
+        "imageAlt": "Audience listening to a speaker at a conference",
+        "action": "Create your website"
+      },
+      {
+        "title": "Workshops",
+        "description": "Explain the topic, who it is for, and how to enquire about a place.",
+        "image": "/industries/education/classroom.webp",
+        "imageAlt": "Teacher leading a hands-on learning session with students",
+        "action": "Create your website"
+      },
+      {
+        "title": "Community events",
+        "description": "Make dates, directions, and organiser contact easy to find.",
+        "image": "/industries/event/banquet-table-setting.webp",
+        "imageAlt": "Tables set for a community gathering",
+        "action": "Create your website"
+      }
+    ]
+  },
+  "capabilities": {
+    "eyebrow": "For the details event visitors need",
+    "headline": "Everything your event site needs to explain.",
+    "description": "Show session times, speakers, and useful changes in one scannable schedule. Share directions, arrival time, parking, and accessibility information.",
+    "note": "Illustrative website sections. Registration can link to your existing ticket provider. Search tip: Put the event name, date, and venue in visible copy.",
+    "items": [
+      {
+        "title": "Program at a glance",
+        "description": "Show session times, speakers, and useful changes in one scannable schedule.",
+        "visual": "services"
+      },
+      {
+        "title": "Venue and access",
+        "description": "Share directions, arrival time, parking, and accessibility information.",
+        "visual": "subscription"
+      },
+      {
+        "title": "Registration path",
+        "description": "Link to an existing ticket provider or collect enquiries; confirm registration outside the site.",
+        "visual": "portfolio"
+      },
+      {
+        "title": "Your location",
+        "description": "Help visitors find your event with accurate address, hours, or service-area information.",
+        "visual": "location"
+      },
+      {
+        "title": "A way to reach you",
+        "description": "Collect a clear event enquiry and follow up directly.",
+        "visual": "enquiry"
+      },
+      {
+        "title": "A good fit on mobile",
+        "description": "Give visitors a responsive layout that reads well on phones and larger screens.",
+        "visual": "mobile"
+      }
+    ],
+    "visuals": {
+      "services": {
+        "image": "/industries/event/conference.webp",
+        "eyebrow": "Program & speakers",
+        "headline": ["One day. Many new perspectives."],
+        "rows": ["22 November", "Riverside Hall", "Doors at 9 AM"],
+        "link": "Explore the program"
+      },
+      "subscription": {
+        "image": "/industries/event/banquet-table-setting.webp",
+        "eyebrow": "Venue and access",
+        "title": "Talks & Workshops",
+        "description": "Share directions, arrival time, parking, and accessibility information.",
+        "plans": [
+          {
+            "title": "Talks",
+            "price": "See speakers",
+            "action": "Details"
+          },
+          {
+            "title": "Workshops",
+            "price": "View sessions",
+            "action": "Details"
+          }
+        ]
+      },
+      "portfolio": {
+        "images": [
+          "/industries/event/conference.webp",
+          "/industries/event/banquet-table-setting.webp"
+        ],
+        "label": "Registration path"
+      },
+      "location": {
+        "eyebrow": "Find us",
+        "lines": ["Field Notes Live", "Doors at 9 AM"]
+      },
+      "enquiry": {
+        "image": "/industries/event/conference.webp",
+        "eyebrow": "Get in touch",
+        "headline": ["Start with", "a conversation."],
+        "fields": ["Your name", "Question for the organiser?"],
+        "action": "Send an enquiry"
+      },
+      "mobile": {
+        "image": "/industries/event/conference.webp",
+        "display": ["Event.", "On the go."],
+        "eyebrow": "Made for visitors",
+        "headline": ["One day. Many new perspectives."],
+        "action": "Explore the program"
+      }
+    }
+  },
+  "steps": {
+    "eyebrow": "From event details to a first draft",
+    "headline": "How to Create Your Event Website",
+    "description": "Tell Velozy about your event, review the suggested page plan, and edit the generated homepage. Use the sections above to answer visitors’ practical questions. Publish only information you can keep accurate; extra pages depend on your plan.",
+    "preview": {
+      "briefLabel": "Let’s plan your website",
+      "conversation": [
+        {
+          "question": "What’s your event called?",
+          "answer": "Field Notes Live"
+        }
+      ],
+      "focusLabel": "What should visitors find first?",
+      "focusOptions": [
+        {
+          "label": "22 November",
+          "selected": true
+        },
+        {
+          "label": "Riverside Hall",
+          "selected": false
+        }
+      ],
+      "planLabel": "Your website plan",
+      "pages": ["Home", "Program at a glance", "Registration path", "Contact"],
+      "editorLabel": "Website preview",
+      "brand": "FIELD NOTES LIVE",
+      "headline": "One day. Many new perspectives.",
+      "image": "/industries/event/conference.webp",
+      "imageAlt": "Audience listening to a speaker at an event",
+      "publishLabel": "Ready for the world"
+    },
+    "items": [
+      {
+        "title": "Tell us about your event",
+        "description": "Share your business details and what visitors need. Final date, time zone, venue and travel details."
+      },
+      {
+        "title": "Shape the page plan",
+        "description": "Review suggested pages and homepage sections. Approved speaker names, bios, and session summaries."
+      },
+      {
+        "title": "Choose a style. Make it yours.",
+        "description": "Confirm design choices, generate a homepage, then refine the words and images before publishing."
+      }
+    ]
+  },
+  "management": {
+    "businessName": "Field Notes Live"
+  },
+  "faq": {
+    "eyebrow": "Event website questions",
+    "headline": "Event Website FAQs",
+    "description": "Clear answers to help you plan and publish your event site.",
+    "items": [
+      {
+        "question": "Can I sell tickets directly?",
+        "answer": "A website can link to your existing ticket provider. Built-in ticket sales are not promised here."
+      },
+      {
+        "question": "Can I change the schedule?",
+        "answer": "Yes. Edit the event page when a session or time changes."
+      },
+      {
+        "question": "Can guests ask accessibility questions?",
+        "answer": "Add clear access details and a contact path so your team can answer specific questions."
+      },
+      {
+        "question": "What information should an event page include?",
+        "answer": "Include the date, schedule, speakers, venue, directions, accessibility details, and an organiser contact so guests can plan their visit."
+      },
+      {
+        "question": "Can I link guests to registration or tickets?",
+        "answer": "Yes. You can direct guests to an existing ticket provider. Ticket inventory, payment, and registration management are handled by that provider."
+      },
+      {
+        "question": "Can I publish schedule changes after the page is live?",
+        "answer": "Yes. Update the event page when sessions, speakers, or timings change, and make important changes easy for attendees to find."
+      }
+    ]
+  },
+  "finalCta": {
+    "eyebrow": "Your event, in its own words",
+    "headline": "Make the event details easy to share.",
+    "midHeadline": "Ready to start your event website?",
+    "description": "Start with one homepage, then build out the pages your visitors need.",
+    "action": "Start your event website"
+  },
+  "related": [
+    {
+      "slug": "cafe-website-builder",
+      "label": "Café"
+    },
+    {
+      "slug": "nonprofit-website-builder",
+      "label": "Nonprofit"
+    }
+  ]
+}
