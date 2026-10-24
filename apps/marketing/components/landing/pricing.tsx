@@ -32,16 +32,48 @@ function featuresFor(plans: FoundationPlan[], region: Region, annual: boolean) {
     (plan.id === "scale" && plan.features.includes("all_launch_features"));
 
   return [
-    ["AI credits included / month", "One-time trial", ...paid.map((plan) => String(plan.included_ai_credits_per_month))],
+    [
+      "AI credits included / month",
+      "One-time trial",
+      ...paid.map((plan) => String(plan.included_ai_credits_per_month)),
+    ],
     ["Homepage draft preview", "1", "1", "1"],
-    ["Published pages", ...plans.map((plan) => String(plan.limits.published_pages))],
-    ["Custom domains", ...plans.map((plan) => String(plan.limits.custom_domains))],
-    ["Media storage", ...plans.map((plan) => `${plan.limits.media_storage_gb} GB`)],
-    ["Team editors", ...plans.map((plan) => String(plan.limits.team_editors_including_owner))],
-    ["Forms and enquiries", ...plans.map((plan) => yesNo(plan, "forms") || yesNo(plan, "basic_forms"))],
-    ["Blog and CMS", ...plans.map((plan) => yesNo(plan, "cms_blog") || yesNo(plan, "advanced_cms"))],
-    ["Manual on-page SEO", ...plans.map((plan) => yesNo(plan, "manual_onpage_seo"))],
-    ["Analytics integration", ...plans.map((plan) => yesNo(plan, "analytics_integration"))],
+    [
+      "Published pages",
+      ...plans.map((plan) => String(plan.limits.published_pages)),
+    ],
+    [
+      "Custom domains",
+      ...plans.map((plan) => String(plan.limits.custom_domains)),
+    ],
+    [
+      "Media storage",
+      ...plans.map((plan) => `${plan.limits.media_storage_gb} GB`),
+    ],
+    [
+      "Team editors",
+      ...plans.map((plan) => String(plan.limits.team_editors_including_owner)),
+    ],
+    [
+      "Forms and enquiries",
+      ...plans.map(
+        (plan) => yesNo(plan, "forms") || yesNo(plan, "basic_forms"),
+      ),
+    ],
+    [
+      "Blog and CMS",
+      ...plans.map(
+        (plan) => yesNo(plan, "cms_blog") || yesNo(plan, "advanced_cms"),
+      ),
+    ],
+    [
+      "Manual on-page SEO",
+      ...plans.map((plan) => yesNo(plan, "manual_onpage_seo")),
+    ],
+    [
+      "Analytics integration",
+      ...plans.map((plan) => yesNo(plan, "analytics_integration")),
+    ],
     ["Price", ...plans.map((plan) => formatMinorUnits(price(plan), currency))],
   ] as const;
 }
@@ -75,7 +107,8 @@ export default function Pricing({ initialRegion }: { initialRegion: Region }) {
 
           <div className="pb-1 text-left md:text-right">
             <p className="ml-auto max-w-[440px] text-[15px] leading-7 text-white/60 sm:text-base">
-              Preview your homepage, then publish it free on a Velozy subdomain. Upgrade when you need more pages or a custom domain.
+              Preview your homepage, then publish it free on a Velozy subdomain.
+              Upgrade when you need more pages or a custom domain.
             </p>
             <div className="mt-5 flex flex-wrap items-center gap-3 md:justify-end">
               <div
@@ -113,23 +146,33 @@ export default function Pricing({ initialRegion }: { initialRegion: Region }) {
             {plans.map((plan) => {
               const selectedPrice = plan.prices[region];
               const isFree = plan.id === "free";
-              const amount = selectedPrice[annual ? "annual_monthly_equivalent" : "monthly"];
+              const amount =
+                selectedPrice[annual ? "annual_monthly_equivalent" : "monthly"];
 
               return (
                 <article
                   key={plan.id}
                   className={`relative flex min-h-[340px] flex-col border-t border-white/10 p-7 first:border-t-0 sm:p-9 md:border-l md:border-t-0 md:first:border-l-0 ${plan.id === "launch" ? "bg-[linear-gradient(145deg,rgba(34,211,238,0.15),rgba(37,99,235,0.08)_48%,rgba(255,255,255,0.025))]" : "bg-[linear-gradient(145deg,rgba(255,255,255,0.035),rgba(255,255,255,0.012))]"}`}
                 >
-                  <span aria-hidden="true" className="plan-grain pointer-events-none absolute inset-0 z-[1]" />
+                  <span
+                    aria-hidden="true"
+                    className="plan-grain pointer-events-none absolute inset-0 z-[1]"
+                  />
                   {plan.id === "launch" && (
                     <div className="absolute right-7 top-7 rounded-full bg-cyan-300 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-950">
                       Most popular
                     </div>
                   )}
                   <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
-                    {plan.id === "free" ? "Publish on a Velozy subdomain" : plan.id === "launch" ? "For getting started" : "For growing sites"}
+                    {plan.id === "free"
+                      ? "Publish on a Velozy subdomain"
+                      : plan.id === "launch"
+                        ? "For getting started"
+                        : "For growing sites"}
                   </p>
-                  <h2 className="mt-5 text-2xl font-medium tracking-tight">{plan.name}</h2>
+                  <h2 className="mt-5 text-2xl font-medium tracking-tight">
+                    {plan.name}
+                  </h2>
                   <p className="mt-3 max-w-[240px] text-sm leading-6 text-slate-300/80">
                     {plan.id === "free"
                       ? "Create, preview, and publish one homepage for free."
@@ -139,16 +182,24 @@ export default function Pricing({ initialRegion }: { initialRegion: Region }) {
                   </p>
                   <div className="mt-auto pt-8">
                     {isFree ? (
-                      <span className="text-4xl font-semibold tracking-[-0.05em]">Free</span>
+                      <span className="text-4xl font-semibold tracking-[-0.05em]">
+                        Free
+                      </span>
                     ) : (
                       <>
                         <span className="text-5xl font-semibold tracking-[-0.06em]">
                           {formatMinorUnits(amount, currency)}
                         </span>
-                        <span className="ml-2 text-sm text-slate-400">/ month</span>
+                        <span className="ml-2 text-sm text-slate-400">
+                          / month
+                        </span>
                         {annual && (
                           <p className="mt-1 text-xs text-slate-400">
-                            {formatMinorUnits(selectedPrice.annual_total, currency)} billed yearly
+                            {formatMinorUnits(
+                              selectedPrice.annual_total,
+                              currency,
+                            )}{" "}
+                            billed yearly
                           </p>
                         )}
                       </>
@@ -172,7 +223,10 @@ export default function Pricing({ initialRegion }: { initialRegion: Region }) {
                 <div className="mb-3 grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))] gap-3 text-[10px] uppercase tracking-[0.18em] text-slate-400 sm:text-xs">
                   <span>Plan details</span>
                   {plans.map((plan) => (
-                    <span key={plan.id} className={`text-center ${plan.id === "launch" ? "text-cyan-300" : ""}`}>
+                    <span
+                      key={plan.id}
+                      className={`text-center ${plan.id === "launch" ? "text-cyan-300" : ""}`}
+                    >
                       {plan.name}
                     </span>
                   ))}
@@ -184,10 +238,27 @@ export default function Pricing({ initialRegion }: { initialRegion: Region }) {
                   >
                     <span className="text-slate-300">{label}</span>
                     {values.map((value, valueIndex) => (
-                      <span key={`${label}-${valueIndex}`} className="flex justify-center text-center text-slate-300/80">
+                      <span
+                        key={`${label}-${valueIndex}`}
+                        className="flex justify-center text-center text-slate-300/80"
+                      >
                         {typeof value === "boolean" ? (
-                          value ? <Check aria-label="Included" className="h-4 w-4 text-cyan-300" /> : <span aria-label="Not included" className="text-slate-500">—</span>
-                        ) : value}
+                          value ? (
+                            <Check
+                              aria-label="Included"
+                              className="h-4 w-4 text-cyan-300"
+                            />
+                          ) : (
+                            <span
+                              aria-label="Not included"
+                              className="text-slate-500"
+                            >
+                              —
+                            </span>
+                          )
+                        ) : (
+                          value
+                        )}
                       </span>
                     ))}
                   </div>
@@ -197,7 +268,8 @@ export default function Pricing({ initialRegion }: { initialRegion: Region }) {
           </div>
         </div>
         <p className="mt-7 text-center text-xs text-slate-400">
-          Free includes one published homepage on a Velozy subdomain. Additional pages and custom domains require a paid plan.
+          Free includes one published homepage on a Velozy subdomain. Additional
+          pages and custom domains require a paid plan.
         </p>
       </div>
     </section>

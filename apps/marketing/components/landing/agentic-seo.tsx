@@ -257,9 +257,7 @@ export default function AgenticSeo() {
         };
         const animateBusiness = (timeline: gsap.core.Timeline) => {
           const business = section.querySelector("[data-business]")!;
-          const connector = section.querySelector(
-            "[data-business-connector]",
-          )!;
+          const connector = section.querySelector("[data-business-connector]")!;
           reveal(timeline, business);
           timeline.fromTo(
             connector,

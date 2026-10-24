@@ -2,8 +2,7 @@ import { ComponentPropsWithoutRef, CSSProperties, FC } from "react";
 
 import { cn } from "@/lib/utils";
 
-export interface AnimatedShinyTextProps
-  extends ComponentPropsWithoutRef<"span"> {
+export interface AnimatedShinyTextProps extends ComponentPropsWithoutRef<"span"> {
   shimmerWidth?: number;
 }
 
@@ -20,10 +19,7 @@ export const AnimatedShinyText: FC<AnimatedShinyTextProps> = ({
           "--shiny-width": `${shimmerWidth}px`,
         } as CSSProperties
       }
-      className={cn(
-        "relative inline-block",
-        className,
-      )}
+      className={cn("relative inline-block", className)}
       {...props}
     >
       {children}
