@@ -1,2 +1,10 @@
 #!/usr/bin/env sh
-pnpm exec prettier --write .
+set -eu
+
+git diff --cached --name-only --diff-filter=ACMR -z \
+  | grep -z -v -x 'pnpm-lock.yaml' \
+  | xargs -0 -r pnpm exec prettier --write --ignore-unknown --
+
+git diff --cached --name-only --diff-filter=ACMR -z \
+  | grep -z -v -x 'pnpm-lock.yaml' \
+  | xargs -0 -r git add --
